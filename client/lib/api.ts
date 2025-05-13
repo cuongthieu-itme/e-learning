@@ -12,29 +12,11 @@ const apiClient = axios.create({
   },
 });
 
-let csrfToken: string | null = null;
-async function fetchCsrfToken() {
-  if (!csrfToken) {
-    try {
-      const response = await apiClient.get<{ csrfToken: string }>(
-        '/auth/csrf-token',
-      );
-      csrfToken = response.data.csrfToken;
-    } catch (error) {
-      console.error('Failed to fetch CSRF token:', error);
-      throw error;
-    }
-  }
-  return csrfToken;
-}
+// CSRF token handling removed
 
 apiClient.interceptors.request.use(
   async (config) => {
-    const method = config.method?.toUpperCase();
-    if (method === 'POST' || method === 'PATCH' || method === 'DELETE') {
-      const token = await fetchCsrfToken();
-      config.headers['X-CSRF-Token'] = token;
-    }
+    // CSRF token handling removed
     return config;
   },
   (error) => Promise.reject(error),
