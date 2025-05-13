@@ -1,4 +1,5 @@
 import { Delete, Edit, MoreHorizontal } from 'lucide-react';
+import Link from 'next/link';
 import React, { useState } from 'react';
 
 import { queryClient } from '@/context/react-query-client';
@@ -158,10 +159,12 @@ const DashboardUsersList: React.FC<DashboardUsersListProps> = ({
                     <DropdownMenuGroup>
                       <DropdownMenuLabel>Hành động</DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <Edit className="mr-2 h-4 w-4" />
-                        Sửa người dùng
-                      </DropdownMenuItem>
+                      <Link href={`/dashboard/users/${user._id}/edit`}>
+                        <DropdownMenuItem>
+                          <Edit className="mr-2 h-4 w-4" />
+                          Sửa người dùng
+                        </DropdownMenuItem>
+                      </Link>
                       <DropdownMenuItem onSelect={() => handleDeleteClick(user._id)}>
                         <Delete className="mr-2 h-4 w-4" />
                         Xóa người dùng

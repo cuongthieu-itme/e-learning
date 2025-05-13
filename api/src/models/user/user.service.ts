@@ -4,8 +4,8 @@ import { FilterQuery, Model, UpdateQuery, UpdateWriteOpResult } from 'mongoose';
 
 import { User } from './schema/user.schema';
 
-import { UpdateProfileDto } from './dto/update-profile.dto';
 import { GetUsersDto } from './dto/get-users.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class UserService {
@@ -74,7 +74,7 @@ export class UserService {
   }
 
   async getOne(id: string): Promise<ResponseObject> {
-    const user = await this.userModel.findById(id).select('-role');
+    const user = await this.userModel.findById(id);
 
     if (!user) throw new NotFoundException('User not found');
 

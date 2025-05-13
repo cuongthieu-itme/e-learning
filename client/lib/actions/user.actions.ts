@@ -1,7 +1,12 @@
-import { IUser, UpdateProfileDto } from '@/types';
+import { IUser, ServerResponse, UpdateProfileDto } from '@/types';
 import qs from 'qs';
 import { GetUsersDto } from '../../../api/src/models/user/dto/get-users.dto';
-import { deleteApiHandler, getApiHandler, patchApiHandler } from '../api';
+import {
+  deleteApiHandler,
+  getApiHandler,
+  patchApiHandler,
+  postApiHandler,
+} from '../api';
 
 export const updateProfile = async (
   data: UpdateProfileDto,
@@ -36,4 +41,27 @@ export const getAllUsers = async (
 
 export const deleteUser = async (userId: string): Promise<ServerResponse> => {
   return await deleteApiHandler(`user/${userId}`);
+};
+
+export const createUser = async (
+  data: any,
+): Promise<ServerResponse<{ user: IUser }>> => {
+  return await postApiHandler('users', data);
+};
+
+export const updateUser = async (
+  userId: string,
+  data: any,
+): Promise<ServerResponse<{ user: IUser }>> => {
+  return await patchApiHandler(`users/${userId}`, data);
+};
+
+export const getOneUser = async (
+  userId: string,
+): Promise<
+  ServerResponse<{
+    user: IUser;
+  }>
+> => {
+  return await getApiHandler(`user/${userId}`);
 };
