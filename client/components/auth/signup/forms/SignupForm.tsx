@@ -3,18 +3,16 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
+import { useToast } from '@/hooks/core/use-toast';
 import { signup } from '@/lib/actions/auth.actions';
 import { SignupSchema } from '@/lib/zod/auth.zod';
-import { useToast } from '@/hooks/core/use-toast';
 
-import Loader from '@/components/ui/info/loader';
 import { Button } from '@/components/ui/buttons/button';
-import { Input } from '@/components/ui/form/input';
 import {
   Form,
   FormControl,
@@ -24,6 +22,8 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form/form';
+import { Input } from '@/components/ui/form/input';
+import Loader from '@/components/ui/info/loader';
 
 const SignupForm: React.FC = () => {
   const { toast } = useToast();
@@ -72,11 +72,11 @@ const SignupForm: React.FC = () => {
             name="first_name"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>First Name</FormLabel>
+                <FormLabel>Họ</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="First Name" />
+                  <Input {...field} placeholder="Họ" />
                 </FormControl>
-                <FormDescription>Enter your given name.</FormDescription>
+                <FormDescription>Nhập họ của bạn.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -86,11 +86,11 @@ const SignupForm: React.FC = () => {
             name="last_name"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Last Name</FormLabel>
+                <FormLabel>Tên</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Last Name" />
+                  <Input {...field} placeholder="Tên" />
                 </FormControl>
-                <FormDescription>Enter your family or surname.</FormDescription>
+                <FormDescription>Nhập tên của bạn.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -105,7 +105,7 @@ const SignupForm: React.FC = () => {
               <FormControl>
                 <Input type="email" {...field} placeholder="Email" />
               </FormControl>
-              <FormDescription>Enter a valid email address.</FormDescription>
+              <FormDescription>Nhập email của bạn.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -115,13 +115,13 @@ const SignupForm: React.FC = () => {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Mật khẩu</FormLabel>
               <FormControl>
                 <Input {...field} type="password" placeholder="Password" />
               </FormControl>
               <FormDescription>
-                Start with uppercase letter, minimum 8 characters and contain
-                symbols and numbers
+                Bắt đầu bằng chữ hoa, ít nhất 8 ký tự và chứa ký tự đặc biệt và
+                số
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -137,10 +137,10 @@ const SignupForm: React.FC = () => {
             {form.formState.isSubmitting ? (
               <Loader type="ScaleLoader" height={10} />
             ) : (
-              'Register'
+              'Đăng ký'
             )}
           </Button>
-          <p className="text-muted-foreground">Or</p>
+          <p className="text-muted-foreground">Hoặc</p>
           <Button
             variant="outline"
             className="flex w-full items-center justify-center"
@@ -154,7 +154,7 @@ const SignupForm: React.FC = () => {
               width={40}
               height={40}
             />
-            Sign up with Google
+            Đăng ký với Google
           </Button>
         </div>
       </form>

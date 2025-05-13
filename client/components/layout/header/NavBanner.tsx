@@ -20,7 +20,7 @@ const NavBanner: React.FC = () => {
     <div className="base-padding hide-scrollbar hide-scrollbar flex items-center justify-between gap-5 overflow-x-scroll whitespace-nowrap bg-[#F5F5F5] py-2.5">
       <div>
         <h2 className="font-light text-muted-foreground">
-          Welcome to DzenvoShop!
+          Chào mừng đến với E-Learning!
         </h2>
       </div>
       <div className="flex items-center gap-10">

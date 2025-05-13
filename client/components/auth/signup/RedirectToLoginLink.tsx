@@ -4,9 +4,9 @@ const RedirectToLoginLink: React.FC = () => {
   return (
     <div className="text-center">
       <p className="text-muted-foreground">
-        Already have account?{' '}
+        Đã có tài khoản?{' '}
         <Link href="/login" className="text-blue-600 underline">
-          Login
+          Đăng nhập
         </Link>
       </p>
     </div>

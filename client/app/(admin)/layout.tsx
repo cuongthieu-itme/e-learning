@@ -1,16 +1,16 @@
-import { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';
+import { Metadata } from 'next';
 
-import '../globals.css';
-import AdminLayoutWrapper from './_AdminLayoutWrapper';
 import { Toaster } from '@/components/ui/info/toaster';
 import { QueryContextProvider } from '@/context/react-query-client';
+import '../globals.css';
+import AdminLayoutWrapper from './_AdminLayoutWrapper';
 
 export const metadata: Metadata = {
   icons: 'favicon.ico',
   title: {
-    default: 'DzenvoShop | Your Online Ecommerce Store',
-    template: '%s | DzenvoShop',
+    default: 'E-Learning | Hệ thống giảng dạy trực tuyến',
+    template: '%s | E-Learning',
   },
 };
 

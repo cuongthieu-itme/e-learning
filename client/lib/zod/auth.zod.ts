@@ -1,39 +1,39 @@
 import { z } from 'zod';
 
-import { sanitizeInput } from '@/lib/utils';
 import { PASSWORD_REGEX } from '@/constants';
+import { sanitizeInput } from '@/lib/utils';
 
 export const SignupSchema = z.object({
   first_name: z
     .string()
-    .min(2, { message: 'First Name must be at least 2 characters long' })
-    .max(15, { message: 'First Name must be at most 15 characters long' })
+    .min(2, { message: 'Tên phải có ít nhất 2 ký tự' })
+    .max(15, { message: 'Tên phải có tối đa 15 ký tự' })
     .regex(
       /^[A-Z][a-zA-Z\s]*$/,
-      'First name must start with an uppercase letter',
+      'Tên phải bắt đầu bằng chữ hoa',
     )
     .transform((value) => sanitizeInput(value)),
   last_name: z
     .string()
-    .min(2, { message: 'Last Name must be at least 2 characters long' })
-    .max(15, { message: 'Last Name must be at most 15 characters long' })
+    .min(2, { message: 'Họ phải có ít nhất 2 ký tự' })
+    .max(15, { message: 'Họ phải có tối đa 15 ký tự' })
     .regex(
       /^[A-Z][a-zA-Z\s]*$/,
-      'Last name must start with an uppercase letter',
+      'Họ phải bắt đầu bằng chữ hoa',
     )
     .transform((value) => sanitizeInput(value)),
   email: z
     .string()
-    .min(5, { message: 'Email must be at least 5 characters long' })
-    .max(255, { message: 'Email must be at most 255 characters long' })
+    .min(5, { message: 'Email phải có ít nhất 5 ký tự' })
+    .max(255, { message: 'Email phải có tối đa 255 ký tự' })
     .email()
     .transform((value) => sanitizeInput(value)),
   password: z
     .string()
-    .min(8, { message: 'Password must be at least 8 characters long' })
+    .min(8, { message: 'Mật khẩu phải có ít nhất 8 ký tự' })
     .regex(
       PASSWORD_REGEX,
-      'Password must be at least 8 characters long, start with uppercase letter and contain symbols and numbers',
+      'Mật khẩu phải bắt đầu bằng chữ hoa, ít nhất 8 ký tự và chứa ký tự đặc biệt và số',
     )
     .transform((value) => sanitizeInput(value)),
 });
@@ -41,16 +41,16 @@ export const SignupSchema = z.object({
 export const LoginSchema = z.object({
   email: z
     .string()
-    .min(1, { message: 'Email must not be empty' })
-    .max(255, { message: 'Email must be at most 255 characters long' })
+    .min(1, { message: 'Email không được để trống' })
+    .max(255, { message: 'Email phải có tối đa 255 ký tự' })
     .email()
     .transform((value) => sanitizeInput(value)),
   password: z
     .string()
-    .min(8, { message: 'Password must be at least 8 characters long' })
+    .min(8, { message: 'Mật khẩu phải có ít nhất 8 ký tự' })
     .regex(
       PASSWORD_REGEX,
-      'Password must be at least 8 characters long, start with uppercase letter and contain symbols and numbers',
+      'Mật khẩu phải bắt đầu bằng chữ hoa, ít nhất 8 ký tự và chứa ký tự đặc biệt và số',
     )
     .transform((value) => sanitizeInput(value)),
 });

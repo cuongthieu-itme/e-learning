@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
-import LoginForm from './forms/LoginForm';
 import Logo from '@/components/layout/header/Logo';
+import LoginForm from './forms/LoginForm';
 
 import {
   Card,
@@ -21,9 +21,9 @@ const Login: React.FC = () => {
       </CardContent>
       <CardFooter className="justify-center">
         <p className="text-muted-foreground">
-          Dont have account?{' '}
+          Chưa có tài khoản?{' '}
           <Link href="/signup" className="text-blue-600 underline">
-            Signup
+            Đăng ký
           </Link>
         </p>
       </CardFooter>

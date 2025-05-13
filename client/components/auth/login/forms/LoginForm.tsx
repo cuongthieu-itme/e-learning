@@ -1,14 +1,14 @@
 import Image from 'next/image';
 
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
+import { useToast } from '@/hooks/core/use-toast';
 import { signin } from '@/lib/actions/auth.actions';
 import { LoginSchema } from '@/lib/zod/auth.zod';
-import { useToast } from '@/hooks/core/use-toast';
 
 import Loader from '@/components/ui/info/loader';
 
@@ -83,7 +83,7 @@ const LoginForm: React.FC = () => {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Mật khẩu</FormLabel>
               <FormControl>
                 <Input type="password" placeholder="**********" {...field} />
               </FormControl>
@@ -101,10 +101,10 @@ const LoginForm: React.FC = () => {
             {form.formState.isSubmitting ? (
               <Loader type="ScaleLoader" height={10} />
             ) : (
-              'Login'
+              'Đăng nhập'
             )}
           </Button>
-          <p className="text-muted-foreground">Or</p>
+          <p className="text-muted-foreground">Hoặc</p>
           <Button
             variant="outline"
             className="flex w-full items-center justify-center"
@@ -118,7 +118,7 @@ const LoginForm: React.FC = () => {
               width={40}
               height={40}
             />
-            Sign in with Google
+            Đăng nhập với Google
           </Button>
         </div>
       </form>
