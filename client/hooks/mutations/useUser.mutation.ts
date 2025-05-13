@@ -1,46 +1,28 @@
-import { useMutation, UseMutationOptions } from '@tanstack/react-query';
+import { deleteUser } from '@/lib/actions/user.actions';
+import { ServerResponse } from '@/types';
+import { useMutation } from '@tanstack/react-query';
 
-import { updateProfile } from '@/lib/actions/user.actions';
-
-import { UpdateProfileDto } from '@/types';
-
-import { useToast } from '../core/use-toast';
+const UserMutationFunctions = {
+  DELETE: (params: { userId: string }) => deleteUser(params.userId),
+} as const;
 
 enum UserMutationType {
-  UPDATE = 'UPDATE',
+  DELETE = 'DELETE',
 }
 
 type UserMutationPayload = {
-  type: UserMutationType.UPDATE;
-  data: UpdateProfileDto;
+  type: UserMutationType;
+  userId: string;
 };
 
-const useUserMutation = (
-  options?: Omit<
-    UseMutationOptions<any, any, UserMutationPayload>,
-    'mutationFn'
-  >,
-) => {
-  const { toast } = useToast();
-
-  const mutationFn = (payload: UserMutationPayload) => {
-    switch (payload.type) {
-      case UserMutationType.UPDATE:
-        return updateProfile(payload.data);
-      default:
-        throw new Error('Invalid mutation type');
-    }
-  };
-
-  const mutation = useMutation({
-    mutationFn,
-    onError: (error: any) => {
-      toast({ title: 'Error', description: error?.response?.data?.message });
+const useUserMutation = (options?: any) => {
+  return useMutation<ServerResponse, Error, UserMutationPayload>({
+    mutationFn: async (payload) => {
+      const mutationFn = UserMutationFunctions[payload.type];
+      return mutationFn({ userId: payload.userId });
     },
     ...options,
   });
-
-  return mutation;
 };
 
-export { useUserMutation, UserMutationType };
+export { UserMutationType, useUserMutation };

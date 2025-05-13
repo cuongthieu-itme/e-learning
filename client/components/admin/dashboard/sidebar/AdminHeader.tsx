@@ -1,7 +1,7 @@
 import { Calendar } from 'lucide-react';
 
-import { SidebarTrigger } from '@/components/ui/layout/sidebar';
 import { Separator } from '@/components/ui/layout/separator';
+import { SidebarTrigger } from '@/components/ui/layout/sidebar';
 
 const AdminHeader: React.FC = () => {
   return (
@@ -9,7 +9,7 @@ const AdminHeader: React.FC = () => {
       <div className="flex items-center gap-2 px-4">
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="mr-2 h-4" />
-        <h1 className="text-lg font-semibold">Dashboard Overview</h1>
+        <h1 className="text-lg font-semibold">Tổng quan</h1>
       </div>
       <div className="px-4">
         <p className="flex items-center gap-2 text-sm text-muted-foreground">

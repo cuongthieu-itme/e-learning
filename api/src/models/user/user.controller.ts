@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Query, UseGuards } from '@nestjs/common';
 
 import { UserService } from './user.service';
 
@@ -10,6 +10,7 @@ import { Role } from '@/types';
 import { User } from '@/common/decorators/user.decorator';
 
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { GetUsersDto } from './dto/get-users.dto';
 
 @Controller('/user')
 export class UserController {
@@ -30,5 +31,12 @@ export class UserController {
   @Roles(Role.User)
   async getProfile(@User('userId') userId: string) {
     return await this.userService.getOne(userId);
+  }
+
+  @Get('/all')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  async getAllUsers(@Query() query: GetUsersDto) {
+    return await this.userService.getAll(query);
   }
 }

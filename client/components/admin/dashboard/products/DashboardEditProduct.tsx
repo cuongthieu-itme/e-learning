@@ -3,8 +3,8 @@
 import HandleProduct from '@/components/admin/dashboard/products/handle/HandleProduct';
 
 import {
-  useProductQuery,
-  ProductQueryType,
+    ProductQueryType,
+    useProductQuery,
 } from '@/hooks/queries/useProduct.query';
 
 type DashboardEditProductProps = {

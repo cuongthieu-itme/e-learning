@@ -5,6 +5,7 @@ import { FilterQuery, Model, UpdateQuery, UpdateWriteOpResult } from 'mongoose';
 import { User } from './schema/user.schema';
 
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { GetUsersDto } from './dto/get-users.dto';
 
 @Injectable()
 export class UserService {
@@ -80,6 +81,48 @@ export class UserService {
     return {
       statusCode: HttpStatus.OK,
       user,
+    };
+  }
+
+  async getAll({
+    page = 1,
+    limit = 10,
+    search,
+    sort,
+    role,
+  }: GetUsersDto): Promise<ResponseObject> {
+    const conditions: any = {};
+
+    if (search) {
+      const regexSearch = new RegExp(String(search), 'i');
+      conditions.$or = [
+        { first_name: { $regex: regexSearch } },
+        { last_name: { $regex: regexSearch } },
+        { email: { $regex: regexSearch } },
+      ];
+    }
+
+    if (role) {
+      conditions.role = role;
+    }
+
+    const sortOptions: any = { createdAt: sort === 'desc' ? -1 : 1 };
+
+    const users = await this.userModel
+      .find(conditions)
+      .sort(sortOptions)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .select('-password')
+      .lean()
+      .exec();
+
+    const totalUsers = await this.userModel.countDocuments(conditions);
+
+    return {
+      statusCode: HttpStatus.OK,
+      users,
+      totalUsers,
     };
   }
 }

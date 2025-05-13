@@ -1,14 +1,15 @@
+import { getAllUsers } from '@/lib/actions/user.actions';
 import { createGenericQueryHook } from './createGenericQueryHook';
-import { getProfile } from '@/lib/actions/user.actions';
 
 const UserQueryFunctions = {
-  GET_PROFILE: () => getProfile(),
+  GET_ALL: (params: { query: Record<string, any> }) =>
+    getAllUsers(params.query),
 } as const;
 
 enum UserQueryType {
-  GET_PROFILE = 'GET_PROFILE',
+  GET_ALL = 'GET_ALL',
 }
 
-const useUserQuery = createGenericQueryHook('user', UserQueryFunctions);
+const useUserQuery = createGenericQueryHook('users', UserQueryFunctions);
 
-export { useUserQuery, UserQueryType };
+export { UserQueryType, useUserQuery };

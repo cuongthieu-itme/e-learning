@@ -1,6 +1,7 @@
 export enum Role {
   User = 'user',
   Admin = 'admin',
+  Teacher = 'teacher',
 }
 
 export type FieldType = 'text' | 'select' | 'multi';
@@ -26,4 +27,10 @@ export type Category = {
   href?: string;
   fields?: CategoryField[];
   subcategories?: Category[];
+};
+
+export type ServerResponse<T = any> = {
+  statusCode: number;
+  message: string;
+  data?: T;
 };

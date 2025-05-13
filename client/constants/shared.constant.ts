@@ -51,15 +51,15 @@ export const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
 
 export const SORT_OPTIONS = [
   {
-    label: 'Default',
+    label: 'Mặc định',
     value: 'default',
   },
   {
-    label: 'Ascending',
+    label: 'Tăng dần',
     value: 'asc',
   },
   {
-    label: 'Descending',
+    label: 'Giảm dần',
     value: 'desc',
   },
 ];

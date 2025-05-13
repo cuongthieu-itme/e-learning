@@ -1,14 +1,13 @@
 import {
-  Heart,
-  LayoutDashboard,
-  ShoppingBag,
   ClipboardList,
-  Settings,
-  User,
-  TicketCheck,
-  Plus,
-  View,
+  Heart,
   Home,
+  LayoutDashboard,
+  Plus,
+  ShoppingBag,
+  TicketCheck,
+  User,
+  View
 } from 'lucide-react';
 
 export const UserNavbarActions = [
@@ -36,31 +35,45 @@ export const AdminNavbarActions = [
   {
     id: 1,
     icon: Home,
-    text: 'Home',
+    text: 'Trang chủ',
     href: '/',
     subActions: [],
   },
   {
     id: 2,
     icon: LayoutDashboard,
-    text: 'Dashboard',
+    text: 'Tổng quan',
     href: '/dashboard',
     subActions: [],
   },
   {
     id: 3,
-    icon: ShoppingBag,
-    text: 'Products',
-    href: '/dashboard/products',
+    icon: User,
+    text: 'Người dùng',
+    href: '/users',
     subActions: [
       {
         id: 3.1,
+        icon: View,
+        text: 'Danh sách',
+        href: '/dashboard/users',
+      },
+    ],
+  },
+  {
+    id: 4,
+    icon: ShoppingBag,
+    text: 'Sản phẩm',
+    href: '/dashboard/products',
+    subActions: [
+      {
+        id: 4.1,
         icon: Plus,
         text: 'Add Product',
         href: '/dashboard/products/add',
       },
       {
-        id: 3.2,
+        id: 4.2,
         icon: View,
         text: 'View Products',
         href: '/dashboard/products',
@@ -68,26 +81,26 @@ export const AdminNavbarActions = [
     ],
   },
   {
-    id: 4,
+    id: 5,
     icon: ClipboardList,
-    text: 'Orders',
+    text: 'Đơn hàng',
     href: '/dashboard/orders',
     subActions: [],
   },
   {
-    id: 5,
+    id: 6,
     icon: TicketCheck,
     text: 'Coupons',
     href: '/dashboard/coupons',
     subActions: [
       {
-        id: 5.1,
+        id: 6.1,
         icon: Plus,
         text: 'Create Coupon',
         href: '/dashboard/coupons/create',
       },
       {
-        id: 5.2,
+        id: 6.2,
         icon: View,
         text: 'View Coupons',
         href: '/dashboard/coupons/',
