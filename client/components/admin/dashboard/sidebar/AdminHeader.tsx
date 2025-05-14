@@ -14,7 +14,7 @@ const AdminHeader: React.FC = () => {
       <div className="px-4">
         <p className="flex items-center gap-2 text-sm text-muted-foreground">
           <Calendar />
-          {new Date().toLocaleDateString('en-US', {
+          {new Date().toLocaleDateString('vi-VN', {
             weekday: 'long',
             year: 'numeric',
             month: 'long',

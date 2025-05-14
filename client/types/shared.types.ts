@@ -29,8 +29,7 @@ export type Category = {
   subcategories?: Category[];
 };
 
-export type ServerResponse<T = any> = {
+export type ServerResponse<T = any> = T & {
   statusCode: number;
   message: string;
-  data?: T;
 };

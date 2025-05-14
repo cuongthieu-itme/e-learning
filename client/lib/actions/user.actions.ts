@@ -53,7 +53,7 @@ export const updateUser = async (
   userId: string,
   data: any,
 ): Promise<ServerResponse<{ user: IUser }>> => {
-  return await patchApiHandler(`users/${userId}`, data);
+  return await patchApiHandler(`user/update/${userId}`, data);
 };
 
 export const getOneUser = async (

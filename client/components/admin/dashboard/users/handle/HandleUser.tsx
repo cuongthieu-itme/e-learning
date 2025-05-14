@@ -27,9 +27,9 @@ import {
 } from '@/components/ui/form/select';
 
 const UserSchema = z.object({
-  first_name: z.string().min(2, 'First name must be at least 2 characters'),
-  last_name: z.string().min(2, 'Last name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
+  first_name: z.string().min(2, 'Họ phải có ít nhất 2 ký tự'),
+  last_name: z.string().min(2, 'Tên phải có ít nhất 2 ký tự'),
+  email: z.string().email('Email không hợp lệ'),
   role: z.enum(['user', 'admin', 'teacher']),
 });
 
