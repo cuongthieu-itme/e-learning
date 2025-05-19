@@ -22,11 +22,11 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Controller('/user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Patch('/update')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.User, Role.Admin, Role.Teacher)
+  @Roles(Role.User, Role.Admin, Role.Manager)
   async updateProfile(
     @Body() body: UpdateProfileDto,
     @User('userId') userId: string,

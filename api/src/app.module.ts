@@ -3,16 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { ProductModule } from '@/models/product/product.module';
-import { UserModule } from '@/models/user/user.module';
-import { AddressModule } from '@/models/address/address.module';
-import { ReviewModule } from '@/models/review/review.module';
-import { WishlistModule } from '@/models/wishlist/wishlist.module';
-import { OrderModule } from '@/models/order/order.module';
-import { CouponModule } from '@/models/coupon/coupon.module';
-import { CartModule } from '@/models/cart/cart.module';
 import { AuthModule } from '@/authentication/auth.module';
-import { AnalyticsModule } from './common/modules/analytics/analytics.module';
+import { UserModule } from '@/models/user/user.module';
 
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
@@ -37,15 +29,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
       }),
     }),
     AuthModule,
-    ProductModule,
     UserModule,
-    AddressModule,
-    ReviewModule,
-    WishlistModule,
-    OrderModule,
-    CouponModule,
-    CartModule,
-    AnalyticsModule,
   ],
   providers: [
     {
@@ -54,4 +38,4 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }

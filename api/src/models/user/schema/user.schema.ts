@@ -1,13 +1,8 @@
-import mongoose, { HydratedDocument } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument } from 'mongoose';
 
 import * as bcrypt from 'bcryptjs';
 
-import { Cart } from '@/models/cart/schema/cart.schema';
-import { Order } from '@/models/order/schema/order.schema';
-import { Address } from '@/models/address/schema/address.schema';
-import { Review } from '@/models/review/schema/review.schema';
-import { Wishlist } from '@/models/wishlist/schema/wishlist.schema';
 import { Role } from '@/types';
 
 export type UserDocument = HydratedDocument<User>;
@@ -57,34 +52,6 @@ export class User {
     select: false,
   })
   password?: string;
-
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Cart', default: null })
-  cart: Cart | mongoose.Types.ObjectId;
-
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Wishlist',
-    default: null,
-  })
-  wishlist: Wishlist | mongoose.Types.ObjectId;
-
-  @Prop({
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],
-    default: [],
-  })
-  orders: (Order | mongoose.Types.ObjectId)[];
-
-  @Prop({
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Address' }],
-    default: [],
-  })
-  addresses: (Address | mongoose.Types.ObjectId)[];
-
-  @Prop({
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Review' }],
-    default: [],
-  })
-  reviews: (Review | mongoose.Types.ObjectId)[];
 
   @Prop({ type: String, default: 'user', enum: Role })
   role: Role;
