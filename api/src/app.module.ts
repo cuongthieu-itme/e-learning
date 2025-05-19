@@ -5,6 +5,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { AuthModule } from '@/authentication/auth.module';
 import { UserModule } from '@/models/user/user.module';
+import { CourseModule } from '@/models/course/course.module';
+import { CourseTopicModule } from '@/models/course-topic/course-topic.module';
+import { LectureModule } from '@/models/lecture/lecture.module';
+import { QuestionModule } from '@/models/question/question.module';
 
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
@@ -30,6 +34,10 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     }),
     AuthModule,
     UserModule,
+    CourseModule,
+    CourseTopicModule,
+    LectureModule,
+    QuestionModule,
   ],
   providers: [
     {

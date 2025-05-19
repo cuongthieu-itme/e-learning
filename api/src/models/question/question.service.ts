@@ -1,0 +1,342 @@
+import { HttpStatus, Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { FilterQuery, Model, UpdateQuery, UpdateWriteOpResult, Types } from 'mongoose';
+
+import { Question } from './schema/question.schema';
+
+import { CreateQuestionDto } from './dto/create-question.dto';
+import { UpdateQuestionDto } from './dto/update-question.dto';
+import { GetQuestionsDto } from './dto/get-questions.dto';
+import { ResponseObject } from '@/types';
+
+@Injectable()
+export class QuestionService {
+  constructor(
+    @InjectModel(Question.name) private readonly questionModel: Model<Question>,
+  ) {}
+
+  async find(query: FilterQuery<Question> = {}, select?: string): Promise<Question[]> {
+    return await this.questionModel.find(query).select(select).lean().exec();
+  }
+
+  async countDocuments(
+    query: FilterQuery<Question> = {},
+    select?: string,
+  ): Promise<number> {
+    return await this.questionModel.countDocuments(query).select(select).exec();
+  }
+
+  async findAndUpdateMany(
+    query: FilterQuery<Question> = {},
+    update: UpdateQuery<Question> = {},
+  ): Promise<UpdateWriteOpResult> {
+    return await this.questionModel.updateMany(query, update).exec();
+  }
+
+  async findById(id: string): Promise<Question> {
+    return this.questionModel.findById(id).lean().exec();
+  }
+
+  async createOne(body: CreateQuestionDto, userId: string): Promise<ResponseObject> {
+    const newQuestion = await this.questionModel.create({
+      ...body,
+      lectureId: new Types.ObjectId(body.lectureId),
+      createdById: new Types.ObjectId(userId),
+    });
+
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: 'Question created successfully',
+      question: newQuestion,
+    };
+  }
+
+  async updateOne(id: string, body: UpdateQuestionDto, userId: string): Promise<ResponseObject> {
+    const question = await this.questionModel.findById(id).exec();
+
+    if (!question) throw new NotFoundException('Question not found');
+
+    // Check if user is authorized to update this question
+    if (question.createdById.toString() !== userId) {
+      throw new ForbiddenException('You are not authorized to update this question');
+    }
+
+    // Check if there are any changes
+    const hasChanges = Object.keys(body).some(key => body[key] !== question[key]);
+    if (!hasChanges) throw new NotFoundException('No changes found');
+
+    const updateData: any = { ...body };
+    if (body.lectureId) updateData.lectureId = new Types.ObjectId(body.lectureId);
+
+    const updatedQuestion = await this.questionModel.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true, runValidators: true },
+    ).exec();
+
+    return {
+      statusCode: HttpStatus.ACCEPTED,
+      message: 'Question updated successfully',
+      question: updatedQuestion,
+    };
+  }
+
+  async deleteOne(id: string, userId: string): Promise<ResponseObject> {
+    const question = await this.questionModel.findById(id).exec();
+    
+    if (!question) throw new NotFoundException('Question not found');
+    
+    // Check if user is authorized to delete this question
+    if (question.createdById.toString() !== userId) {
+      throw new ForbiddenException('You are not authorized to delete this question');
+    }
+
+    await this.questionModel.findByIdAndDelete(id).exec();
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Question deleted successfully',
+    };
+  }
+
+  async getOne(id: string): Promise<ResponseObject> {
+    const question = await this.questionModel.findById(id)
+      .populate('lectureId', 'title')
+      .populate('createdById', 'first_name last_name')
+      .lean()
+      .exec();
+
+    if (!question) throw new NotFoundException('Question not found');
+
+    return {
+      statusCode: HttpStatus.OK,
+      question,
+    };
+  }
+
+  async getAll({
+    page = 1,
+    limit = 10,
+    search,
+    sort,
+    lectureId,
+    createdById,
+  }: GetQuestionsDto): Promise<ResponseObject> {
+    const conditions: any = {};
+
+    if (search) {
+      const regexSearch = new RegExp(String(search), 'i');
+      conditions.$or = [
+        { question: { $regex: regexSearch } },
+        { optionA: { $regex: regexSearch } },
+        { optionB: { $regex: regexSearch } },
+        { optionC: { $regex: regexSearch } },
+        { optionD: { $regex: regexSearch } },
+        { explanation: { $regex: regexSearch } },
+      ];
+    }
+
+    if (lectureId) {
+      conditions.lectureId = new Types.ObjectId(lectureId);
+    }
+
+    if (createdById) {
+      conditions.createdById = new Types.ObjectId(createdById);
+    }
+
+    const sortOptions: any = { 
+      createdAt: sort === 'desc' ? -1 : 1 
+    };
+
+    const questions = await this.questionModel
+      .find(conditions)
+      .sort(sortOptions)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate('lectureId', 'title')
+      .populate('createdById', 'first_name last_name')
+      .lean()
+      .exec();
+
+    const totalQuestions = await this.questionModel.countDocuments(conditions);
+
+    return {
+      statusCode: HttpStatus.OK,
+      questions,
+      totalQuestions,
+      currentPage: page,
+      totalPages: Math.ceil(totalQuestions / limit),
+    };
+  }
+
+  async getUserQuestions(userId: string, {
+    page = 1,
+    limit = 10,
+    search,
+    sort,
+    lectureId,
+  }: GetQuestionsDto): Promise<ResponseObject> {
+    const conditions: any = { createdById: new Types.ObjectId(userId) };
+
+    if (search) {
+      const regexSearch = new RegExp(String(search), 'i');
+      conditions.$or = [
+        { question: { $regex: regexSearch } },
+        { optionA: { $regex: regexSearch } },
+        { optionB: { $regex: regexSearch } },
+        { optionC: { $regex: regexSearch } },
+        { optionD: { $regex: regexSearch } },
+        { explanation: { $regex: regexSearch } },
+      ];
+    }
+
+    if (lectureId) {
+      conditions.lectureId = new Types.ObjectId(lectureId);
+    }
+
+    const sortOptions: any = { 
+      createdAt: sort === 'desc' ? -1 : 1 
+    };
+
+    const questions = await this.questionModel
+      .find(conditions)
+      .sort(sortOptions)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate('lectureId', 'title')
+      .lean()
+      .exec();
+
+    const totalQuestions = await this.questionModel.countDocuments(conditions);
+
+    return {
+      statusCode: HttpStatus.OK,
+      questions,
+      totalQuestions,
+      currentPage: page,
+      totalPages: Math.ceil(totalQuestions / limit),
+    };
+  }
+
+  async getLectureQuestions(lectureId: string, {
+    page = 1,
+    limit = 10,
+    search,
+    sort,
+  }: GetQuestionsDto): Promise<ResponseObject> {
+    const conditions: any = { 
+      lectureId: new Types.ObjectId(lectureId)
+    };
+
+    if (search) {
+      const regexSearch = new RegExp(String(search), 'i');
+      conditions.$or = [
+        { question: { $regex: regexSearch } },
+        { optionA: { $regex: regexSearch } },
+        { optionB: { $regex: regexSearch } },
+        { optionC: { $regex: regexSearch } },
+        { optionD: { $regex: regexSearch } },
+        { explanation: { $regex: regexSearch } },
+      ];
+    }
+
+    const sortOptions: any = { 
+      createdAt: sort === 'desc' ? -1 : 1 
+    };
+
+    const questions = await this.questionModel
+      .find(conditions)
+      .sort(sortOptions)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean()
+      .exec();
+
+    const totalQuestions = await this.questionModel.countDocuments(conditions);
+
+    return {
+      statusCode: HttpStatus.OK,
+      questions,
+      totalQuestions,
+      currentPage: page,
+      totalPages: Math.ceil(totalQuestions / limit),
+    };
+  }
+
+  // Method to get questions for quiz (hides correct answers)
+  async getQuestionsForQuiz(lectureId: string, limit: number = 10): Promise<ResponseObject> {
+    const conditions = { 
+      lectureId: new Types.ObjectId(lectureId)
+    };
+
+    // Randomly select questions up to the limit
+    const questions = await this.questionModel
+      .aggregate([
+        { $match: conditions },
+        { $sample: { size: limit } },
+        { $project: { 
+          question: 1,
+          optionA: 1,
+          optionB: 1,
+          optionC: 1,
+          optionD: 1,
+          // Do not include correctAnswer and explanation
+        }}
+      ])
+      .exec();
+
+    return {
+      statusCode: HttpStatus.OK,
+      questions,
+      totalQuestions: questions.length,
+    };
+  }
+
+  // Method to check quiz answers
+  async checkQuizAnswers(answers: {questionId: string, answer: string}[]): Promise<ResponseObject> {
+    if (!answers || !Array.isArray(answers) || answers.length === 0) {
+      throw new NotFoundException('No answers provided');
+    }
+    
+    const questionIds = answers.map(a => new Types.ObjectId(a.questionId));
+    const questions = await this.questionModel
+      .find({ _id: { $in: questionIds } })
+      .lean()
+      .exec();
+
+    if (questions.length === 0) {
+      throw new NotFoundException('No questions found for the provided answers');
+    }
+
+    const questionsMap = questions.reduce((acc, q) => {
+      acc[q._id.toString()] = q;
+      return acc;
+    }, {});
+
+    let correctCount = 0;
+    const results = answers.map(answer => {
+      const question = questionsMap[answer.questionId];
+      if (!question) return null;
+
+      const isCorrect = question.correctAnswer === answer.answer;
+      if (isCorrect) correctCount++;
+
+      return {
+        questionId: answer.questionId,
+        userAnswer: answer.answer,
+        correctAnswer: question.correctAnswer,
+        isCorrect,
+        explanation: question.explanation
+      };
+    }).filter(r => r !== null);
+
+    return {
+      statusCode: HttpStatus.OK,
+      results,
+      totalQuestions: results.length,
+      correctCount,
+      score: `${correctCount}/${results.length}`,
+      percentage: Math.round((correctCount / results.length) * 100)
+    };
+  }
+}
