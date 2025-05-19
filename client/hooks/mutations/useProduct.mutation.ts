@@ -6,7 +6,6 @@ import {
   updateProduct,
 } from '@/lib/actions/product.actions';
 
-import { CreateProductDto } from '@/types';
 
 import { useToast } from '../core/use-toast';
 
@@ -18,18 +17,18 @@ enum ProductMutationType {
 
 type ProductMutationPayload =
   | {
-      type: ProductMutationType.CREATE;
-      data: FormData;
-    }
+    type: ProductMutationType.CREATE;
+    data: FormData;
+  }
   | {
-      type: ProductMutationType.UPDATE;
-      data: FormData;
-      productId: string;
-    }
+    type: ProductMutationType.UPDATE;
+    data: FormData;
+    productId: string;
+  }
   | {
-      type: ProductMutationType.DELETE;
-      productId: string;
-    };
+    type: ProductMutationType.DELETE;
+    productId: string;
+  };
 
 const useProductMutation = (
   options?: Omit<
@@ -63,4 +62,4 @@ const useProductMutation = (
   return mutation;
 };
 
-export { useProductMutation, ProductMutationType };
+export { ProductMutationType, useProductMutation };

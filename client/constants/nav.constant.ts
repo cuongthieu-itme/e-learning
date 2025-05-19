@@ -1,4 +1,5 @@
 import {
+  Book,
   ClipboardList,
   Heart,
   Home,
@@ -104,6 +105,26 @@ export const AdminNavbarActions = [
         icon: View,
         text: 'View Coupons',
         href: '/dashboard/coupons/',
+      },
+    ],
+  },
+  {
+    id: 7,
+    icon: Book,
+    text: 'Khóa học',
+    href: '/dashboard/courses',
+    subActions: [
+      {
+        id: 7.1,
+        icon: Plus,
+        text: 'Thêm khóa học',
+        href: '/dashboard/courses/add',
+      },
+      {
+        id: 7.2,
+        icon: View,
+        text: 'Danh sách khóa học',
+        href: '/dashboard/courses',
       },
     ],
   },

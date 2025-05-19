@@ -72,4 +72,4 @@ const useCouponMutation = (
   return mutation;
 };
 
-export { useCouponMutation, CouponMutationType };
+export { CouponMutationType, useCouponMutation };
