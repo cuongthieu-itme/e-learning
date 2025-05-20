@@ -4,6 +4,12 @@ export enum Role {
   Teacher = 'teacher',
 }
 
+export enum LectureStatus {
+  DRAFT = 'draft',
+  PUBLISHED = 'published',
+  ARCHIVED = 'archived',
+}
+
 export type FieldType = 'text' | 'select' | 'multi';
 
 export type CategoryField = {

@@ -4,7 +4,8 @@ import {
   Heart,
   Home,
   LayoutDashboard,
-  Plus,
+  MessageCircleQuestion,
+  School,
   ShoppingBag,
   User,
   View
@@ -60,26 +61,26 @@ export const AdminNavbarActions = [
       },
     ],
   },
-  {
-    id: 4,
-    icon: ShoppingBag,
-    text: 'Sản phẩm',
-    href: '/dashboard/products',
-    subActions: [
-      {
-        id: 4.1,
-        icon: Plus,
-        text: 'Add Product',
-        href: '/dashboard/products/add',
-      },
-      {
-        id: 4.2,
-        icon: View,
-        text: 'View Products',
-        href: '/dashboard/products',
-      },
-    ],
-  },
+  // {
+  //   id: 4,
+  //   icon: ShoppingBag,
+  //   text: 'Sản phẩm',
+  //   href: '/dashboard/products',
+  //   subActions: [
+  //     {
+  //       id: 4.1,
+  //       icon: Plus,
+  //       text: 'Add Product',
+  //       href: '/dashboard/products/add',
+  //     },
+  //     {
+  //       id: 4.2,
+  //       icon: View,
+  //       text: 'View Products',
+  //       href: '/dashboard/products',
+  //     },
+  //   ],
+  // },
   {
     id: 5,
     icon: Book,
@@ -87,15 +88,9 @@ export const AdminNavbarActions = [
     href: '/dashboard/courses',
     subActions: [
       {
-        id: 5.1,
-        icon: Plus,
-        text: 'Thêm khóa học',
-        href: '/dashboard/courses/add',
-      },
-      {
         id: 5.2,
         icon: View,
-        text: 'Danh sách khóa học',
+        text: 'Danh sách',
         href: '/dashboard/courses',
       },
     ],
@@ -107,16 +102,38 @@ export const AdminNavbarActions = [
     href: '/dashboard/course-topics',
     subActions: [
       {
-        id: 6.1,
-        icon: Plus,
-        text: 'Tạo mới',
-        href: '/dashboard/course-topics/add',
-      },
-      {
         id: 6.2,
         icon: View,
         text: 'Danh sách',
         href: '/dashboard/course-topics',
+      },
+    ],
+  },
+  {
+    id: 7,
+    icon: School,
+    text: 'Bài giảng',
+    href: '/dashboard/lectures',
+    subActions: [
+      {
+        id: 7.2,
+        icon: View,
+        text: 'Danh sách',
+        href: '/dashboard/lectures',
+      },
+    ],
+  },
+  {
+    id: 8,
+    icon: MessageCircleQuestion,
+    text: 'Câu hỏi',
+    href: '/dashboard/questions',
+    subActions: [
+      {
+        id: 8.2,
+        icon: View,
+        text: 'Danh sách',
+        href: '/dashboard/questions',
       },
     ],
   },
