@@ -109,10 +109,16 @@ export const AdminNavbarActions = [
     href: '/dashboard/course-topics',
     subActions: [
       {
-        id: 6.2,
+        id: 6.1,
         icon: View,
         text: 'Danh sách',
         href: '/dashboard/course-topics',
+      },
+      {
+        id: 6.2,
+        icon: Plus,
+        text: 'Thêm mới',
+        href: '/dashboard/course-topics/add',
       },
     ],
   },

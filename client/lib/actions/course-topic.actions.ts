@@ -1,5 +1,6 @@
 import qs from 'qs';
 
+import { ServerResponse } from '@/types';
 import { GetCourseTopicsDto, ICourseTopic } from '@/types/course-topic.types';
 import {
     deleteApiHandler,
@@ -9,10 +10,15 @@ import {
 } from '../api';
 
 export const createCourseTopic = async (
-    data: FormData,
+    data: FormData | any,
 ): Promise<ServerResponse> => {
-    return await postApiHandler('course-topic/create', data, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+    // Handle both FormData and JSON payload
+    const headers = data instanceof FormData
+        ? { 'Content-Type': 'multipart/form-data' }
+        : { 'Content-Type': 'application/json' };
+
+    return await postApiHandler('course-topic', data, {
+        headers,
     });
 };
 
@@ -20,13 +26,13 @@ export const updateCourseTopic = async (
     data: FormData,
     courseTopicId: string,
 ): Promise<ServerResponse> => {
-    return await patchApiHandler(`course-topic/update/${courseTopicId}`, data);
+    return await patchApiHandler(`course-topic/${courseTopicId}`, data);
 };
 
 export const deleteCourseTopic = async (
     courseTopicId: string,
 ): Promise<ServerResponse> => {
-    return await deleteApiHandler(`course-topic/delete/${courseTopicId}`);
+    return await deleteApiHandler(`course-topic/${courseTopicId}`);
 };
 
 export const getAllCourseTopics = async (
