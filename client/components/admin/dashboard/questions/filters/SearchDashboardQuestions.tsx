@@ -20,7 +20,7 @@ const SearchDashboardQuestions: React.FC = () => {
           {({ value, onChange }) => (
             <Input
               type="text"
-              placeholder="Search questions...."
+              placeholder="Tìm kiếm câu hỏi..."
               value={value !== undefined ? value : ''}
               onChange={(event) => onChange(event.target.value)}
             />
@@ -42,10 +42,10 @@ const SearchDashboardQuestions: React.FC = () => {
               className="w-full"
               value={value}
               onChange={onChange}
-              placeholder="Questions per page"
+              placeholder="Số lượng dữ liệu/trang"
               groups={[
                 {
-                  label: 'Questions per page',
+                  label: 'Số lượng dữ liệu/trang',
                   options: [
                     {
                       label: '10',
@@ -81,10 +81,10 @@ const SearchDashboardQuestions: React.FC = () => {
               className="w-full"
               value={value}
               onChange={onChange}
-              placeholder="Sort questions by"
+              placeholder="Sắp xếp"
               groups={[
                 {
-                  label: 'Questions per page',
+                  label: 'Sắp xếp',
                   options: SORT_OPTIONS,
                 },
               ]}

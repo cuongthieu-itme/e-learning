@@ -1,8 +1,5 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
-
 import DashboardQuestionsList from '@/components/admin/dashboard/questions/DashboardQuestionsList';
 import SearchDashboardQuestions from '@/components/admin/dashboard/questions/filters/SearchDashboardQuestions';
 import LoadingDashboardQuestions from '@/components/shared/loading/dashboard/LoadingDashboardQuestions';
@@ -10,6 +7,8 @@ import NotFound from '@/components/shared/NotFound';
 import QueryParamController from '@/components/shared/QueryParamController';
 import PaginateList from '@/components/ui/pagination/paginate-list';
 import { QuestionQueryType, useQuestionQuery } from '@/hooks/queries/useQuestion.query';
+import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
 const DashboardQuestions: React.FC = () => {
   return (

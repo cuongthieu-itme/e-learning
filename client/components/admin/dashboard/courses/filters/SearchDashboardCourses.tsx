@@ -1,10 +1,9 @@
 'use client';
 
 import QueryParamController from '@/components/shared/QueryParamController';
-import { SORT_OPTIONS } from '@/constants';
-
 import { Input } from '@/components/ui/form/input';
 import { SelectWrapper } from '@/components/ui/form/select';
+import { SORT_OPTIONS } from '@/constants';
 
 const SearchDashboardCourses: React.FC = () => {
   return (
@@ -21,7 +20,7 @@ const SearchDashboardCourses: React.FC = () => {
           {({ value, onChange }) => (
             <Input
               type="text"
-              placeholder="Search courses...."
+              placeholder="Tìm kiếm khóa học...."
               value={value !== undefined ? value : ''}
               onChange={(event) => onChange(event.target.value)}
             />
@@ -43,10 +42,10 @@ const SearchDashboardCourses: React.FC = () => {
               className="w-full"
               value={value}
               onChange={onChange}
-              placeholder="Courses per page"
+              placeholder="Số lượng dữ liệu/trang"
               groups={[
                 {
-                  label: 'Courses per page',
+                  label: 'Số lượng dữ liệu/trang',
                   options: [
                     {
                       label: '10',
@@ -82,10 +81,10 @@ const SearchDashboardCourses: React.FC = () => {
               className="w-full"
               value={value}
               onChange={onChange}
-              placeholder="Sort courses by"
+              placeholder="Sắp xếp"
               groups={[
                 {
-                  label: 'Sort options',
+                  label: 'Sắp xếp',
                   options: SORT_OPTIONS,
                 },
               ]}

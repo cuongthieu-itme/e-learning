@@ -1,13 +1,5 @@
-import { Delete, Edit, MoreHorizontal } from 'lucide-react';
-import Link from 'next/link';
-import React, { useState } from 'react';
-
-import { queryClient } from '@/context/react-query-client';
-import { useToast } from '@/hooks/core/use-toast';
-
-import Loader from '@/components/ui/info/loader';
-
 import { Button } from '@/components/ui/buttons/button';
+import Loader from '@/components/ui/info/loader';
 import {
   Dialog,
   DialogContent,
@@ -35,8 +27,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/utilities/table';
+import { queryClient } from '@/context/react-query-client';
+import { useToast } from '@/hooks/core/use-toast';
 import { CourseTopicMutationType, useCourseTopicMutation } from '@/hooks/mutations/useCourseTopic.mutation';
 import { ICourseTopic } from '@/types/course-topic.types';
+import { Delete, Edit, MoreHorizontal } from 'lucide-react';
+import Link from 'next/link';
+import React, { useState } from 'react';
 
 type DashboardCourseTopicsListProps = {
   courseTopicsData: { courseTopics: ICourseTopic[]; totalCourseTopics: number };
@@ -70,13 +67,13 @@ const DashboardCourseTopicsList: React.FC<DashboardCourseTopicsListProps> = ({
 
   return (
     <Table>
-      <TableCaption>A list of your course topics</TableCaption>
+      <TableCaption>Danh sách các chủ đề khóa học</TableCaption>
       <TableHeader>
         <TableRow>
           {[
-            'Id',
-            'Topic',
-            'Actions',
+            '#',
+            'Chủ đề',
+            'Hành động',
           ].map((header) => (
             <TableHead className="whitespace-nowrap" key={header}>
               {header}
@@ -87,12 +84,12 @@ const DashboardCourseTopicsList: React.FC<DashboardCourseTopicsListProps> = ({
       <TableBody>
         {courseTopicsData.courseTopics.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={5}>No course topics found</TableCell>
+            <TableCell colSpan={5}>Không tìm thấy chủ đề khóa học</TableCell>
           </TableRow>
         ) : (
-          courseTopicsData.courseTopics.map((courseTopic) => (
+          courseTopicsData.courseTopics.map((courseTopic, index) => (
             <TableRow className="whitespace-nowrap" key={courseTopic._id}>
-              <TableCell>{courseTopic._id}</TableCell>
+              <TableCell>{index + 1}</TableCell>
               <TableCell>{courseTopic.topic}</TableCell>
               <TableCell>
                 <DropdownMenu modal={false}>
@@ -103,17 +100,17 @@ const DashboardCourseTopicsList: React.FC<DashboardCourseTopicsListProps> = ({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuGroup>
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuLabel>Hành động</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <Link href={`/dashboard/course-topics/${courseTopic._id}/edit`}>
                         <DropdownMenuItem>
                           <Edit />
-                          Edit Course Topic
+                          Sửa
                         </DropdownMenuItem>
                       </Link>
                       <DropdownMenuItem onSelect={() => setIsDialogOpen(true)}>
                         <Delete />
-                        Delete Course Topic
+                        Xóa
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
                   </DropdownMenuContent>
@@ -121,10 +118,9 @@ const DashboardCourseTopicsList: React.FC<DashboardCourseTopicsListProps> = ({
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Delete Course Topic</DialogTitle>
+                      <DialogTitle>Xóa</DialogTitle>
                       <DialogDescription>
-                        This action cannot be undone. Are you sure you want to
-                        permanently delete this course topic from server?
+                        Bạn có chắc chắn muốn xóa chủ đề khóa học này?
                       </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -142,7 +138,7 @@ const DashboardCourseTopicsList: React.FC<DashboardCourseTopicsListProps> = ({
                         {courseTopicMutation.status === 'pending' ? (
                           <Loader type="ScaleLoader" height={20} />
                         ) : (
-                          'Confirm'
+                          'Xác nhận'
                         )}
                       </Button>
                     </DialogFooter>
@@ -155,7 +151,7 @@ const DashboardCourseTopicsList: React.FC<DashboardCourseTopicsListProps> = ({
       </TableBody>
       <TableFooter>
         <TableRow>
-          <TableCell colSpan={5}>Total</TableCell>
+          <TableCell colSpan={5}>Tổng</TableCell>
           <TableCell className="text-right">
             {courseTopicsData.totalCourseTopics}
           </TableCell>

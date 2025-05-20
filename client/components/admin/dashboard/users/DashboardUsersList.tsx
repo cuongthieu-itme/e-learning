@@ -1,15 +1,3 @@
-import { Delete, Edit, MoreHorizontal } from 'lucide-react';
-import Link from 'next/link';
-import React, { useState } from 'react';
-
-import { queryClient } from '@/context/react-query-client';
-import { useToast } from '@/hooks/core/use-toast';
-import {
-  UserMutationType,
-  useUserMutation,
-} from '@/hooks/mutations/useUser.mutation';
-import { IUser, Role } from '@/types';
-
 import { Button } from '@/components/ui/buttons/button';
 import { Badge } from '@/components/ui/info/badge';
 import Loader from '@/components/ui/info/loader';
@@ -40,7 +28,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/utilities/table';
+import { queryClient } from '@/context/react-query-client';
+import { useToast } from '@/hooks/core/use-toast';
+import {
+  UserMutationType,
+  useUserMutation,
+} from '@/hooks/mutations/useUser.mutation';
 import { formatDate } from '@/lib/utils';
+import { IUser, Role } from '@/types';
+import { Delete, Edit, MoreHorizontal } from 'lucide-react';
+import Link from 'next/link';
+import React, { useState } from 'react';
 
 type DashboardUsersListProps = {
   usersData: { users: IUser[]; totalUsers: number };
@@ -179,7 +177,7 @@ const DashboardUsersList: React.FC<DashboardUsersListProps> = ({
       </TableBody>
       <TableFooter>
         <TableRow>
-          <TableCell colSpan={8}>Total</TableCell>
+          <TableCell colSpan={8}>Tổng</TableCell>
           <TableCell className="text-right">{usersData.totalUsers}</TableCell>
         </TableRow>
       </TableFooter>
@@ -207,7 +205,7 @@ const DashboardUsersList: React.FC<DashboardUsersListProps> = ({
               {userMutation.status === 'pending' ? (
                 <Loader type="ScaleLoader" height={20} />
               ) : (
-                'Confirm'
+                'Xác nhận'
               )}
             </Button>
           </DialogFooter>

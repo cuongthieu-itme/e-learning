@@ -1,14 +1,6 @@
-import { Delete, Edit, MoreHorizontal } from 'lucide-react';
-import Link from 'next/link';
-import React, { useState } from 'react';
-
-import { queryClient } from '@/context/react-query-client';
-import { useToast } from '@/hooks/core/use-toast';
-
-import Loader from '@/components/ui/info/loader';
-
 import { Button } from '@/components/ui/buttons/button';
 import { Badge } from '@/components/ui/info/badge';
+import Loader from '@/components/ui/info/loader';
 import {
   Dialog,
   DialogContent,
@@ -36,8 +28,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/utilities/table';
+import { queryClient } from '@/context/react-query-client';
+import { useToast } from '@/hooks/core/use-toast';
 import { QuestionMutationType, useQuestionMutation } from '@/hooks/mutations/useQuestion.mutation';
 import { IQuestion } from '@/types/question.types';
+import { Delete, Edit, MoreHorizontal } from 'lucide-react';
+import Link from 'next/link';
+import React, { useState } from 'react';
 
 type DashboardQuestionsListProps = {
   questionsData: { questions: IQuestion[]; totalQuestions: number };
@@ -73,14 +70,14 @@ const DashboardQuestionsList: React.FC<DashboardQuestionsListProps> = ({
 
   return (
     <Table>
-      <TableCaption>A list of your questions</TableCaption>
+      <TableCaption>Danh sách câu hỏi</TableCaption>
       <TableHeader>
         <TableRow>
           {[
-            'ID',
-            'Question',
-            'Correct Answer',
-            'Actions',
+            '#',
+            'Câu hỏi',
+            'Đáp án đúng',
+            'Hành động',
           ].map((header) => (
             <TableHead className="whitespace-nowrap" key={header}>
               {header}
@@ -91,15 +88,15 @@ const DashboardQuestionsList: React.FC<DashboardQuestionsListProps> = ({
       <TableBody>
         {questionsData.questions.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={4}>No questions found</TableCell>
+            <TableCell colSpan={4}>Không tìm thấy câu hỏi</TableCell>
           </TableRow>
         ) : (
-          questionsData.questions.map((question) => (
+          questionsData.questions.map((question, index) => (
             <TableRow className="whitespace-nowrap" key={question._id}>
-              <TableCell className="max-w-[120px] truncate">{question._id}</TableCell>
+              <TableCell className="max-w-[120px] truncate">{index + 1}</TableCell>
               <TableCell className="max-w-[300px] truncate">{question.question}</TableCell>
               <TableCell>
-                <Badge variant="default">Option {question.correctAnswer}</Badge>
+                <Badge variant="default">Đáp án {question.correctAnswer}</Badge>
               </TableCell>
               <TableCell>
                 <DropdownMenu modal={false}>
@@ -110,12 +107,12 @@ const DashboardQuestionsList: React.FC<DashboardQuestionsListProps> = ({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuGroup>
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuLabel>Hành động</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <Link href={`/dashboard/questions/${question._id}/edit`}>
                         <DropdownMenuItem>
                           <Edit className="mr-2 h-4 w-4" />
-                          Edit Question
+                          Sửa
                         </DropdownMenuItem>
                       </Link>
                       <DropdownMenuItem onSelect={() => {
@@ -123,7 +120,7 @@ const DashboardQuestionsList: React.FC<DashboardQuestionsListProps> = ({
                         setIsDialogOpen(true);
                       }}>
                         <Delete className="mr-2 h-4 w-4" />
-                        Delete Question
+                        Xóa
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
                   </DropdownMenuContent>
@@ -135,7 +132,7 @@ const DashboardQuestionsList: React.FC<DashboardQuestionsListProps> = ({
       </TableBody>
       <TableFooter>
         <TableRow>
-          <TableCell colSpan={3}>Total</TableCell>
+          <TableCell colSpan={3}>Tổng</TableCell>
           <TableCell className="text-right">
             {questionsData.totalQuestions}
           </TableCell>
@@ -145,10 +142,9 @@ const DashboardQuestionsList: React.FC<DashboardQuestionsListProps> = ({
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Question</DialogTitle>
+            <DialogTitle>Xóa</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. Are you sure you want to
-              permanently delete this question from server?
+              Bạn có chắc chắn muốn xóa câu hỏi này?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -166,7 +162,7 @@ const DashboardQuestionsList: React.FC<DashboardQuestionsListProps> = ({
               {questionMutation.status === 'pending' ? (
                 <Loader type="ScaleLoader" height={20} />
               ) : (
-                'Confirm'
+                'Xác nhận'
               )}
             </Button>
           </DialogFooter>

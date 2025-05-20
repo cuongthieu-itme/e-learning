@@ -37,6 +37,7 @@ import {
   TableRow,
 } from '@/components/ui/utilities/table';
 import { LectureMutationType, useLectureMutation } from '@/hooks/mutations/useLecture.mutation';
+import { formatDate } from '@/lib/utils';
 import { ILecture } from '@/types/lecture.types';
 import { LectureStatus } from '@/types/shared.types';
 
@@ -85,16 +86,32 @@ const DashboardLecturesList: React.FC<DashboardLecturesListProps> = ({
     }
   };
 
+  const getLabel = (status: LectureStatus) => {
+    switch (status) {
+      case LectureStatus.PUBLISHED:
+        return 'Đã đăng';
+      case LectureStatus.DRAFT:
+        return 'Bản nháp';
+      case LectureStatus.ARCHIVED:
+        return 'Đã lưu trữ';
+      default:
+        return status;
+    }
+  };
+
   return (
     <Table>
-      <TableCaption>A list of your lectures</TableCaption>
+      <TableCaption>Danh sách các bài giảng</TableCaption>
       <TableHeader>
         <TableRow>
           {[
-            'ID',
-            'Title',
-            'Status',
-            'Actions',
+            '#',
+            'Tiêu đề',
+            'Nội dung',
+            'Người tạo',
+            'Trạng thái',
+            'Ngày tạo',
+            'Hành động',
           ].map((header) => (
             <TableHead className="whitespace-nowrap" key={header}>
               {header}
@@ -105,14 +122,17 @@ const DashboardLecturesList: React.FC<DashboardLecturesListProps> = ({
       <TableBody>
         {lecturesData.lectures.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={4}>No lectures found</TableCell>
+            <TableCell colSpan={4}>Không tìm thấy bài giảng</TableCell>
           </TableRow>
         ) : (
-          lecturesData.lectures.map((lecture) => (
+          lecturesData.lectures.map((lecture, index) => (
             <TableRow className="whitespace-nowrap" key={lecture._id}>
-              <TableCell className="max-w-[120px] truncate">{lecture._id}</TableCell>
+              <TableCell className="max-w-[120px] truncate">{index + 1}</TableCell>
               <TableCell className="max-w-[300px] truncate">{lecture.title}</TableCell>
-              <TableCell>{getStatusBadge(lecture.status)}</TableCell>
+              <TableCell className="max-w-[300px] truncate">{lecture.content}</TableCell>
+              <TableCell>{`${lecture.createdById?.first_name} ${lecture.createdById?.last_name}`}</TableCell>
+              <TableCell>{getLabel(lecture.status)}</TableCell>
+              <TableCell>{formatDate(new Date(lecture.createdAt || ''))}</TableCell>
               <TableCell>
                 <DropdownMenu modal={false}>
                   <DropdownMenuTrigger asChild>
@@ -122,12 +142,12 @@ const DashboardLecturesList: React.FC<DashboardLecturesListProps> = ({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuGroup>
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuLabel>Hành động</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <Link href={`/dashboard/lectures/${lecture._id}/edit`}>
                         <DropdownMenuItem>
                           <Edit className="mr-2 h-4 w-4" />
-                          Edit Lecture
+                          Sửa
                         </DropdownMenuItem>
                       </Link>
                       <DropdownMenuItem onSelect={() => {
@@ -135,7 +155,7 @@ const DashboardLecturesList: React.FC<DashboardLecturesListProps> = ({
                         setIsDialogOpen(true);
                       }}>
                         <Delete className="mr-2 h-4 w-4" />
-                        Delete Lecture
+                        Xóa
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
                   </DropdownMenuContent>
@@ -147,7 +167,7 @@ const DashboardLecturesList: React.FC<DashboardLecturesListProps> = ({
       </TableBody>
       <TableFooter>
         <TableRow>
-          <TableCell colSpan={3}>Total</TableCell>
+          <TableCell colSpan={3}>Tổng</TableCell>
           <TableCell className="text-right">
             {lecturesData.totalLectures}
           </TableCell>
@@ -157,10 +177,9 @@ const DashboardLecturesList: React.FC<DashboardLecturesListProps> = ({
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Lecture</DialogTitle>
+            <DialogTitle>Xóa</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. Are you sure you want to
-              permanently delete this lecture from server?
+              Bạn có chắc chắn muốn xóa bài giảng này?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -178,7 +197,7 @@ const DashboardLecturesList: React.FC<DashboardLecturesListProps> = ({
               {lectureMutation.status === 'pending' ? (
                 <Loader type="ScaleLoader" height={20} />
               ) : (
-                'Confirm'
+                'Xác nhận'
               )}
             </Button>
           </DialogFooter>

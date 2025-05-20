@@ -1,22 +1,8 @@
 'use client';
 
-import { Book, Delete, Edit, MoreHorizontal } from 'lucide-react';
-import Link from 'next/link';
-import React, { useState } from 'react';
-
-import { queryClient } from '@/context/react-query-client';
-import { useToast } from '@/hooks/core/use-toast';
-import {
-  CourseMutationType,
-  useCourseMutation,
-} from '@/hooks/mutations/useCourse.mutation';
-import { formatDate } from '@/lib/utils/date.utils';
-import { ICourse } from '@/types';
-
-import Loader from '@/components/ui/info/loader';
-
 import { Button } from '@/components/ui/buttons/button';
 import { Badge } from '@/components/ui/info/badge';
+import Loader from '@/components/ui/info/loader';
 import {
   Dialog,
   DialogContent,
@@ -44,6 +30,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/utilities/table';
+import { queryClient } from '@/context/react-query-client';
+import { useToast } from '@/hooks/core/use-toast';
+import {
+  CourseMutationType,
+  useCourseMutation,
+} from '@/hooks/mutations/useCourse.mutation';
+import { formatDate } from '@/lib/utils/date.utils';
+import { ICourse } from '@/types';
+import { Delete, Edit, MoreHorizontal } from 'lucide-react';
+import Link from 'next/link';
+import React, { useState } from 'react';
 
 type DashboardCoursesListProps = {
   coursesData: {
@@ -88,19 +85,18 @@ const DashboardCoursesList: React.FC<DashboardCoursesListProps> = ({
 
   return (
     <Table>
-      <TableCaption>A list of your courses</TableCaption>
+      <TableCaption>Danh sách khóa học</TableCaption>
       <TableHeader>
         <TableRow>
           {[
-            '',
-            'Id',
-            'Name',
-            'Description',
-            'Subject',
-            'Status',
-            'Created By',
-            'Created At',
-            'Actions',
+            '#',
+            'Tên',
+            'Mô tả',
+            'Môn học',
+            'Trạng thái',
+            'Tạo bởi',
+            'Ngày tạo',
+            'Hành động',
           ].map((header) => (
             <TableHead className="whitespace-nowrap" key={header}>
               {header}
@@ -111,21 +107,18 @@ const DashboardCoursesList: React.FC<DashboardCoursesListProps> = ({
       <TableBody>
         {coursesData.courses.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={9}>No courses found</TableCell>
+            <TableCell colSpan={9}>Không tìm thấy khóa học</TableCell>
           </TableRow>
         ) : (
-          coursesData.courses.map((course) => (
+          coursesData.courses.map((course, index) => (
             <TableRow className="whitespace-nowrap" key={course._id}>
-              <TableCell>
-                <Book className="h-8 w-8 text-primary" />
-              </TableCell>
-              <TableCell className="max-w-[100px] truncate">{course._id}</TableCell>
+              <TableCell className="max-w-[100px] truncate">{index + 1}</TableCell>
               <TableCell>{course.name}</TableCell>
               <TableCell className="max-w-[200px] truncate">{course.description}</TableCell>
               <TableCell>{course.subject}</TableCell>
               <TableCell>
                 <Badge variant={course.isPublished ? "default" : "outline"} className={course.isPublished ? "bg-green-500" : ""}>
-                  {course.isPublished ? "Published" : "Draft"}
+                  {course.isPublished ? "Đã xuất bản" : "Bản nháp"}
                 </Badge>
               </TableCell>
               <TableCell>{`${course.createdById.first_name} ${course.createdById.last_name}`}</TableCell>
@@ -139,17 +132,17 @@ const DashboardCoursesList: React.FC<DashboardCoursesListProps> = ({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuGroup>
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuLabel>Hành động</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <Link href={`/dashboard/courses/${course._id}/edit`}>
                         <DropdownMenuItem>
                           <Edit className="mr-2 h-4 w-4" />
-                          Edit Course
+                          Chỉnh sửa
                         </DropdownMenuItem>
                       </Link>
                       <DropdownMenuItem onSelect={() => handleDeleteClick(course._id)}>
                         <Delete className="mr-2 h-4 w-4" />
-                        Delete Course
+                        Xóa
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
                   </DropdownMenuContent>
@@ -161,7 +154,7 @@ const DashboardCoursesList: React.FC<DashboardCoursesListProps> = ({
       </TableBody>
       <TableFooter>
         <TableRow>
-          <TableCell colSpan={8}>Total</TableCell>
+          <TableCell colSpan={8}>Tổng</TableCell>
           <TableCell className="text-right">
             {coursesData.totalCourses}
           </TableCell>
@@ -171,10 +164,9 @@ const DashboardCoursesList: React.FC<DashboardCoursesListProps> = ({
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Course</DialogTitle>
+            <DialogTitle>Xóa</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. Are you sure you want to
-              permanently delete this course from server?
+              Bạn có chắc chắn muốn xóa khóa học này?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -192,7 +184,7 @@ const DashboardCoursesList: React.FC<DashboardCoursesListProps> = ({
               {courseMutation.status === 'pending' ? (
                 <Loader type="ScaleLoader" height={20} />
               ) : (
-                'Confirm'
+                'Xác nhận'
               )}
             </Button>
           </DialogFooter>

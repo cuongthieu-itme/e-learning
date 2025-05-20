@@ -20,7 +20,7 @@ const SearchDashboardCourseTopics: React.FC = () => {
           {({ value, onChange }) => (
             <Input
               type="text"
-              placeholder="Search course topics...."
+              placeholder="Tìm kiếm chủ đề khóa học..."
               value={value !== undefined ? value : ''}
               onChange={(event) => onChange(event.target.value)}
             />
@@ -42,10 +42,10 @@ const SearchDashboardCourseTopics: React.FC = () => {
               className="w-full"
               value={value}
               onChange={onChange}
-              placeholder="Course topics per page"
+              placeholder="Số lượng dữ liệu/trang"
               groups={[
                 {
-                  label: 'Course topics per page',
+                  label: 'Số lượng dữ liệu/trang',
                   options: [
                     {
                       label: '10',
@@ -81,10 +81,10 @@ const SearchDashboardCourseTopics: React.FC = () => {
               className="w-full"
               value={value}
               onChange={onChange}
-              placeholder="Sort course topics by"
+              placeholder="Sắp xếp"
               groups={[
                 {
-                  label: 'Course topics per page',
+                  label: 'Sắp xếp',
                   options: SORT_OPTIONS,
                 },
               ]}

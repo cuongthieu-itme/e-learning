@@ -43,10 +43,10 @@ const SearchDashboardUsers: React.FC = () => {
               className="w-full"
               value={value}
               onChange={onChange}
-              placeholder="Số người dùng trên trang"
+              placeholder="Số lượng dữ liệu/trang"
               groups={[
                 {
-                  label: 'Số người dùng trên trang',
+                  label: 'Số lượng dữ liệu/trang',
                   options: [
                     {
                       label: '10',
@@ -82,10 +82,10 @@ const SearchDashboardUsers: React.FC = () => {
               className="w-full"
               value={value}
               onChange={onChange}
-              placeholder="Sắp xếp người dùng theo"
+              placeholder="Sắp xếp"
               groups={[
                 {
-                  label: 'Sắp xếp người dùng theo',
+                  label: 'Sắp xếp',
                   options: SORT_OPTIONS,
                 },
               ]}

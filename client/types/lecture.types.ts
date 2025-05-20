@@ -21,7 +21,11 @@ export type GetLecturesDto = {
 export interface ILecture {
   _id: string;
   courseId: string;
-  createdById: string;
+  createdById: {
+    _id: string;
+    first_name: string;
+    last_name: string;
+  };
   title: string;
   content: string;
   outline: string;

@@ -1,23 +1,18 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
-
-import {
-  CourseQueryType,
-  useCourseQuery,
-} from '@/hooks/queries/useCourse.query';
-
-import DashboardCoursesList from '@/components/admin/dashboard/courses/DashboardCoursesList';
-import SearchDashboardCourses from '@/components/admin/dashboard/courses/filters/SearchDashboardCourses';
-import LoadingDashboardProducts from '@/components/shared/loading/dashboard/LoadingDashboardProducts';
+import LoadingDashboardCourses from '@/components/shared/loading/dashboard/LoadingDashboardCourses';
 import NotFound from '@/components/shared/NotFound';
 import QueryParamController from '@/components/shared/QueryParamController';
 import PaginateList from '@/components/ui/pagination/paginate-list';
+import { CourseQueryType, useCourseQuery } from '@/hooks/queries/useCourse.query';
+import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
+import DashboardCoursesList from './DashboardCoursesList';
+import SearchDashboardCourses from './filters/SearchDashboardCourses';
 
 const DashboardCourses: React.FC = () => {
   return (
-    <Suspense fallback={<LoadingDashboardProducts />}>
+    <Suspense fallback={<LoadingDashboardCourses />}>
       <DashboardCoursesContent />
     </Suspense>
   );
@@ -39,7 +34,7 @@ const DashboardCoursesContent: React.FC = () => {
   });
 
   if (isLoading) {
-    return <LoadingDashboardProducts />;
+    return <LoadingDashboardCourses />;
   }
 
   if (!data) {
