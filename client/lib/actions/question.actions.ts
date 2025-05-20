@@ -1,5 +1,6 @@
 import qs from 'qs';
 
+import { ServerResponse } from '@/types';
 import { GetQuestionsDto, IQuestion } from '@/types/question.types';
 import {
   deleteApiHandler,
@@ -9,24 +10,36 @@ import {
 } from '../api';
 
 export const createQuestion = async (
-  data: FormData,
+  data: FormData | any,
 ): Promise<ServerResponse> => {
-  return await postApiHandler('question/create', data, {
-    headers: { 'Content-Type': 'multipart/form-data' },
+  // Handle both FormData and JSON payload
+  const headers = data instanceof FormData 
+    ? { 'Content-Type': 'multipart/form-data' }
+    : { 'Content-Type': 'application/json' };
+
+  return await postApiHandler('question', data, {
+    headers,
   });
 };
 
 export const updateQuestion = async (
-  data: FormData,
+  data: FormData | any,
   questionId: string,
 ): Promise<ServerResponse> => {
-  return await patchApiHandler(`question/update/${questionId}`, data);
+  // Handle both FormData and JSON payload
+  const headers = data instanceof FormData 
+    ? { 'Content-Type': 'multipart/form-data' }
+    : { 'Content-Type': 'application/json' };
+
+  return await patchApiHandler(`question/${questionId}`, data, {
+    headers,
+  });
 };
 
 export const deleteQuestion = async (
   questionId: string,
 ): Promise<ServerResponse> => {
-  return await deleteApiHandler(`question/delete/${questionId}`);
+  return await deleteApiHandler(`question/${questionId}`);
 };
 
 export const getAllQuestions = async (

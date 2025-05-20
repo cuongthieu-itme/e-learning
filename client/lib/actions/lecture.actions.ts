@@ -1,5 +1,6 @@
 import qs from 'qs';
 
+import { ServerResponse } from '@/types';
 import { GetLecturesDto, ILecture } from '@/types/lecture.types';
 import {
   deleteApiHandler,
@@ -9,24 +10,36 @@ import {
 } from '../api';
 
 export const createLecture = async (
-  data: FormData,
+  data: FormData | any,
 ): Promise<ServerResponse> => {
-  return await postApiHandler('lecture/create', data, {
-    headers: { 'Content-Type': 'multipart/form-data' },
+  // Handle both FormData and JSON payload
+  const headers = data instanceof FormData 
+    ? { 'Content-Type': 'multipart/form-data' }
+    : { 'Content-Type': 'application/json' };
+
+  return await postApiHandler('lecture', data, {
+    headers,
   });
 };
 
 export const updateLecture = async (
-  data: FormData,
+  data: FormData | any,
   lectureId: string,
 ): Promise<ServerResponse> => {
-  return await patchApiHandler(`lecture/update/${lectureId}`, data);
+  // Handle both FormData and JSON payload
+  const headers = data instanceof FormData 
+    ? { 'Content-Type': 'multipart/form-data' }
+    : { 'Content-Type': 'application/json' };
+
+  return await patchApiHandler(`lecture/${lectureId}`, data, {
+    headers,
+  });
 };
 
 export const deleteLecture = async (
   lectureId: string,
 ): Promise<ServerResponse> => {
-  return await deleteApiHandler(`lecture/delete/${lectureId}`);
+  return await deleteApiHandler(`lecture/${lectureId}`);
 };
 
 export const getAllLectures = async (
