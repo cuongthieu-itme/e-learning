@@ -5,6 +5,7 @@ import {
   Home,
   LayoutDashboard,
   MessageCircleQuestion,
+  Plus,
   School,
   ShoppingBag,
   User,
@@ -88,10 +89,16 @@ export const AdminNavbarActions = [
     href: '/dashboard/courses',
     subActions: [
       {
-        id: 5.2,
+        id: 5.1,
         icon: View,
         text: 'Danh sách',
         href: '/dashboard/courses',
+      },
+      {
+        id: 5.2,
+        icon: Plus,
+        text: 'Thêm mới',
+        href: '/dashboard/courses/add',
       },
     ],
   },

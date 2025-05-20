@@ -5,7 +5,7 @@ import {
   deleteCourse,
   updateCourse,
 } from '@/lib/actions/course.actions';
-import { ServerResponse } from '@/types';
+import { ServerResponse, ICourse } from '@/types';
 
 import { useToast } from '../core/use-toast';
 
@@ -18,11 +18,11 @@ enum CourseMutationType {
 type CourseMutationPayload =
   | {
       type: CourseMutationType.CREATE;
-      data: FormData;
+      data: FormData | any;
     }
   | {
       type: CourseMutationType.UPDATE;
-      data: FormData;
+      data: FormData | any;
       courseId: string;
     }
   | {
@@ -59,7 +59,41 @@ const useCourseMutation = (
     ...options,
   });
 
-  return mutation;
+  // Helper methods to make the API easier to use
+  return {
+    ...mutation,
+    createCourse: (data: any) => {
+      // Process data for API compatibility
+      const apiData = {
+        ...data,
+        // Add any transformations needed for the API
+      };
+      
+      return mutation.mutate({
+        type: CourseMutationType.CREATE,
+        data: apiData,
+      });
+    },
+    updateCourse: (courseId: string, data: any) => {
+      // Process data for API compatibility
+      const apiData = {
+        ...data,
+        // Add any transformations needed for the API
+      };
+      
+      return mutation.mutate({
+        type: CourseMutationType.UPDATE,
+        data: apiData,
+        courseId,
+      });
+    },
+    deleteCourse: (courseId: string) => {
+      return mutation.mutate({
+        type: CourseMutationType.DELETE,
+        courseId,
+      });
+    },
+  };
 };
 
 export { CourseMutationType, useCourseMutation };

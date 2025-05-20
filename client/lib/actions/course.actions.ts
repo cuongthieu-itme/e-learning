@@ -1,6 +1,6 @@
 import qs from 'qs';
 
-import { GetCoursesDto, ICourse } from '@/types';
+import { GetCoursesDto, ICourse, ServerResponse } from '@/types';
 
 import {
   deleteApiHandler,
@@ -10,22 +10,24 @@ import {
 } from '../api';
 
 export const createCourse = async (
-  data: FormData,
+  data: FormData | any,
 ): Promise<ServerResponse> => {
-  return await postApiHandler('course/create', data);
+  // Handle both FormData and JSON payload
+  return await postApiHandler('course', data);
 };
 
 export const updateCourse = async (
-  data: FormData,
+  data: FormData | any,
   courseId: string,
 ): Promise<ServerResponse> => {
-  return await patchApiHandler(`course/update/${courseId}`, data);
+  // Handle both FormData and JSON payload
+  return await patchApiHandler(`course/${courseId}`, data);
 };
 
 export const deleteCourse = async (
   courseId: string,
 ): Promise<ServerResponse> => {
-  return await deleteApiHandler(`course/delete/${courseId}`);
+  return await deleteApiHandler(`course/${courseId}`);
 };
 
 export const getAllCourses = async (
