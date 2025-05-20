@@ -10,20 +10,19 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { CourseTopicService } from './course-topic.service';
 import { JwtAuthGuard } from '@/authentication/guards/jwt-auth.guard';
 import { RolesGuard } from '@/authentication/guards/role-auth.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { Role } from '@/types';
-import { User } from '@/common/decorators/user.decorator';
+import { CourseTopicService } from './course-topic.service';
 
 import { CreateCourseTopicDto } from './dto/create-course-topic.dto';
-import { UpdateCourseTopicDto } from './dto/update-course-topic.dto';
 import { GetCourseTopicsDto } from './dto/get-course-topics.dto';
+import { UpdateCourseTopicDto } from './dto/update-course-topic.dto';
 
 @Controller('/course-topic')
 export class CourseTopicController {
-  constructor(private readonly courseTopicService: CourseTopicService) {}
+  constructor(private readonly courseTopicService: CourseTopicService) { }
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)

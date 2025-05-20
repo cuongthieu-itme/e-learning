@@ -1,12 +1,11 @@
 import {
+  AlignVerticalJustifyEnd,
   Book,
-  ClipboardList,
   Heart,
   Home,
   LayoutDashboard,
   Plus,
   ShoppingBag,
-  TicketCheck,
   User,
   View
 } from 'lucide-react';
@@ -83,48 +82,41 @@ export const AdminNavbarActions = [
   },
   {
     id: 5,
-    icon: ClipboardList,
-    text: 'Đơn hàng',
-    href: '/dashboard/orders',
-    subActions: [],
-  },
-  {
-    id: 6,
-    icon: TicketCheck,
-    text: 'Coupons',
-    href: '/dashboard/coupons',
-    subActions: [
-      {
-        id: 6.1,
-        icon: Plus,
-        text: 'Create Coupon',
-        href: '/dashboard/coupons/create',
-      },
-      {
-        id: 6.2,
-        icon: View,
-        text: 'View Coupons',
-        href: '/dashboard/coupons/',
-      },
-    ],
-  },
-  {
-    id: 7,
     icon: Book,
     text: 'Khóa học',
     href: '/dashboard/courses',
     subActions: [
       {
-        id: 7.1,
+        id: 5.1,
         icon: Plus,
         text: 'Thêm khóa học',
         href: '/dashboard/courses/add',
       },
       {
-        id: 7.2,
+        id: 5.2,
         icon: View,
         text: 'Danh sách khóa học',
         href: '/dashboard/courses',
+      },
+    ],
+  },
+  {
+    id: 6,
+    icon: AlignVerticalJustifyEnd,
+    text: 'Chủ đề khóa học',
+    href: '/dashboard/course-topics',
+    subActions: [
+      {
+        id: 6.1,
+        icon: Plus,
+        text: 'Tạo mới',
+        href: '/dashboard/course-topics/add',
+      },
+      {
+        id: 6.2,
+        icon: View,
+        text: 'Danh sách',
+        href: '/dashboard/course-topics',
       },
     ],
   },
