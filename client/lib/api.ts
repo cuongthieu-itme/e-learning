@@ -12,11 +12,8 @@ const apiClient = axios.create({
   },
 });
 
-// CSRF token handling removed
-
 apiClient.interceptors.request.use(
   async (config) => {
-    // CSRF token handling removed
     return config;
   },
   (error) => Promise.reject(error),

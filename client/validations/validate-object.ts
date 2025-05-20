@@ -1,6 +1,6 @@
 import { CategoryField } from '@/types';
 
-interface FieldConfig extends CategoryField {}
+interface FieldConfig extends CategoryField { }
 
 export const validateObject = (
   attributes: Record<string, any>,
