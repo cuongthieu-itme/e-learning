@@ -1,16 +1,5 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-
-import { queryClient } from '@/context/react-query-client';
-import { useToast } from '@/hooks/core/use-toast';
-import { ICourseTopic } from '@/types/course-topic.types';
-import { CourseTopicMutationType, useCourseTopicMutation } from '@/hooks/mutations/useCourseTopic.mutation';
-
 import { Button } from '@/components/ui/buttons/button';
 import {
   Form,
@@ -23,7 +12,22 @@ import {
 } from '@/components/ui/form/form';
 import { Input } from '@/components/ui/form/input';
 import Loader from '@/components/ui/info/loader';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/layout/popover';
 import { Separator } from '@/components/ui/layout/separator';
+import { queryClient } from '@/context/react-query-client';
+import { useToast } from '@/hooks/core/use-toast';
+import { CourseTopicMutationType, useCourseTopicMutation } from '@/hooks/mutations/useCourseTopic.mutation';
+import { CourseQueryType, useCourseQuery } from '@/hooks/queries/useCourse.query';
+import { cn } from '@/lib/utils';
+import { GetCoursesDto, ICourse } from '@/types';
+import { ICourseTopic } from '@/types/course-topic.types';
+import { zodResolver } from '@hookform/resolvers/zod';
+import debounce from 'lodash.debounce';
+import { Check, ChevronsUpDown, Search } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 const CreateCourseTopicSchema = z.object({
   courseId: z.string().min(1, 'Course ID is required'),
@@ -48,12 +52,19 @@ const HandleCourseTopicForm: React.FC<HandleCourseTopicFormProps> = (props) => {
   const { toast } = useToast();
   const router = useRouter();
 
+  const extractCourseId = useCallback((courseId: string | ICourse): string => {
+    if (typeof courseId === 'object' && '_id' in courseId) {
+      return courseId._id;
+    }
+    return String(courseId);
+  }, []);
+
   const schema = props.isEdit ? UpdateCourseTopicSchema : CreateCourseTopicSchema;
 
   const form = useForm<CourseTopicFormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      courseId: '682ad3dff69fbc18179a0062', // Default course ID as specified in the request
+      courseId: '682ad3dff69fbc18179a0062',
       topic: '',
     },
   });
@@ -87,14 +98,14 @@ const HandleCourseTopicForm: React.FC<HandleCourseTopicFormProps> = (props) => {
   useEffect(() => {
     if (props.isEdit && props.courseTopic) {
       const formValues: CourseTopicFormValues = {
-        courseId: typeof props.courseTopic.courseId === 'object' && '_id' in props.courseTopic.courseId 
-          ? props.courseTopic.courseId._id 
-          : String(props.courseTopic.courseId),
+        courseId: typeof props.courseTopic.courseId === 'string'
+          ? props.courseTopic.courseId
+          : props.courseTopic.courseId._id,
         topic: props.courseTopic.topic,
       };
       form.reset(formValues);
     }
-  }, [props.courseTopic, props.isEdit, form]);
+  }, [props.courseTopic, props.isEdit, form, extractCourseId]);
 
   const handleFormSubmit = async (data: CourseTopicFormValues) => {
     if (props.isEdit) {
@@ -111,6 +122,89 @@ const HandleCourseTopicForm: React.FC<HandleCourseTopicFormProps> = (props) => {
     }
   };
 
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [page, setPage] = useState<number>(1);
+  const [selectedCourse, setSelectedCourse] = useState<ICourse | null>(null);
+  const [open, setOpen] = useState(false);
+
+  const queryParams = useMemo<GetCoursesDto>(() => ({
+    page,
+    limit: 10,
+    search: searchTerm,
+  }), [page, searchTerm]);
+
+  const { data: coursesData, isLoading: isCoursesLoading, refetch } = useCourseQuery({
+    type: CourseQueryType.GET_ALL,
+    params: { query: queryParams },
+    enabled: open,
+  });
+
+  useEffect(() => {
+    if (open && !coursesData) {
+      refetch();
+    }
+  }, [open, coursesData, refetch]);
+
+  const courses = useMemo<ICourse[]>(() => {
+    return (coursesData?.courses || []) as ICourse[];
+  }, [coursesData]);
+
+  const totalPages = useMemo(() => coursesData?.totalPages || 1, [coursesData]);
+
+  const debouncedSearch = useCallback(
+    debounce((value: string) => {
+      if (value !== searchTerm) {
+        setSearchTerm(value);
+        setPage(1);
+
+        if (!open) {
+          setOpen(true);
+        }
+
+        refetch();
+      }
+    }, 800),
+    [searchTerm, open, refetch],
+  );
+
+  const handleSearch = (value: string) => {
+    debouncedSearch(value);
+  };
+
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value.length === 0 || value.length > 1) {
+      handleSearch(value);
+    }
+  };
+
+  useEffect(() => {
+    if (searchTerm && !open) {
+      setOpen(true);
+    }
+  }, [searchTerm, open]);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    const isScrolledToBottom = scrollTop + clientHeight >= scrollHeight - 20;
+
+    if (isScrolledToBottom && page < totalPages && !isCoursesLoading) {
+      setPage((prevPage) => prevPage + 1);
+    }
+  };
+
+  useEffect(() => {
+    if (props.isEdit && props.courseTopic) {
+      if (courses.length > 0) {
+        const courseId = extractCourseId(props.courseTopic.courseId as string);
+        const course = courses.find(c => c._id === courseId);
+        if (course) {
+          setSelectedCourse(course);
+        }
+      }
+    }
+  }, [props.isEdit, props.courseTopic, courses, extractCourseId]);
+
   return (
     <Form {...form}>
       <form
@@ -121,18 +215,108 @@ const HandleCourseTopicForm: React.FC<HandleCourseTopicFormProps> = (props) => {
           <FormField
             control={form.control}
             name="courseId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>ID Khóa học</FormLabel>
-                <FormControl>
-                  <Input placeholder="Nhập ID khóa học" {...field} />
-                </FormControl>
-                <FormDescription>
-                  ID của khóa học mà chủ đề này thuộc về.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field }) => {
+              useEffect(() => {
+                if (open && field.value && !selectedCourse) {
+                  const course = courses.find(c => c._id === field.value);
+                  if (course) {
+                    setSelectedCourse(course);
+                  }
+                }
+              }, [open, field.value]);
+
+              return (
+                <FormItem className="flex flex-col">
+                  <FormLabel>ID Khóa học</FormLabel>
+                  <Popover open={open} onOpenChange={setOpen}>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={open}
+                          className="justify-between w-full font-normal"
+                        >
+                          {field.value && selectedCourse
+                            ? `${selectedCourse.name} (${field.value})`
+                            : "Chọn khóa học"}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="p-0 w-full min-w-[300px]" align="start">
+                      <div className="bg-popover rounded-md overflow-hidden">
+                        <div className="relative">
+                          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <input
+                            placeholder="Tìm kiếm khóa học..."
+                            onChange={handleSearchInputChange}
+                            className="pl-8 pr-4 py-2 h-9 w-full border-b focus:outline-none"
+                          />
+                        </div>
+                        <div
+                          className="max-h-[300px] overflow-auto p-1"
+                          onScroll={handleScroll}
+                        >
+                          {isCoursesLoading ? (
+                            <div className="py-6 text-center">
+                              <Loader type="ScaleLoader" height={20} />
+                            </div>
+                          ) : courses.length === 0 ? (
+                            <div className="py-6 text-center text-sm text-muted-foreground">
+                              Không tìm thấy khóa học nào
+                            </div>
+                          ) : (
+                            <>
+                              <div className="px-2 pb-1 pt-1 text-xs text-muted-foreground">
+                                {courses.length} kết quả
+                              </div>
+                              <div className="space-y-1">
+                                {courses.map((course) => (
+                                  <div
+                                    key={course._id}
+                                    className={cn(
+                                      "flex items-center px-2 py-1.5 text-sm rounded-md gap-2 cursor-pointer hover:bg-accent",
+                                      field.value === course._id ? "bg-accent" : ""
+                                    )}
+                                    onClick={() => {
+                                      field.onChange(course._id);
+                                      setSelectedCourse(course);
+                                      setOpen(false);
+                                    }}
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "h-4 w-4",
+                                        field.value === course._id ? "opacity-100" : "opacity-0"
+                                      )}
+                                    />
+                                    <div className="flex flex-col">
+                                      <span className="font-medium">{course.name}</span>
+                                      <span className="text-xs text-muted-foreground">{course._id}</span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+
+                              {isCoursesLoading && page > 1 && (
+                                <div className="py-2 text-center">
+                                  <Loader type="ScaleLoader" height={16} />
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                  <FormDescription>
+                    ID của khóa học mà chủ đề này thuộc về.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
           <FormField
             control={form.control}

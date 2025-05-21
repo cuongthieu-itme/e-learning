@@ -9,5 +9,9 @@
     "start:client": "pnpm --filter client dev",
     "build:api": "pnpm --filter api build",
     "build:client": "pnpm --filter client build"
+  },
+  "dependencies": {
+    "@types/lodash.debounce": "^4.0.9",
+    "lodash.debounce": "^4.0.8"
   }
 }
