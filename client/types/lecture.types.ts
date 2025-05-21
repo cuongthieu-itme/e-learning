@@ -18,9 +18,15 @@ export type GetLecturesDto = {
   sort?: string;
 };
 
+interface ICourse {
+  _id: string;
+  name: string;
+  subject: string;
+}
+
 export interface ILecture {
   _id: string;
-  courseId: string;
+  courseId: string | ICourse;
   createdById: {
     _id: string;
     first_name: string;

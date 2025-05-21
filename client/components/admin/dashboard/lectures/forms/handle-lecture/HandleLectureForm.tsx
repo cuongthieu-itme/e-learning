@@ -114,7 +114,9 @@ const HandleLectureForm: React.FC<HandleLectureFormProps> = (props) => {
   useEffect(() => {
     if (props.isEdit && props.lecture) {
       const formValues: LectureFormValues = {
-        courseId: props.lecture.courseId,
+        courseId: typeof props.lecture.courseId === 'object' && '_id' in props.lecture.courseId 
+          ? props.lecture.courseId._id 
+          : String(props.lecture.courseId),
         createdById: typeof props.lecture.createdById === 'object' ? 
           props.lecture.createdById._id : props.lecture.createdById,
         title: props.lecture.title,
