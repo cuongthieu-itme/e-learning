@@ -62,26 +62,6 @@ export const AdminNavbarActions = [
       },
     ],
   },
-  // {
-  //   id: 4,
-  //   icon: ShoppingBag,
-  //   text: 'Sản phẩm',
-  //   href: '/dashboard/products',
-  //   subActions: [
-  //     {
-  //       id: 4.1,
-  //       icon: Plus,
-  //       text: 'Add Product',
-  //       href: '/dashboard/products/add',
-  //     },
-  //     {
-  //       id: 4.2,
-  //       icon: View,
-  //       text: 'View Products',
-  //       href: '/dashboard/products',
-  //     },
-  //   ],
-  // },
   {
     id: 5,
     icon: Book,
