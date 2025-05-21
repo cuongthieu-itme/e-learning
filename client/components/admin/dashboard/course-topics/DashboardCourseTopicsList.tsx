@@ -31,7 +31,8 @@ import { queryClient } from '@/context/react-query-client';
 import { useToast } from '@/hooks/core/use-toast';
 import { CourseTopicMutationType, useCourseTopicMutation } from '@/hooks/mutations/useCourseTopic.mutation';
 import { ICourseTopic } from '@/types/course-topic.types';
-import { Delete, Edit, MoreHorizontal } from 'lucide-react';
+import CourseTopicDetailModal from './modals/CourseTopicDetailModal';
+import { AlertCircle, Delete, Edit, MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
@@ -43,6 +44,8 @@ const DashboardCourseTopicsList: React.FC<DashboardCourseTopicsListProps> = ({
   courseTopicsData,
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
+  const [selectedCourseTopic, setSelectedCourseTopic] = useState<ICourseTopic | null>(null);
   const { toast } = useToast();
 
   const courseTopicMutation = useCourseTopicMutation({
@@ -88,7 +91,14 @@ const DashboardCourseTopicsList: React.FC<DashboardCourseTopicsListProps> = ({
           </TableRow>
         ) : (
           courseTopicsData.courseTopics.map((courseTopic, index) => (
-            <TableRow className="whitespace-nowrap" key={courseTopic._id}>
+            <TableRow 
+              className="whitespace-nowrap cursor-pointer hover:bg-slate-50" 
+              key={courseTopic._id}
+              onClick={() => {
+                setSelectedCourseTopic(courseTopic);
+                setIsDetailDialogOpen(true);
+              }}
+            >
               <TableCell>{index + 1}</TableCell>
               <TableCell>{courseTopic.topic}</TableCell>
               <TableCell>
@@ -157,6 +167,12 @@ const DashboardCourseTopicsList: React.FC<DashboardCourseTopicsListProps> = ({
           </TableCell>
         </TableRow>
       </TableFooter>
+    
+      <CourseTopicDetailModal
+        isOpen={isDetailDialogOpen}
+        onOpenChange={setIsDetailDialogOpen}
+        courseTopic={selectedCourseTopic}
+      />
     </Table>
   );
 };
