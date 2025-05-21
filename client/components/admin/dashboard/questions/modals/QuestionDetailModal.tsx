@@ -1,19 +1,19 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
-import { AlertCircle, Edit } from 'lucide-react';
-import { IQuestion } from '@/types/question.types';
-import { Badge } from '@/components/ui/info/badge';
 import { Button } from '@/components/ui/buttons/button';
+import { Badge } from '@/components/ui/info/badge';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
-  DialogClose,
 } from '@/components/ui/layout/dialog';
+import { IQuestion } from '@/types/question.types';
+import { AlertCircle, Edit } from 'lucide-react';
+import Link from 'next/link';
+import React from 'react';
 
 interface QuestionDetailModalProps {
   isOpen: boolean;
@@ -164,8 +164,8 @@ const QuestionDetailModal: React.FC<QuestionDetailModalProps> = ({
                 <h4 className="text-xs uppercase tracking-wider text-slate-500 mb-1">Bài giảng</h4>
                 {typeof question.lectureId === 'object' ? (
                   <div className="p-3 bg-white rounded border border-slate-200">
-                    <p className="text-sm font-medium">{question.lectureId.title}</p>
-                    <p className="text-xs text-slate-500 mt-1">ID: {question.lectureId._id}</p>
+                    <p className="text-sm font-medium">{question.lectureId?.title}</p>
+                    <p className="text-xs text-slate-500 mt-1">ID: {question.lectureId?._id}</p>
                   </div>
                 ) : (
                   <p className="text-sm">{question.lectureId}</p>
