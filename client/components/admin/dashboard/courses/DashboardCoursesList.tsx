@@ -38,7 +38,8 @@ import {
 } from '@/hooks/mutations/useCourse.mutation';
 import { formatDate } from '@/lib/utils/date.utils';
 import { ICourse } from '@/types';
-import { Delete, Edit, MoreHorizontal } from 'lucide-react';
+import CourseDetailModal from './modals/CourseDetailModal';
+import { Book, Delete, Edit, MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
@@ -56,6 +57,8 @@ const DashboardCoursesList: React.FC<DashboardCoursesListProps> = ({
 }) => {
   const [selectedCourseId, setSelectedCourseId] = useState<string>('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState<ICourse | null>(null);
   const { toast } = useToast();
 
   const courseMutation = useCourseMutation({
@@ -111,7 +114,14 @@ const DashboardCoursesList: React.FC<DashboardCoursesListProps> = ({
           </TableRow>
         ) : (
           coursesData.courses.map((course, index) => (
-            <TableRow className="whitespace-nowrap" key={course._id}>
+            <TableRow 
+              className="whitespace-nowrap cursor-pointer hover:bg-slate-50" 
+              key={course._id}
+              onClick={() => {
+                setSelectedCourse(course);
+                setIsDetailDialogOpen(true);
+              }}
+            >
               <TableCell className="max-w-[100px] truncate">{index + 1}</TableCell>
               <TableCell>{course.name}</TableCell>
               <TableCell className="max-w-[200px] truncate">{course.description}</TableCell>
@@ -190,6 +200,12 @@ const DashboardCoursesList: React.FC<DashboardCoursesListProps> = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <CourseDetailModal
+        isOpen={isDetailDialogOpen}
+        onOpenChange={setIsDetailDialogOpen}
+        course={selectedCourse}
+      />
     </Table>
   );
 };

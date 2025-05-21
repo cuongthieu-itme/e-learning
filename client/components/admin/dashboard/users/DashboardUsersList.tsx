@@ -36,7 +36,8 @@ import {
 } from '@/hooks/mutations/useUser.mutation';
 import { formatDate } from '@/lib/utils';
 import { IUser, Role } from '@/types';
-import { Delete, Edit, MoreHorizontal } from 'lucide-react';
+import UserDetailModal from './modals/UserDetailModal';
+import { Delete, Edit, MoreHorizontal, User } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
@@ -74,7 +75,9 @@ const DashboardUsersList: React.FC<DashboardUsersListProps> = ({
   usersData,
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string>('');
+  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
   const { toast } = useToast();
 
   const userMutation = useUserMutation({
@@ -130,7 +133,14 @@ const DashboardUsersList: React.FC<DashboardUsersListProps> = ({
           </TableRow>
         ) : (
           usersData.users.map((user, index) => (
-            <TableRow className="whitespace-nowrap" key={user._id}>
+            <TableRow 
+              className="whitespace-nowrap cursor-pointer hover:bg-slate-50" 
+              key={user._id}
+              onClick={() => {
+                setSelectedUser(user);
+                setIsDetailDialogOpen(true);
+              }}
+            >
               <TableCell>{index + 1}</TableCell>
               <TableCell>{user.first_name}</TableCell>
               <TableCell>{user.last_name}</TableCell>
@@ -211,6 +221,12 @@ const DashboardUsersList: React.FC<DashboardUsersListProps> = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <UserDetailModal
+        isOpen={isDetailDialogOpen}
+        onOpenChange={setIsDetailDialogOpen}
+        user={selectedUser}
+      />
     </Table>
   );
 };
