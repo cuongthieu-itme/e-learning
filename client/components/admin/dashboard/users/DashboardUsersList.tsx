@@ -136,9 +136,13 @@ const DashboardUsersList: React.FC<DashboardUsersListProps> = ({
             <TableRow 
               className="whitespace-nowrap cursor-pointer hover:bg-slate-50" 
               key={user._id}
-              onClick={() => {
-                setSelectedUser(user);
-                setIsDetailDialogOpen(true);
+              onClick={(e) => {
+                // Chỉ mở modal chi tiết nếu click trực tiếp vào row, không phải vào các nút hành động
+                if ((e.target as HTMLElement).closest('button') === null && 
+                    (e.target as HTMLElement).closest('[role="menuitem"]') === null) {
+                  setSelectedUser(user);
+                  setIsDetailDialogOpen(true);
+                }
               }}
             >
               <TableCell>{index + 1}</TableCell>

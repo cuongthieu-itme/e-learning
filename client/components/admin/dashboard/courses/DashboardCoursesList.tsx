@@ -117,9 +117,13 @@ const DashboardCoursesList: React.FC<DashboardCoursesListProps> = ({
             <TableRow 
               className="whitespace-nowrap cursor-pointer hover:bg-slate-50" 
               key={course._id}
-              onClick={() => {
-                setSelectedCourse(course);
-                setIsDetailDialogOpen(true);
+              onClick={(e) => {
+                // Chỉ mở modal chi tiết nếu click trực tiếp vào row, không phải vào các nút hành động
+                if ((e.target as HTMLElement).closest('button') === null && 
+                    (e.target as HTMLElement).closest('[role="menuitem"]') === null) {
+                  setSelectedCourse(course);
+                  setIsDetailDialogOpen(true);
+                }
               }}
             >
               <TableCell className="max-w-[100px] truncate">{index + 1}</TableCell>

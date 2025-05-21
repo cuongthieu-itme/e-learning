@@ -94,9 +94,13 @@ const DashboardCourseTopicsList: React.FC<DashboardCourseTopicsListProps> = ({
             <TableRow 
               className="whitespace-nowrap cursor-pointer hover:bg-slate-50" 
               key={courseTopic._id}
-              onClick={() => {
-                setSelectedCourseTopic(courseTopic);
-                setIsDetailDialogOpen(true);
+              onClick={(e) => {
+                // Chỉ mở modal chi tiết nếu click trực tiếp vào row, không phải vào các nút hành động
+                if ((e.target as HTMLElement).closest('button') === null && 
+                    (e.target as HTMLElement).closest('[role="menuitem"]') === null) {
+                  setSelectedCourseTopic(courseTopic);
+                  setIsDetailDialogOpen(true);
+                }
               }}
             >
               <TableCell>{index + 1}</TableCell>
@@ -104,7 +108,7 @@ const DashboardCourseTopicsList: React.FC<DashboardCourseTopicsListProps> = ({
               <TableCell>
                 <DropdownMenu modal={false}>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost">
+                    <Button variant="ghost" onClick={(e) => e.stopPropagation()}>
                       <MoreHorizontal />
                     </Button>
                   </DropdownMenuTrigger>
