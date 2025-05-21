@@ -116,8 +116,12 @@ const HandleQuestionForm: React.FC<HandleQuestionFormProps> = (props) => {
   useEffect(() => {
     if (props.isEdit && props.question) {
       const formValues: QuestionFormValues = {
-        lectureId: props.question.lectureId,
-        createdById: props.question.createdById,
+        lectureId: typeof props.question.lectureId === 'object' && '_id' in props.question.lectureId 
+          ? props.question.lectureId._id 
+          : String(props.question.lectureId),
+        createdById: typeof props.question.createdById === 'object' && '_id' in props.question.createdById 
+          ? props.question.createdById._id 
+          : String(props.question.createdById),
         question: props.question.question,
         optionA: props.question.optionA,
         optionB: props.question.optionB,

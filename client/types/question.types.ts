@@ -17,10 +17,22 @@ export type GetQuestionsDto = {
   sort?: string;
 };
 
+interface ICreator {
+  _id: string;
+  first_name: string;
+  last_name: string;
+}
+
+interface ILecture {
+  _id: string;
+  title: string;
+  content?: string;
+}
+
 export interface IQuestion {
   _id: string;
-  lectureId: string;
-  createdById: string;
+  lectureId: string | ILecture;
+  createdById: string | ICreator;
   question: string;
   optionA: string;
   optionB: string;
