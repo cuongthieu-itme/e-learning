@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { queryClient } from '@/context/react-query-client';
+import { useCurrentUser } from '@/hooks/auth/use-current-user';
 import { useToast } from '@/hooks/core/use-toast';
 import { LectureMutationType, useLectureMutation } from '@/hooks/mutations/useLecture.mutation';
 import { CourseQueryType, useCourseQuery } from '@/hooks/queries/useCourse.query';
@@ -74,6 +75,7 @@ type HandleLectureFormProps =
 const HandleLectureForm: React.FC<HandleLectureFormProps> = (props) => {
   const { toast } = useToast();
   const router = useRouter();
+  const { user } = useCurrentUser();
 
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [page, setPage] = useState<number>(1);
@@ -85,8 +87,8 @@ const HandleLectureForm: React.FC<HandleLectureFormProps> = (props) => {
   const form = useForm<LectureFormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      courseId: '682ad3dff69fbc18179a0062',
-      createdById: '6822f239745f8d66b3bb670b',
+      courseId: '',
+      createdById: user?.userId || '',
       title: '',
       content: '',
       outline: '',
@@ -95,6 +97,42 @@ const HandleLectureForm: React.FC<HandleLectureFormProps> = (props) => {
       status: LectureStatus.DRAFT,
     },
   });
+
+  // Update form values when user changes
+  useEffect(() => {
+    if (user?.userId && !form.getValues('createdById')) {
+      form.setValue('createdById', user.userId);
+    }
+  }, [user, form]);
+
+  // Populate form with lecture data when in edit mode
+  useEffect(() => {
+    if (props.isEdit && props.lecture) {
+      const lectureData = props.lecture;
+
+      // Extract courseId
+      const courseId = typeof lectureData.courseId === 'object' && '_id' in lectureData.courseId
+        ? lectureData.courseId._id
+        : String(lectureData.courseId);
+
+      // Set form values
+      form.setValue('courseId', courseId);
+      form.setValue('title', lectureData.title);
+      form.setValue('content', lectureData.content);
+      form.setValue('outline', lectureData.outline);
+      form.setValue('pptxUrl', lectureData.pptxUrl || '');
+      form.setValue('mindmapUrl', lectureData.mindmapUrl || '');
+      form.setValue('status', lectureData.status);
+
+      // Set createdById if available
+      if (lectureData.createdById) {
+        const createdById = typeof lectureData.createdById === 'object' && '_id' in lectureData.createdById
+          ? lectureData.createdById._id
+          : String(lectureData.createdById);
+        form.setValue('createdById', createdById);
+      }
+    }
+  }, [props.isEdit, props.lecture, form]);
 
   const lectureMutation = useLectureMutation({
     onSuccess: (response) => {
@@ -324,22 +362,27 @@ const HandleLectureForm: React.FC<HandleLectureFormProps> = (props) => {
               </FormItem>
             )}
           />
-          <FormField
+          {/* <FormField
             control={form.control}
             name="createdById"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>ID Người tạo</FormLabel>
                 <FormControl>
-                  <Input placeholder="Nhập ID người tạo" {...field} />
+                  <Input
+                    placeholder="ID của người tạo"
+                    {...field}
+                    disabled={true}
+                    title="Tự động lấy từ người dùng đăng nhập"
+                  />
                 </FormControl>
                 <FormDescription>
-                  ID của người tạo bài giảng này.
+                  ID của người tạo bài giảng này (tự động lấy từ người dùng đang đăng nhập).
                 </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
           <FormField
             control={form.control}
             name="title"

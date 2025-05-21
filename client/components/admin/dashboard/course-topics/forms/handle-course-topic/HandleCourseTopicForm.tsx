@@ -193,6 +193,20 @@ const HandleCourseTopicForm: React.FC<HandleCourseTopicFormProps> = (props) => {
     }
   };
 
+  // Effects that need to react to field value but can't be inside the render prop
+  const courseIdValue = form.watch("courseId");
+
+  // Effect for updating selectedCourse when courseId changes
+  useEffect(() => {
+    if (open && courseIdValue && !selectedCourse) {
+      const course = courses.find(c => c._id === courseIdValue);
+      if (course) {
+        setSelectedCourse(course);
+      }
+    }
+  }, [open, courseIdValue, selectedCourse, courses]);
+
+  // Effect for handling edit mode course selection
   useEffect(() => {
     if (props.isEdit && props.courseTopic) {
       if (courses.length > 0) {
@@ -215,108 +229,97 @@ const HandleCourseTopicForm: React.FC<HandleCourseTopicFormProps> = (props) => {
           <FormField
             control={form.control}
             name="courseId"
-            render={({ field }) => {
-              useEffect(() => {
-                if (open && field.value && !selectedCourse) {
-                  const course = courses.find(c => c._id === field.value);
-                  if (course) {
-                    setSelectedCourse(course);
-                  }
-                }
-              }, [open, field.value]);
-
-              return (
-                <FormItem className="flex flex-col">
-                  <FormLabel>ID Khóa học</FormLabel>
-                  <Popover open={open} onOpenChange={setOpen}>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          aria-expanded={open}
-                          className="justify-between w-full font-normal"
-                        >
-                          {field.value && selectedCourse
-                            ? `${selectedCourse.name} (${field.value})`
-                            : "Chọn khóa học"}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0 w-full min-w-[300px]" align="start">
-                      <div className="bg-popover rounded-md overflow-hidden">
-                        <div className="relative">
-                          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                          <input
-                            placeholder="Tìm kiếm khóa học..."
-                            onChange={handleSearchInputChange}
-                            className="pl-8 pr-4 py-2 h-9 w-full border-b focus:outline-none"
-                          />
-                        </div>
-                        <div
-                          className="max-h-[300px] overflow-auto p-1"
-                          onScroll={handleScroll}
-                        >
-                          {isCoursesLoading ? (
-                            <div className="py-6 text-center">
-                              <Loader type="ScaleLoader" height={20} />
-                            </div>
-                          ) : courses.length === 0 ? (
-                            <div className="py-6 text-center text-sm text-muted-foreground">
-                              Không tìm thấy khóa học nào
-                            </div>
-                          ) : (
-                            <>
-                              <div className="px-2 pb-1 pt-1 text-xs text-muted-foreground">
-                                {courses.length} kết quả
-                              </div>
-                              <div className="space-y-1">
-                                {courses.map((course) => (
-                                  <div
-                                    key={course._id}
-                                    className={cn(
-                                      "flex items-center px-2 py-1.5 text-sm rounded-md gap-2 cursor-pointer hover:bg-accent",
-                                      field.value === course._id ? "bg-accent" : ""
-                                    )}
-                                    onClick={() => {
-                                      field.onChange(course._id);
-                                      setSelectedCourse(course);
-                                      setOpen(false);
-                                    }}
-                                  >
-                                    <Check
-                                      className={cn(
-                                        "h-4 w-4",
-                                        field.value === course._id ? "opacity-100" : "opacity-0"
-                                      )}
-                                    />
-                                    <div className="flex flex-col">
-                                      <span className="font-medium">{course.name}</span>
-                                      <span className="text-xs text-muted-foreground">{course._id}</span>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-
-                              {isCoursesLoading && page > 1 && (
-                                <div className="py-2 text-center">
-                                  <Loader type="ScaleLoader" height={16} />
-                                </div>
-                              )}
-                            </>
-                          )}
-                        </div>
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>ID Khóa học</FormLabel>
+                <Popover open={open} onOpenChange={setOpen}>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        className="justify-between w-full font-normal"
+                      >
+                        {field.value && selectedCourse
+                          ? `${selectedCourse.name} (${field.value})`
+                          : "Chọn khóa học"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="p-0 w-full min-w-[300px]" align="start">
+                    <div className="bg-popover rounded-md overflow-hidden">
+                      <div className="relative">
+                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <input
+                          placeholder="Tìm kiếm khóa học..."
+                          onChange={handleSearchInputChange}
+                          className="pl-8 pr-4 py-2 h-9 w-full border-b focus:outline-none"
+                        />
                       </div>
-                    </PopoverContent>
-                  </Popover>
-                  <FormDescription>
-                    ID của khóa học mà chủ đề này thuộc về.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
+                      <div
+                        className="max-h-[300px] overflow-auto p-1"
+                        onScroll={handleScroll}
+                      >
+                        {isCoursesLoading ? (
+                          <div className="py-6 text-center">
+                            <Loader type="ScaleLoader" height={20} />
+                          </div>
+                        ) : courses.length === 0 ? (
+                          <div className="py-6 text-center text-sm text-muted-foreground">
+                            Không tìm thấy khóa học nào
+                          </div>
+                        ) : (
+                          <>
+                            <div className="px-2 pb-1 pt-1 text-xs text-muted-foreground">
+                              {courses.length} kết quả
+                            </div>
+                            <div className="space-y-1">
+                              {courses.map((course) => (
+                                <div
+                                  key={course._id}
+                                  className={cn(
+                                    "flex items-center px-2 py-1.5 text-sm rounded-md gap-2 cursor-pointer hover:bg-accent",
+                                    field.value === course._id ? "bg-accent" : ""
+                                  )}
+                                  onClick={() => {
+                                    field.onChange(course._id);
+                                    setSelectedCourse(course);
+                                    setOpen(false);
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "h-4 w-4",
+                                      field.value === course._id ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                  <div className="flex flex-col">
+                                    <span className="font-medium">{course.name}</span>
+                                    <span className="text-xs text-muted-foreground">{course._id}</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+
+                            {isCoursesLoading && page > 1 && (
+                              <div className="py-2 text-center">
+                                <Loader type="ScaleLoader" height={16} />
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+                <FormDescription>
+                  ID của khóa học mà chủ đề này thuộc về.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
           />
           <FormField
             control={form.control}
