@@ -87,7 +87,9 @@ const HandleCourseTopicForm: React.FC<HandleCourseTopicFormProps> = (props) => {
   useEffect(() => {
     if (props.isEdit && props.courseTopic) {
       const formValues: CourseTopicFormValues = {
-        courseId: props.courseTopic.courseId,
+        courseId: typeof props.courseTopic.courseId === 'object' && '_id' in props.courseTopic.courseId 
+          ? props.courseTopic.courseId._id 
+          : String(props.courseTopic.courseId),
         topic: props.courseTopic.topic,
       };
       form.reset(formValues);

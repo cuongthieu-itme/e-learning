@@ -11,10 +11,17 @@ export type GetCourseTopicsDto = {
     sort?: string;
 };
 
+export interface ICourse {
+    _id: string;
+    name: string;
+    subject: string;
+}
+
 export interface ICourseTopic {
     _id: string;
-    courseId: string;
+    courseId: string | ICourse;
     topic: string;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
+    __v?: number;
 }
