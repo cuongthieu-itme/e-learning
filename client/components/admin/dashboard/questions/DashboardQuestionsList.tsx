@@ -35,6 +35,7 @@ import { IQuestion } from '@/types/question.types';
 import { Delete, Edit, MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
+import QuestionDetailModal from './modals/QuestionDetailModal';
 
 type DashboardQuestionsListProps = {
   questionsData: { questions: IQuestion[]; totalQuestions: number };
@@ -44,7 +45,9 @@ const DashboardQuestionsList: React.FC<DashboardQuestionsListProps> = ({
   questionsData,
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [selectedQuestionId, setSelectedQuestionId] = useState<string>('');
+  const [selectedQuestion, setSelectedQuestion] = useState<IQuestion | null>(null);
   const { toast } = useToast();
 
   const questionMutation = useQuestionMutation({
@@ -92,13 +95,20 @@ const DashboardQuestionsList: React.FC<DashboardQuestionsListProps> = ({
           </TableRow>
         ) : (
           questionsData.questions.map((question, index) => (
-            <TableRow className="whitespace-nowrap" key={question._id}>
+            <TableRow 
+              className="whitespace-nowrap cursor-pointer hover:bg-gray-50" 
+              key={question._id}
+              onClick={() => {
+                setSelectedQuestion(question);
+                setIsDetailDialogOpen(true);
+              }}
+            >
               <TableCell className="max-w-[120px] truncate">{index + 1}</TableCell>
               <TableCell className="max-w-[300px] truncate">{question.question}</TableCell>
               <TableCell>
                 <Badge variant="default">Đáp án {question.correctAnswer}</Badge>
               </TableCell>
-              <TableCell>
+              <TableCell onClick={(e) => e.stopPropagation()}>
                 <DropdownMenu modal={false}>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost">
@@ -168,6 +178,12 @@ const DashboardQuestionsList: React.FC<DashboardQuestionsListProps> = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <QuestionDetailModal 
+        isOpen={isDetailDialogOpen}
+        onOpenChange={setIsDetailDialogOpen}
+        question={selectedQuestion}
+      />
     </Table>
   );
 };

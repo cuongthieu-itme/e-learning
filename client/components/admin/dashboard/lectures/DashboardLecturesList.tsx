@@ -1,4 +1,4 @@
-import { Delete, Edit, MoreHorizontal } from 'lucide-react';
+import { AlertCircle, Delete, Edit, MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
@@ -38,6 +38,7 @@ import {
 } from '@/components/ui/utilities/table';
 import { LectureMutationType, useLectureMutation } from '@/hooks/mutations/useLecture.mutation';
 import { formatDate } from '@/lib/utils';
+import LectureDetailModal from './modals/LectureDetailModal';
 import { ILecture } from '@/types/lecture.types';
 import { LectureStatus } from '@/types/shared.types';
 
@@ -49,7 +50,9 @@ const DashboardLecturesList: React.FC<DashboardLecturesListProps> = ({
   lecturesData,
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [selectedLectureId, setSelectedLectureId] = useState<string>('');
+  const [selectedLecture, setSelectedLecture] = useState<ILecture | null>(null);
   const { toast } = useToast();
 
   const lectureMutation = useLectureMutation({
@@ -126,14 +129,21 @@ const DashboardLecturesList: React.FC<DashboardLecturesListProps> = ({
           </TableRow>
         ) : (
           lecturesData.lectures.map((lecture, index) => (
-            <TableRow className="whitespace-nowrap" key={lecture._id}>
+            <TableRow 
+              className="whitespace-nowrap cursor-pointer hover:bg-slate-50" 
+              key={lecture._id}
+              onClick={() => {
+                setSelectedLecture(lecture);
+                setIsDetailDialogOpen(true);
+              }}
+            >
               <TableCell className="max-w-[120px] truncate">{index + 1}</TableCell>
               <TableCell className="max-w-[300px] truncate">{lecture.title}</TableCell>
               <TableCell className="max-w-[300px] truncate">{lecture.content}</TableCell>
               <TableCell>{`${lecture.createdById?.first_name} ${lecture.createdById?.last_name}`}</TableCell>
               <TableCell>{getLabel(lecture.status)}</TableCell>
               <TableCell>{formatDate(new Date(lecture.createdAt || ''))}</TableCell>
-              <TableCell>
+              <TableCell onClick={(e) => e.stopPropagation()}>
                 <DropdownMenu modal={false}>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost">
@@ -203,6 +213,12 @@ const DashboardLecturesList: React.FC<DashboardLecturesListProps> = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <LectureDetailModal 
+        isOpen={isDetailDialogOpen}
+        onOpenChange={setIsDetailDialogOpen}
+        lecture={selectedLecture}
+      />
     </Table>
   );
 };
