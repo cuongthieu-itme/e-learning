@@ -64,7 +64,7 @@ const HandleCourseTopicForm: React.FC<HandleCourseTopicFormProps> = (props) => {
   const form = useForm<CourseTopicFormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      courseId: '682ad3dff69fbc18179a0062',
+      courseId: '',
       topic: '',
     },
   });

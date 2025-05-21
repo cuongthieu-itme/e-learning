@@ -2,15 +2,19 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { queryClient } from '@/context/react-query-client';
 import { useToast } from '@/hooks/core/use-toast';
 import { LectureMutationType, useLectureMutation } from '@/hooks/mutations/useLecture.mutation';
+import { CourseQueryType, useCourseQuery } from '@/hooks/queries/useCourse.query';
+import { cn } from '@/lib/utils';
+import { GetCoursesDto, ICourse } from '@/types';
 import { ILecture } from '@/types/lecture.types';
 import { LectureStatus } from '@/types/shared.types';
+import debounce from 'lodash.debounce';
 
 import { Button } from '@/components/ui/buttons/button';
 import {
@@ -23,7 +27,7 @@ import {
   FormMessage,
 } from '@/components/ui/form/form';
 import { Input } from '@/components/ui/form/input';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -32,7 +36,9 @@ import {
 } from '@/components/ui/form/select';
 import { Textarea } from '@/components/ui/form/textarea';
 import Loader from '@/components/ui/info/loader';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/layout/popover';
 import { Separator } from '@/components/ui/layout/separator';
+import { Check, ChevronsUpDown, Search } from 'lucide-react';
 
 const CreateLectureSchema = z.object({
   courseId: z.string().min(1, 'Course ID is required'),
@@ -69,13 +75,18 @@ const HandleLectureForm: React.FC<HandleLectureFormProps> = (props) => {
   const { toast } = useToast();
   const router = useRouter();
 
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [page, setPage] = useState<number>(1);
+  const [selectedCourse, setSelectedCourse] = useState<ICourse | null>(null);
+  const [open, setOpen] = useState(false);
+
   const schema = props.isEdit ? UpdateLectureSchema : CreateLectureSchema;
 
   const form = useForm<LectureFormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      courseId: '682ad3dff69fbc18179a0062', // Default course ID as specified in the request
-      createdById: '6822f239745f8d66b3bb670b', // Default creator ID as specified in the request
+      courseId: '682ad3dff69fbc18179a0062',
+      createdById: '6822f239745f8d66b3bb670b',
       title: '',
       content: '',
       outline: '',
@@ -111,24 +122,90 @@ const HandleLectureForm: React.FC<HandleLectureFormProps> = (props) => {
 
   const isLoading = lectureMutation.status === 'pending';
 
+  const queryParams = useMemo<GetCoursesDto>(() => ({
+    page,
+    limit: 10,
+    search: searchTerm,
+  }), [page, searchTerm]);
+
+  const { data: coursesData, isLoading: isCoursesLoading, refetch } = useCourseQuery({
+    type: CourseQueryType.GET_ALL,
+    params: { query: queryParams },
+    enabled: open,
+  });
+
+  useEffect(() => {
+    if (open && !coursesData) {
+      refetch();
+    }
+  }, [open, coursesData, refetch]);
+
+  const courses = useMemo<ICourse[]>(() => {
+    return (coursesData?.courses || []) as ICourse[];
+  }, [coursesData]);
+
+  const totalPages = useMemo(() => coursesData?.totalPages || 1, [coursesData]);
+
+  const debouncedSearch = useCallback(
+    debounce((value: string) => {
+      if (value !== searchTerm) {
+        setSearchTerm(value);
+        setPage(1);
+
+        if (!open) {
+          setOpen(true);
+        }
+
+        refetch();
+      }
+    }, 800),
+    [searchTerm, open, refetch],
+  );
+
+  const handleSearch = (value: string) => {
+    debouncedSearch(value);
+  };
+
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value.length === 0 || value.length > 1) {
+      handleSearch(value);
+    }
+  };
+
+  useEffect(() => {
+    if (searchTerm && !open) {
+      setOpen(true);
+    }
+  }, [searchTerm, open]);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    const isScrolledToBottom = scrollTop + clientHeight >= scrollHeight - 20;
+
+    if (isScrolledToBottom && page < totalPages && !isCoursesLoading) {
+      setPage((prevPage) => prevPage + 1);
+    }
+  };
+
+  const extractCourseId = useCallback((courseId: string | ICourse): string => {
+    if (typeof courseId === 'object' && '_id' in courseId) {
+      return courseId._id;
+    }
+    return String(courseId);
+  }, []);
+
   useEffect(() => {
     if (props.isEdit && props.lecture) {
-      const formValues: LectureFormValues = {
-        courseId: typeof props.lecture.courseId === 'object' && '_id' in props.lecture.courseId 
-          ? props.lecture.courseId._id 
-          : String(props.lecture.courseId),
-        createdById: typeof props.lecture.createdById === 'object' ? 
-          props.lecture.createdById._id : props.lecture.createdById,
-        title: props.lecture.title,
-        content: props.lecture.content,
-        outline: props.lecture.outline,
-        pptxUrl: props.lecture.pptxUrl,
-        mindmapUrl: props.lecture.mindmapUrl,
-        status: props.lecture.status,
-      };
-      form.reset(formValues);
+      if (courses.length > 0) {
+        const courseId = extractCourseId(props.lecture.courseId as any);
+        const course = courses.find(c => c._id === courseId);
+        if (course) {
+          setSelectedCourse(course);
+        }
+      }
     }
-  }, [props.lecture, props.isEdit, form]);
+  }, [props.isEdit, props.lecture, courses, extractCourseId]);
 
   const handleFormSubmit = async (data: LectureFormValues) => {
     if (props.isEdit) {
@@ -156,11 +233,90 @@ const HandleLectureForm: React.FC<HandleLectureFormProps> = (props) => {
             control={form.control}
             name="courseId"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex flex-col">
                 <FormLabel>ID Khóa học</FormLabel>
-                <FormControl>
-                  <Input placeholder="Nhập ID khóa học" {...field} />
-                </FormControl>
+                <Popover open={open} onOpenChange={setOpen}>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        className="justify-between w-full font-normal"
+                      >
+                        {field.value && selectedCourse
+                          ? `${selectedCourse.name} (${field.value})`
+                          : "Chọn khóa học"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="p-0 w-full min-w-[300px]" align="start">
+                    <div className="bg-popover rounded-md overflow-hidden">
+                      <div className="relative">
+                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <input
+                          placeholder="Tìm kiếm khóa học..."
+                          onChange={handleSearchInputChange}
+                          className="pl-8 pr-4 py-2 h-9 w-full border-b focus:outline-none"
+                        />
+                      </div>
+                      <div
+                        className="max-h-[300px] overflow-auto p-1"
+                        onScroll={handleScroll}
+                      >
+                        {isCoursesLoading ? (
+                          <div className="py-6 text-center">
+                            <Loader type="ScaleLoader" height={20} />
+                          </div>
+                        ) : courses.length === 0 ? (
+                          <div className="py-6 text-center text-sm text-muted-foreground">
+                            Không tìm thấy khóa học nào
+                          </div>
+                        ) : (
+                          <>
+                            <div className="px-2 pb-1 pt-1 text-xs text-muted-foreground">
+                              {courses.length} kết quả
+                            </div>
+                            <div className="space-y-1">
+                              {courses.map((course) => (
+                                <div
+                                  key={course._id}
+                                  className={cn(
+                                    "flex items-center px-2 py-1.5 text-sm rounded-md gap-2 cursor-pointer hover:bg-accent",
+                                    field.value === course._id ? "bg-accent" : ""
+                                  )}
+                                  onClick={() => {
+                                    field.onChange(course._id);
+                                    setSelectedCourse(course);
+                                    setOpen(false);
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "h-4 w-4",
+                                      field.value === course._id ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                  <div className="flex flex-col">
+                                    <span className="font-medium">{course.name}</span>
+                                    <span className="text-xs text-muted-foreground">{course._id}</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+
+                            {isCoursesLoading && page > 1 && (
+                              <div className="py-2 text-center">
+                                <Loader type="ScaleLoader" height={16} />
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
                 <FormDescription>
                   ID của khóa học mà bài giảng này thuộc về.
                 </FormDescription>
@@ -278,8 +434,8 @@ const HandleLectureForm: React.FC<HandleLectureFormProps> = (props) => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Trạng thái</FormLabel>
-                <Select 
-                  onValueChange={field.onChange} 
+                <Select
+                  onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
                   <FormControl>
