@@ -56,7 +56,5 @@ export const getOneCourse = async (
     course: ICourse;
   }>
 > => {
-  return await getApiHandler(`course/${courseId}`, {
-    withCredentials: false,
-  });
+  return await getApiHandler(`course/${courseId}`);
 };
