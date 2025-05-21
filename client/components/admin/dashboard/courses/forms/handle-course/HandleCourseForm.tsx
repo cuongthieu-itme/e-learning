@@ -25,6 +25,7 @@ import { Input } from '@/components/ui/form/input';
 import { Textarea } from '@/components/ui/form/textarea';
 import Loader from '@/components/ui/info/loader';
 import { Separator } from '@/components/ui/layout/separator';
+import { useCurrentUser } from '@/hooks/auth/use-current-user';
 import { useCourseMutation } from '@/hooks/mutations/useCourse.mutation';
 
 const CreateCourseSchema = z.object({
@@ -55,6 +56,7 @@ type HandleCourseFormProps =
 const HandleCourseForm: React.FC<HandleCourseFormProps> = (props) => {
   const { toast } = useToast();
   const router = useRouter();
+  const { user, isLoading: authLoading } = useCurrentUser();
 
   const schema = props.isEdit ? UpdateCourseSchema : CreateCourseSchema;
 
@@ -65,7 +67,7 @@ const HandleCourseForm: React.FC<HandleCourseFormProps> = (props) => {
       description: '',
       subject: '',
       isPublished: false,
-      createdById: '6822f239745f8d66b3bb670b',
+      createdById: '',
     },
   });
 
@@ -93,7 +95,7 @@ const HandleCourseForm: React.FC<HandleCourseFormProps> = (props) => {
     },
   });
 
-  const isLoading = courseMutation.status === 'pending';
+  const isLoading = courseMutation.status === 'pending' || authLoading;
 
   useEffect(() => {
     if (props.isEdit && props.course) {
@@ -109,7 +111,23 @@ const HandleCourseForm: React.FC<HandleCourseFormProps> = (props) => {
     }
   }, [props.course, props.isEdit, form]);
 
+  // Set the user ID in the form when it becomes available
+  useEffect(() => {
+    if (user && !props.isEdit) {
+      form.setValue('createdById', user.userId);
+    }
+  }, [user, form, props.isEdit]);
+
   const handleFormSubmit = async (data: CourseFormValues) => {
+    // Verify user data is available
+    if (!user && !props.isEdit) {
+      toast({
+        title: 'Error',
+        description: 'User information is not available. Please try again.',
+        variant: 'destructive',
+      });
+      return;
+    }
     if (props.isEdit) {
       courseMutation.updateCourse(props.course._id, data);
     } else {
