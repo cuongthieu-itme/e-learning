@@ -1,16 +1,14 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-
-import { MongooseModule } from '@nestjs/mongoose';
-
 import { AuthModule } from '@/authentication/auth.module';
-import { UserModule } from '@/models/user/user.module';
-import { CourseModule } from '@/models/course/course.module';
 import { CourseTopicModule } from '@/models/course-topic/course-topic.module';
+import { CourseModule } from '@/models/course/course.module';
 import { LectureModule } from '@/models/lecture/lecture.module';
 import { QuestionModule } from '@/models/question/question.module';
-
+import { UserModule } from '@/models/user/user.module';
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { AnalyticsModule } from './common/modules/analytics/analytics.module';
 
 @Module({
   imports: [
@@ -38,6 +36,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     CourseTopicModule,
     LectureModule,
     QuestionModule,
+    AnalyticsModule
   ],
   providers: [
     {
