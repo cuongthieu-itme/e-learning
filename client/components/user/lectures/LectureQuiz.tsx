@@ -2,9 +2,12 @@
 
 import { Button } from '@/components/ui/buttons/button';
 import { getAllQuestionsRandomByLectureId } from '@/lib/actions/question.actions';
+import { IQuestion } from '@/types/question.types';
+import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle, Clock, Medal, RefreshCw, XCircle } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle, Clock, RefreshCw, XCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface Question {
   _id: string;
@@ -23,97 +26,199 @@ interface Question {
   };
 }
 
+// Types for quiz state management
+type QuizStatus = 'loading' | 'error' | 'ready' | 'in-progress' | 'submitted';
+
 interface QuizProps {
   lectureId: string;
   onClose?: () => void;
+  returnUrl?: string;
 }
 
-const LectureQuiz = ({ lectureId, onClose }: QuizProps) => {
+const LectureQuiz = ({ lectureId, onClose, returnUrl }: QuizProps) => {
+  const router = useRouter();
+  
+  // Core quiz state
+  const [quizStatus, setQuizStatus] = useState<QuizStatus>('loading');
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [quizSubmitted, setQuizSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  
+  // Timer related state
   const [startTime, setStartTime] = useState<Date | null>(null);
-  const [endTime, setEndTime] = useState<Date | null>(null);
   const [timeElapsed, setTimeElapsed] = useState<string>('00:00');
-  const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const startTimeRef = useRef<Date | null>(null);
 
-  // Fetch questions on component mount
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        const response = await getAllQuestionsRandomByLectureId(lectureId);
-        
-        if (response.statusCode === 200 && response.questions?.length > 0) {
-          setQuestions(response.questions);
-          setStartTime(new Date());
+  // Fetch questions from API
+  const fetchQuestions = useCallback(async () => {
+    try {
+      setQuizStatus('loading');
+      setErrorMessage('');
+      
+      const response = await getAllQuestionsRandomByLectureId(lectureId);
+      
+      if (response.statusCode === 200) {
+        if (response.questions?.length > 0) {
+          // Transform the API response to match our Question type
+          const transformedQuestions = response.questions.map((q: any) => ({
+            _id: q._id,
+            question: q.question,
+            optionA: q.optionA,
+            optionB: q.optionB,
+            optionC: q.optionC,
+            optionD: q.optionD,
+            correctAnswer: q.correctAnswer,
+            explanation: q.explanation || '',
+            createdAt: q.createdAt,
+            createdBy: q.createdBy || {
+              _id: q.createdById?._id || '',
+              first_name: q.createdById?.first_name || '',
+              last_name: q.createdById?.last_name || ''
+            }
+          }));
+          
+          setQuestions(transformedQuestions);
+          
+          // Reset other state to ensure clean start
+          setSelectedAnswers({});
+          setCurrentQuestionIndex(0);
+          
+          // Initialize timer and update status
+          const now = new Date();
+          setStartTime(now);
+          startTimeRef.current = now;
+          setTimeElapsed('00:00');
+          setQuizStatus('ready');
         } else {
-          setError('Không tìm thấy câu hỏi cho bài giảng này.');
+          setErrorMessage('Không tìm thấy câu hỏi nào cho bài giảng này.');
+          setQuizStatus('error');
         }
-      } catch (err) {
-        console.error('Error fetching questions:', err);
-        setError('Không thể tải câu hỏi. Vui lòng thử lại sau.');
-      } finally {
-        setIsLoading(false);
+      } else {
+        setErrorMessage(response.message || 'Đã xảy ra lỗi khi tải câu hỏi.');
+        setQuizStatus('error');
       }
-    };
-
-    fetchQuestions();
+    } catch (err) {
+      console.error('Error fetching questions:', err);
+      setErrorMessage('Không thể kết nối với máy chủ. Vui lòng thử lại sau.');
+      setQuizStatus('error');
+    }
   }, [lectureId]);
 
-  // Setup timer
+  // Load questions on component mount
   useEffect(() => {
-    if (startTime && !quizSubmitted) {
-      const interval = setInterval(() => {
+    fetchQuestions();
+    
+    // Cleanup timer on component unmount
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [fetchQuestions]);
+
+  // Setup and manage timer
+  useEffect(() => {
+    // Only run timer in active quiz states
+    if (quizStatus === 'ready' || quizStatus === 'in-progress') {
+      // Only start the timer if we have a valid start time
+      if (!startTimeRef.current) return;
+      
+      // Clear any existing interval
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      
+      // Set up new interval
+      timerRef.current = setInterval(() => {
         const now = new Date();
-        const diff = Math.floor((now.getTime() - startTime.getTime()) / 1000);
+        const diff = Math.floor((now.getTime() - startTimeRef.current!.getTime()) / 1000);
         const minutes = Math.floor(diff / 60).toString().padStart(2, '0');
         const seconds = (diff % 60).toString().padStart(2, '0');
         setTimeElapsed(`${minutes}:${seconds}`);
       }, 1000);
       
-      setTimerInterval(interval);
+      // If state just changed to ready, update to in-progress
+      // This avoids needing to wait for first answer to start quiz
+      if (quizStatus === 'ready') {
+        setQuizStatus('in-progress');
+      }
       
-      return () => clearInterval(interval);
+      // Cleanup on unmount or status change
+      return () => {
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
+      };
     }
-  }, [startTime, quizSubmitted]);
-
-  // Stop timer when quiz is submitted
-  useEffect(() => {
-    if (quizSubmitted && timerInterval) {
-      clearInterval(timerInterval);
-      setEndTime(new Date());
+    
+    // Stop timer when quiz is submitted
+    if (quizStatus === 'submitted') {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
     }
-  }, [quizSubmitted, timerInterval]);
+  }, [quizStatus]);
 
-  const handleAnswerSelect = (questionId: string, answer: string) => {
-    setSelectedAnswers({
-      ...selectedAnswers,
-      [questionId]: answer,
+  // Handle selecting an answer for a question
+  const handleAnswerSelect = useCallback((questionId: string, answer: string) => {
+    setSelectedAnswers(prev => {
+      // If same answer is selected again, do nothing (prevent toggle behavior)
+      if (prev[questionId] === answer) return prev;
+      
+      // Otherwise set the new answer
+      return {
+        ...prev,
+        [questionId]: answer,
+      };
     });
-  };
+    
+    // Ensure quiz is in progress after first answer
+    if (quizStatus === 'ready') {
+      setQuizStatus('in-progress');
+    }
+  }, [quizStatus]);
 
-  const handleNextQuestion = () => {
+  // Navigation between questions
+  const handleNextQuestion = useCallback(() => {
     if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setCurrentQuestionIndex(prev => prev + 1);
     }
-  };
+  }, [currentQuestionIndex, questions.length]);
 
-  const handlePreviousQuestion = () => {
+  const handlePreviousQuestion = useCallback(() => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
+      setCurrentQuestionIndex(prev => prev - 1);
     }
-  };
+  }, [currentQuestionIndex]);
 
-  const handleSubmitQuiz = () => {
-    setQuizSubmitted(true);
-  };
+  // Jump to a specific question
+  const jumpToQuestion = useCallback((index: number) => {
+    if (index >= 0 && index < questions.length) {
+      setCurrentQuestionIndex(index);
+    }
+  }, [questions.length]);
 
-  const calculateScore = () => {
+  // Submit the quiz
+  const handleSubmitQuiz = useCallback(() => {
+    // Only allow submission if all questions are answered
+    const allAnswered = questions.every(q => selectedAnswers[q._id] !== undefined);
+    if (!allAnswered) return;
+    
+    // Stop the timer
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    
+    setQuizStatus('submitted');
+  }, [questions, selectedAnswers]);
+
+  // Calculate the quiz score
+  const calculateScore = useCallback(() => {
     let correctCount = 0;
     
     questions.forEach(question => {
@@ -127,19 +232,46 @@ const LectureQuiz = ({ lectureId, onClose }: QuizProps) => {
       totalQuestions: questions.length,
       percentage: Math.round((correctCount / questions.length) * 100)
     };
-  };
+  }, [questions, selectedAnswers]);
 
-  const resetQuiz = () => {
+  // Reset the quiz to start over
+  const resetQuiz = useCallback(() => {
+    // Stop any existing timer first
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    
+    // Reset all quiz state
     setSelectedAnswers({});
-    setCurrentQuestionIndex(0);
-    setQuizSubmitted(false);
-    setStartTime(new Date());
-    setEndTime(null);
+    setCurrentQuestionIndex(0); // Start from first question
+    
+    // Reset timer
+    const now = new Date();
+    setStartTime(now);
+    startTimeRef.current = now;
     setTimeElapsed('00:00');
-  };
+    
+    // Reset quiz status to begin from the start
+    setQuizStatus('ready');
+    
+    // Scroll to top if needed
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+  
+  // Handle closing/returning
+  const handleClose = useCallback(() => {
+    if (onClose) {
+      onClose();
+    } else if (returnUrl) {
+      router.push(returnUrl);
+    } else {
+      router.back();
+    }
+  }, [onClose, returnUrl, router]);
 
   // Loading state
-  if (isLoading) {
+  if (quizStatus === 'loading') {
     return (
       <div className="flex min-h-[400px] flex-col items-center justify-center rounded-xl bg-white p-8 shadow-md">
         <div className="mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-indigo-600"></div>
@@ -149,12 +281,12 @@ const LectureQuiz = ({ lectureId, onClose }: QuizProps) => {
   }
 
   // Error state
-  if (error) {
+  if (quizStatus === 'error') {
     return (
       <div className="flex min-h-[300px] flex-col items-center justify-center rounded-xl bg-white p-8 shadow-md">
         <AlertCircle className="mb-4 h-12 w-12 text-red-500" />
-        <p className="mb-4 text-center text-red-500">{error}</p>
-        <Button onClick={onClose} variant="outline" className="flex items-center gap-2">
+        <p className="mb-4 text-center text-red-500">{errorMessage}</p>
+        <Button onClick={handleClose} variant="outline" className="flex items-center gap-2">
           <ArrowLeft className="h-4 w-4" />
           Quay lại
         </Button>
@@ -163,12 +295,12 @@ const LectureQuiz = ({ lectureId, onClose }: QuizProps) => {
   }
 
   // No questions state
-  if (questions.length === 0) {
+  if (questions.length === 0 && (quizStatus === 'ready' || quizStatus === 'in-progress')) {
     return (
       <div className="flex min-h-[300px] flex-col items-center justify-center rounded-xl bg-white p-8 shadow-md">
         <AlertCircle className="mb-4 h-12 w-12 text-amber-500" />
         <p className="mb-4 text-center text-gray-600">Không có câu hỏi nào cho bài giảng này.</p>
-        <Button onClick={onClose} variant="outline" className="flex items-center gap-2">
+        <Button onClick={handleClose} variant="outline" className="flex items-center gap-2">
           <ArrowLeft className="h-4 w-4" />
           Quay lại
         </Button>
@@ -177,7 +309,7 @@ const LectureQuiz = ({ lectureId, onClose }: QuizProps) => {
   }
 
   // Quiz results
-  if (quizSubmitted) {
+  if (quizStatus === 'submitted') {
     const { correctCount, totalQuestions, percentage } = calculateScore();
     const isPassed = percentage >= 60;
 
@@ -268,7 +400,7 @@ const LectureQuiz = ({ lectureId, onClose }: QuizProps) => {
                           <span className="text-green-600">{question.correctAnswer}</span>
                         </p>
                       )}
-                      {!isCorrect && question.explanation && (
+                            {!isCorrect && question.explanation && question.explanation.trim() !== '' && (
                         <p className="mt-1 text-gray-600">
                           <span className="font-medium">Giải thích:</span> {question.explanation}
                         </p>
@@ -285,7 +417,7 @@ const LectureQuiz = ({ lectureId, onClose }: QuizProps) => {
               <RefreshCw className="h-4 w-4" />
               Làm lại bài
             </Button>
-            <Button onClick={onClose} variant="outline" className="flex items-center gap-2">
+            <Button onClick={handleClose} variant="outline" className="flex items-center gap-2">
               <ArrowLeft className="h-4 w-4" />
               Quay lại
             </Button>
@@ -295,10 +427,14 @@ const LectureQuiz = ({ lectureId, onClose }: QuizProps) => {
     );
   }
 
-  // Current question
+  // Current question and quiz stats
   const currentQuestion = questions[currentQuestionIndex];
-  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
   const answeredCount = Object.keys(selectedAnswers).length;
+  const allQuestionsAnswered = answeredCount === questions.length;
+  const isLastQuestion = currentQuestionIndex === questions.length - 1;
+  
+  // Calculate progress based on current position (not completion)
+  const progress = questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
 
   return (
     <div className="relative overflow-hidden rounded-xl bg-white p-6 shadow-md md:p-8">
@@ -308,7 +444,14 @@ const LectureQuiz = ({ lectureId, onClose }: QuizProps) => {
           <span className="font-medium">
             Câu {currentQuestionIndex + 1}/{questions.length}
           </span>
-          <div className="h-2 w-32 overflow-hidden rounded-full bg-gray-200 md:w-48">
+          <div 
+            className="h-2 w-32 overflow-hidden rounded-full bg-gray-200 md:w-48"
+            role="progressbar"
+            aria-valuenow={progress}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={`Đang ở câu ${currentQuestionIndex + 1} trong tổng số ${questions.length} câu`}
+          >
             <div 
               className="h-full rounded-full bg-indigo-600 transition-all duration-300"
               style={{ width: `${progress}%` }}
@@ -316,11 +459,14 @@ const LectureQuiz = ({ lectureId, onClose }: QuizProps) => {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 text-gray-600">
-            <Clock className="h-4 w-4" />
+          <div className="flex items-center gap-2 text-gray-600" aria-live="polite" aria-atomic="true">
+            <Clock className="h-4 w-4" aria-hidden="true" />
             <span>{timeElapsed}</span>
           </div>
-          <div className="text-gray-600">
+          <div 
+            className={cn("text-gray-600", allQuestionsAnswered && "text-green-600 font-medium")}
+            aria-live="polite"
+          >
             {answeredCount}/{questions.length} câu đã trả lời
           </div>
         </div>
@@ -335,8 +481,9 @@ const LectureQuiz = ({ lectureId, onClose }: QuizProps) => {
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
           className="mb-6"
+          aria-live="polite"
         >
-          <h2 className="mb-6 text-xl font-medium">{currentQuestion.question}</h2>
+          <h2 className="mb-6 text-xl font-medium" id="current-question">{currentQuestion.question}</h2>
 
           <div className="space-y-3">
             {['A', 'B', 'C', 'D'].map((option) => {
@@ -352,10 +499,20 @@ const LectureQuiz = ({ lectureId, onClose }: QuizProps) => {
                       : 'border-gray-200 hover:border-indigo-200 hover:bg-indigo-50/50'
                   }`}
                   onClick={() => handleAnswerSelect(currentQuestion._id, option)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleAnswerSelect(currentQuestion._id, option);
+                    }
+                  }}
+                  role="radio"
+                  aria-checked={isSelected}
+                  aria-label={`Đáp án ${option}: ${optionText}`}
+                  tabIndex={0}
                 >
                   <div className="flex items-center gap-3">
                     <div
-                      className={`flex h-6 w-6 items-center justify-center rounded-full border ${
+                      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border ${
                         isSelected
                           ? 'border-indigo-600 bg-indigo-600 text-white'
                           : 'border-gray-300 bg-white'
@@ -363,7 +520,7 @@ const LectureQuiz = ({ lectureId, onClose }: QuizProps) => {
                     >
                       {option}
                     </div>
-                    <span>{optionText}</span>
+                    <span className="break-words">{optionText}</span>
                   </div>
                 </div>
               );
@@ -379,55 +536,64 @@ const LectureQuiz = ({ lectureId, onClose }: QuizProps) => {
           variant="outline"
           disabled={currentQuestionIndex === 0}
           className="flex items-center gap-2"
+          aria-label="Câu hỏi trước đó"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           Câu trước
         </Button>
 
         <div className="flex gap-3">
-          {currentQuestionIndex === questions.length - 1 ? (
+          {isLastQuestion ? (
             <Button
               onClick={handleSubmitQuiz}
-              disabled={answeredCount < questions.length}
-              className="flex items-center gap-2"
+              disabled={!allQuestionsAnswered}
+              className={cn(
+                "flex items-center gap-2",
+                allQuestionsAnswered ? "bg-green-600 hover:bg-green-700" : ""
+              )}
+              aria-label={allQuestionsAnswered ? "Nộp bài" : "Cần trả lời tất cả câu hỏi trước khi nộp bài"}
             >
-              <CheckCircle className="h-4 w-4" />
+              <CheckCircle className="h-4 w-4" aria-hidden="true" />
               Nộp bài
             </Button>
           ) : (
             <Button
               onClick={handleNextQuestion}
               className="flex items-center gap-2"
+              aria-label="Câu hỏi tiếp theo"
             >
               Câu tiếp
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Button>
           )}
         </div>
       </div>
 
       {/* Question navigation dots */}
-      <div className="mt-6 flex flex-wrap justify-center gap-2">
-        {questions.map((_, index) => {
-          const isAnswered = selectedAnswers[questions[index]._id] !== undefined;
-          const isCurrent = index === currentQuestionIndex;
-          
-          return (
-            <button
-              key={index}
-              className={`h-3 w-3 rounded-full transition-all ${
-                isCurrent
-                  ? 'bg-indigo-600 ring-2 ring-indigo-200'
-                  : isAnswered
-                  ? 'bg-indigo-400'
-                  : 'bg-gray-200'
-              }`}
-              onClick={() => setCurrentQuestionIndex(index)}
-              aria-label={`Đi đến câu ${index + 1}`}
-            />
-          );
-        })}
-      </div>
+      <nav aria-label="Điều hướng câu hỏi" className="mt-6">
+        <div className="flex flex-wrap justify-center gap-2">
+          {questions.map((question, index) => {
+            const isAnswered = selectedAnswers[question._id] !== undefined;
+            const isCurrent = index === currentQuestionIndex;
+            
+            return (
+              <button
+                key={index}
+                className={`h-3 w-3 rounded-full transition-all ${
+                  isCurrent
+                    ? 'bg-indigo-600 ring-2 ring-indigo-200'
+                    : isAnswered
+                    ? 'bg-indigo-400'
+                    : 'bg-gray-200'
+                }`}
+                onClick={() => jumpToQuestion(index)}
+                aria-label={`Câu hỏi ${index + 1}${isAnswered ? ' (đã trả lời)' : ''}${isCurrent ? ' (đang xem)' : ''}`}
+                aria-current={isCurrent ? 'step' : undefined}
+              />
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 };
