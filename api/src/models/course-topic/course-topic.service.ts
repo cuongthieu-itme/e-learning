@@ -211,4 +211,35 @@ export class CourseTopicService {
       totalTopics: courseTopics.length,
     };
   }
+
+  async getRandomTopics(limit: number = 3): Promise<ResponseObject> {
+    // Using MongoDB's aggregation pipeline with $sample to get random documents
+    const randomTopics = await this.courseTopicModel.aggregate([
+      { $sample: { size: limit } },
+      {
+        $lookup: {
+          from: 'courses',
+          localField: 'courseId',
+          foreignField: '_id',
+          as: 'course'
+        }
+      },
+      { $unwind: { path: '$course', preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          _id: 1,
+          topic: 1,
+          courseId: 1,
+          'course.name': 1,
+          'course.subject': 1
+        }
+      }
+    ]).exec();
+
+    return {
+      statusCode: HttpStatus.OK,
+      courseTopics: randomTopics,
+      totalTopics: randomTopics.length,
+    };
+  }
 }

@@ -48,6 +48,12 @@ export class CourseTopicController {
     return await this.courseTopicService.deleteOne(id);
   }
 
+  @Get('/random')
+  @UseGuards(JwtAuthGuard)
+  async getRandomCourseTopics() {
+    return await this.courseTopicService.getRandomTopics(3);
+  }
+
   @Get('/by-course/:courseId')
   @UseGuards(JwtAuthGuard)
   async getCourseTopicsByCourse(@Param('courseId') courseId: string) {
