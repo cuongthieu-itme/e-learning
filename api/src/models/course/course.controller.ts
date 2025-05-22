@@ -62,6 +62,11 @@ export class CourseController {
     return await this.courseService.getUserCourses(userId, query);
   }
 
+  @Get('/random')
+  async getRandomCourses() {
+    return await this.courseService.getRandomCourses();
+  }
+
   @Get('/:id')
   @UseGuards(JwtAuthGuard)
   async getCourse(@Param('id') id: string) {

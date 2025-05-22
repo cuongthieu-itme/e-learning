@@ -7,6 +7,7 @@ import { Course } from './schema/course.schema';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { GetCoursesDto } from './dto/get-courses.dto';
+import { ResponseObject } from '@/types';
 
 @Injectable()
 export class CourseService {
@@ -189,6 +190,52 @@ export class CourseService {
       totalCourses,
       currentPage: page,
       totalPages: Math.ceil(totalCourses / limit),
+    };
+  }
+
+  async getRandomCourses(limit: number = 3): Promise<ResponseObject> {
+    // Using MongoDB's aggregation pipeline with $sample to get random documents
+    const randomCourses = await this.courseModel.aggregate([
+      { $match: { isPublished: true } }, // Only get published courses
+      { $sample: { size: limit } },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'createdById',
+          foreignField: '_id',
+          as: 'instructor'
+        }
+      },
+      { $unwind: { path: '$instructor', preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: 'coursetopics',
+          localField: '_id',
+          foreignField: 'courseId',
+          as: 'topics'
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          description: 1,
+          subject: 1,
+          price: 1,
+          imageUrl: 1,
+          isPublished: 1,
+          createdById: 1,
+          'instructor.first_name': 1,
+          'instructor.last_name': 1,
+          topics: 1
+        }
+      }
+    ]).exec();
+
+    return {
+      statusCode: HttpStatus.OK,
+      courses: randomCourses,
+      totalCourses: randomCourses.length,
     };
   }
 }
