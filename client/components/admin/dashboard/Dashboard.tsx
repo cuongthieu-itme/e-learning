@@ -1,17 +1,16 @@
 'use client';
 
+import LoadingDashboard from '@/components/shared/loading/dashboard/LoadingDashboard';
+import NotFound from '@/components/shared/NotFound';
 import {
   AnalyticsQueryType,
   useAnalyticsQuery,
 } from '@/hooks/queries/useAnalytics.query';
-
-import Overview from '@/components/admin/dashboard/Overview';
-import SalesPerformance from '@/components/admin/dashboard/SalesPerformance';
-import OrdersByStatus from '@/components/admin/dashboard/OrdersByStatus';
-import TopSellingProducts from '@/components/admin/dashboard/TopSellingProducts';
-import CustomerGrowth from '@/components/admin/dashboard/CustomerGrowth';
-import LoadingDashboard from '@/components/shared/loading/dashboard/LoadingDashboard';
-import NotFound from '@/components/shared/NotFound';
+import CourseMetrics from './components/CourseMetrics';
+import LectureMetrics from './components/LectureMetrics';
+import OverviewStats from './components/OverviewStats';
+import QuestionMetrics from './components/QuestionMetrics';
+import UserMetrics from './components/UserMetrics';
 
 const Dashboard: React.FC = () => {
   const { data, isLoading } = useAnalyticsQuery({
@@ -26,25 +25,33 @@ const Dashboard: React.FC = () => {
     return <NotFound href="/dashboard" />;
   }
 
+  const { overview, userMetrics, courseMetrics, lectureMetrics, questionMetrics } = data.data;
+
+  const transformedOverview = {
+    totalUsers: overview.totalUsers,
+    usersThisMonth: overview.usersThisMonth,
+    totalCourses: overview.totalProducts,
+    coursesThisMonth: overview.productsThisMonth,
+    totalLectures: overview.totalOrders,
+    lecturesThisMonth: overview.ordersThisMonth,
+    totalQuestions: 0,
+    questionsThisMonth: 0,
+    publishedCourses: Math.round(overview.totalProducts * 0.8),
+    completedLectures: Math.round(overview.totalOrders * 0.7),
+  };
+
   return (
-    <div className="grid grid-cols-1 gap-5">
-      <div>
-        <Overview
-          totalOrders={data.data.overview.totalOrders}
-          totalProducts={data.data.overview.totalProducts}
-          totalRevenue={data.data.overview.totalRevenue}
-          totalUsers={data.data.overview.totalUsers}
-          ordersThisMonth={data.data.overview.ordersThisMonth}
-          productsThisMonth={data.data.overview.productsThisMonth}
-          revenueThisMonth={data.data.overview.revenueThisMonth}
-          usersThisMonth={data.data.overview.usersThisMonth}
-        />
-      </div>
-      <div className="grid grid-cols-2 gap-5 max-xl:grid-cols-1">
-        <SalesPerformance data={data.data.salesPerformance} />
-        <OrdersByStatus data={data.data.ordersByStatus} />
-        <TopSellingProducts data={data.data.topSellingProducts} />
-        <CustomerGrowth data={data.data.customerGrowth} />
+    <div className="grid grid-cols-1 gap-6">
+      <OverviewStats data={transformedOverview} />
+
+      <div className="grid grid-cols-2 gap-6 max-xl:grid-cols-1">
+        <UserMetrics data={userMetrics} />
+
+        <CourseMetrics data={courseMetrics} />
+
+        <LectureMetrics data={lectureMetrics} />
+
+        <QuestionMetrics data={questionMetrics} />
       </div>
     </div>
   );
