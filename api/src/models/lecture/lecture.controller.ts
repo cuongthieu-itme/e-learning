@@ -10,20 +10,20 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { LectureService } from './lecture.service';
 import { JwtAuthGuard } from '@/authentication/guards/jwt-auth.guard';
 import { RolesGuard } from '@/authentication/guards/role-auth.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { Role } from '@/types';
 import { User } from '@/common/decorators/user.decorator';
+import { Role } from '@/types';
+import { LectureService } from './lecture.service';
 
 import { CreateLectureDto } from './dto/create-lecture.dto';
-import { UpdateLectureDto } from './dto/update-lecture.dto';
 import { GetLecturesDto } from './dto/get-lectures.dto';
+import { UpdateLectureDto } from './dto/update-lecture.dto';
 
 @Controller('/lecture')
 export class LectureController {
-  constructor(private readonly lectureService: LectureService) {}
+  constructor(private readonly lectureService: LectureService) { }
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -73,6 +73,14 @@ export class LectureController {
     @Query() query: GetLecturesDto,
   ) {
     return await this.lectureService.getCourseLectures(courseId, query);
+  }
+
+  @Get('/public/course/:courseId')
+  async getPublicCourseLectures(
+    @Param('courseId') courseId: string,
+    @Query() query: GetLecturesDto,
+  ) {
+    return await this.lectureService.getPublicCourseLectures(courseId, query);
   }
 
   @Patch('/:id/publish')
