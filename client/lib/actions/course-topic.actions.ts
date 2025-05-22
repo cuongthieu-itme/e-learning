@@ -61,3 +61,14 @@ export const getOneCourseTopic = async (
 > => {
     return await getApiHandler(`course-topic/${courseTopicId}`);
 };
+
+export const getRandomCourseTopics = async (
+    count: number = 3
+): Promise<
+    ServerResponse<{
+        courseTopics: ICourseTopic[];
+        totalTopics: number;
+    }>
+> => {
+    return await getApiHandler(`course-topic/random`);
+};

@@ -49,7 +49,6 @@ export class CourseTopicController {
   }
 
   @Get('/random')
-  @UseGuards(JwtAuthGuard)
   async getRandomCourseTopics() {
     return await this.courseTopicService.getRandomTopics(3);
   }
