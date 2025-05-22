@@ -58,3 +58,12 @@ export const getOneCourse = async (
 > => {
   return await getApiHandler(`course/${courseId}`);
 };
+
+export const getRandomCourses = async (): Promise<
+  ServerResponse<{
+    courses: ICourse[];
+    totalCourses: number;
+  }>
+> => {
+  return await getApiHandler('course/random');
+};

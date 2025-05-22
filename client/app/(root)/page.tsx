@@ -1,11 +1,12 @@
 import HomeSlider from '@/components/HomeSlider';
-import RandomTopics from '@/components/RandomTopics';
+import RandomCourses from '@/components/RandomCourses';
 
 const HomePage = () => {
   return (
     <article className="relative">
       <HomeSlider />
-      <RandomTopics />
+      {/* <RandomTopics /> */}
+      <RandomCourses />
     </article>
   );
 };
