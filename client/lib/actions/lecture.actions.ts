@@ -13,7 +13,7 @@ export const createLecture = async (
   data: FormData | any,
 ): Promise<ServerResponse> => {
   // Handle both FormData and JSON payload
-  const headers = data instanceof FormData 
+  const headers = data instanceof FormData
     ? { 'Content-Type': 'multipart/form-data' }
     : { 'Content-Type': 'application/json' };
 
@@ -27,7 +27,7 @@ export const updateLecture = async (
   lectureId: string,
 ): Promise<ServerResponse> => {
   // Handle both FormData and JSON payload
-  const headers = data instanceof FormData 
+  const headers = data instanceof FormData
     ? { 'Content-Type': 'multipart/form-data' }
     : { 'Content-Type': 'application/json' };
 
@@ -67,4 +67,19 @@ export const getOneLecture = async (
   }>
 > => {
   return await getApiHandler(`lecture/${lectureId}`);
+};
+
+export const getCourseLectures = async (
+  courseId: string,
+  queryString?: string,
+): Promise<
+  ServerResponse<{
+    lectures: ILecture[];
+    totalLectures: number;
+    currentPage: number;
+    totalPages: number;
+  }>
+> => {
+  const endpoint = `lecture/public/course/${courseId}${queryString ? `?${queryString}` : ''}`;
+  return await getApiHandler(endpoint);
 };
