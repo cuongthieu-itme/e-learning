@@ -36,28 +36,28 @@ const UserMetrics: React.FC<UserMetricsProps> = ({ data }) => {
   return (
     <Card className="col-span-1">
       <CardHeader>
-        <CardTitle>User Metrics</CardTitle>
+        <CardTitle>Thống kê người dùng</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div>
-          <h3 className="text-sm font-medium mb-2">User Growth Trend</h3>
+          <h3 className="text-sm font-medium mb-2">Xu hướng tăng trưởng người dùng</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={formattedUserGrowth} margin={{ top: 5, right: 20, bottom: 20, left: 0 }}>
                 <XAxis dataKey="date" />
                 <YAxis />
                 <Tooltip
-                  formatter={(value) => [`${value} users`, 'Count']}
-                  labelFormatter={(label) => `Period: ${label}`}
+                  formatter={(value) => [`${value} người dùng`, 'Số lượng']}
+                  labelFormatter={(label) => `Giai đoạn: ${label}`}
                 />
-                <Bar dataKey="count" fill="#3b82f6" name="Users" />
+                <Bar dataKey="count" fill="#3b82f6" name="Người dùng" />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         <div>
-          <h3 className="text-sm font-medium mb-2">Role Distribution</h3>
+          <h3 className="text-sm font-medium mb-2">Phân bố vai trò</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -76,7 +76,7 @@ const UserMetrics: React.FC<UserMetricsProps> = ({ data }) => {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value, name, props) => [`${value} users`, props.payload.role]} />
+                <Tooltip formatter={(value, name, props) => [`${value} người dùng`, props.payload.role]} />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>

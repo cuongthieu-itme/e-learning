@@ -44,11 +44,11 @@ const LectureMetrics: React.FC<LectureMetricsProps> = ({ data }) => {
   return (
     <Card className="col-span-1">
       <CardHeader>
-        <CardTitle>Lecture Metrics</CardTitle>
+        <CardTitle>Thống kê bài giảng</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div>
-          <h3 className="text-sm font-medium mb-2">Lectures Per Course</h3>
+          <h3 className="text-sm font-medium mb-2">Số bài giảng mỗi khóa</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
@@ -71,8 +71,8 @@ const LectureMetrics: React.FC<LectureMetricsProps> = ({ data }) => {
                   }}
                 />
                 <Tooltip
-                  formatter={(value) => [`${value} lectures`, 'Count']}
-                  labelFormatter={(label) => `Course: ${label}`}
+                  formatter={(value) => [`${value} bài giảng`, 'Số lượng']}
+                  labelFormatter={(label) => `Khóa học: ${label}`}
                 />
                 <Bar dataKey="lectureCount" fill="#8b5cf6" />
               </BarChart>
@@ -82,7 +82,7 @@ const LectureMetrics: React.FC<LectureMetricsProps> = ({ data }) => {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <h3 className="text-sm font-medium mb-2">Status Distribution</h3>
+            <h3 className="text-sm font-medium mb-2">Phân bố trạng thái</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -101,7 +101,7 @@ const LectureMetrics: React.FC<LectureMetricsProps> = ({ data }) => {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value, name, props) => [`${value} lectures`, props.payload.status]} />
+                  <Tooltip formatter={(value, name, props) => [`${value} bài giảng`, props.payload.status]} />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
@@ -109,7 +109,7 @@ const LectureMetrics: React.FC<LectureMetricsProps> = ({ data }) => {
           </div>
 
           <div>
-            <h3 className="text-sm font-medium mb-2">Content Types</h3>
+            <h3 className="text-sm font-medium mb-2">Loại nội dung</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -127,7 +127,7 @@ const LectureMetrics: React.FC<LectureMetricsProps> = ({ data }) => {
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value, name, props) => [`${value} lectures`, props.payload.type]} />
+                  <Tooltip formatter={(value, name, props) => [`${value} bài giảng`, props.payload.type]} />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>

@@ -34,13 +34,13 @@ const QuestionMetrics: React.FC<QuestionMetricsProps> = ({ data }) => {
   return (
     <Card className="col-span-1">
       <CardHeader>
-        <CardTitle>Question Metrics</CardTitle>
+        <CardTitle>Thống kê câu hỏi</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div>
-          <h3 className="text-sm font-medium mb-2">Questions Per Lecture</h3>
+          <h3 className="text-sm font-medium mb-2">Số câu hỏi mỗi bài giảng</h3>
           {data.questionsPerLecture.length === 0 ? (
-            <div className="p-4 text-center text-gray-500">No questions data available</div>
+            <div className="p-4 text-center text-gray-500">Không có dữ liệu câu hỏi</div>
           ) : (
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -64,8 +64,8 @@ const QuestionMetrics: React.FC<QuestionMetricsProps> = ({ data }) => {
                     }}
                   />
                   <Tooltip
-                    formatter={(value) => [`${value} questions`, 'Count']}
-                    labelFormatter={(label) => `Lecture: ${label}`}
+                    formatter={(value) => [`${value} câu hỏi`, 'Số lượng']}
+                    labelFormatter={(label) => `Bài giảng: ${label}`}
                   />
                   <Bar dataKey="questionCount" fill="#f59e0b" />
                 </BarChart>
@@ -75,9 +75,9 @@ const QuestionMetrics: React.FC<QuestionMetricsProps> = ({ data }) => {
         </div>
 
         <div>
-          <h3 className="text-sm font-medium mb-2">Correct Answer Distribution</h3>
+          <h3 className="text-sm font-medium mb-2">Phân bố đáp án đúng</h3>
           {data.correctAnswerDistribution.length === 0 ? (
-            <div className="p-4 text-center text-gray-500">No answer distribution data available</div>
+            <div className="p-4 text-center text-gray-500">Không có dữ liệu phân bố đáp án</div>
           ) : (
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -100,7 +100,7 @@ const QuestionMetrics: React.FC<QuestionMetricsProps> = ({ data }) => {
                       />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value, name, props) => [`${value} questions`, `Answer ${props.payload.answer}`]} />
+                  <Tooltip formatter={(value, name, props) => [`${value} câu hỏi`, `Đáp án ${props.payload.answer}`]} />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
@@ -110,7 +110,7 @@ const QuestionMetrics: React.FC<QuestionMetricsProps> = ({ data }) => {
 
         <div className="p-4 bg-amber-50 rounded-lg">
           <p className="text-sm text-amber-800">
-            Total Questions: <span className="font-bold">{getTotalQuestions(data.correctAnswerDistribution)}</span>
+            Tổng số câu hỏi: <span className="font-bold">{getTotalQuestions(data.correctAnswerDistribution)}</span>
           </p>
         </div>
       </CardContent>

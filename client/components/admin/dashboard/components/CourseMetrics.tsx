@@ -44,11 +44,11 @@ const CourseMetrics: React.FC<CourseMetricsProps> = ({ data }) => {
   return (
     <Card className="col-span-1">
       <CardHeader>
-        <CardTitle>Course Metrics</CardTitle>
+        <CardTitle>Thống kê khóa học</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div>
-          <h3 className="text-sm font-medium mb-2">Courses by Subject</h3>
+          <h3 className="text-sm font-medium mb-2">Khóa học theo chủ đề</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
@@ -58,7 +58,7 @@ const CourseMetrics: React.FC<CourseMetricsProps> = ({ data }) => {
               >
                 <XAxis type="number" />
                 <YAxis dataKey="subject" type="category" width={80} />
-                <Tooltip formatter={(value) => [`${value} courses`, 'Count']} />
+                <Tooltip formatter={(value) => [`${value} khóa học`, 'Số lượng']} />
                 <Bar dataKey="count" fill="#10b981" />
               </BarChart>
             </ResponsiveContainer>
@@ -66,24 +66,24 @@ const CourseMetrics: React.FC<CourseMetricsProps> = ({ data }) => {
         </div>
 
         <div>
-          <h3 className="text-sm font-medium mb-2">Course Creation Trend</h3>
+          <h3 className="text-sm font-medium mb-2">Xu hướng tạo khóa học</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={formattedCreationTrend} margin={{ top: 5, right: 20, bottom: 20, left: 0 }}>
                 <XAxis dataKey="date" />
                 <YAxis />
                 <Tooltip
-                  formatter={(value) => [`${value} courses`, 'Count']}
-                  labelFormatter={(label) => `Period: ${label}`}
+                  formatter={(value) => [`${value} khóa học`, 'Số lượng']}
+                  labelFormatter={(label) => `Giai đoạn: ${label}`}
                 />
-                <Bar dataKey="count" fill="#8b5cf6" name="Courses" />
+                <Bar dataKey="count" fill="#8b5cf6" name="Khóa học" />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         <div>
-          <h3 className="text-sm font-medium mb-2">Publish Status Distribution</h3>
+          <h3 className="text-sm font-medium mb-2">Phân bố trạng thái xuất bản</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -102,7 +102,7 @@ const CourseMetrics: React.FC<CourseMetricsProps> = ({ data }) => {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value, name, props) => [`${value} courses`, props.payload.status]} />
+                <Tooltip formatter={(value, name, props) => [`${value} khóa học`, props.payload.status]} />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
@@ -111,15 +111,15 @@ const CourseMetrics: React.FC<CourseMetricsProps> = ({ data }) => {
 
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-slate-50 p-4 rounded-lg">
-            <h4 className="text-xs font-medium text-slate-500">Avg Topics Per Course</h4>
+            <h4 className="text-xs font-medium text-slate-500">Số chủ đề trung bình mỗi khóa</h4>
             <p className="text-2xl font-bold mt-1">{data.courseTopicsDistribution.averageTopicsPerCourse}</p>
           </div>
           <div className="bg-slate-50 p-4 rounded-lg">
-            <h4 className="text-xs font-medium text-slate-500">Max Topics</h4>
+            <h4 className="text-xs font-medium text-slate-500">Số chủ đề tối đa</h4>
             <p className="text-2xl font-bold mt-1">{data.courseTopicsDistribution.maxTopicsInCourse}</p>
           </div>
           <div className="bg-slate-50 p-4 rounded-lg">
-            <h4 className="text-xs font-medium text-slate-500">Min Topics</h4>
+            <h4 className="text-xs font-medium text-slate-500">Số chủ đề tối thiểu</h4>
             <p className="text-2xl font-bold mt-1">{data.courseTopicsDistribution.minTopicsInCourse}</p>
           </div>
         </div>

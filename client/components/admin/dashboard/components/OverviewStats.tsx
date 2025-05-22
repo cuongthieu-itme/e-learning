@@ -23,42 +23,42 @@ interface OverviewStatsProps {
 const OverviewStats: React.FC<OverviewStatsProps> = ({ data }) => {
   const statCards = [
     {
-      title: 'Total Users',
+      title: 'Tổng số người dùng',
       value: data.totalUsers,
       thisMonth: data.usersThisMonth,
       icon: <Users className="h-5 w-5 text-blue-600" />,
       color: 'bg-blue-50',
     },
     {
-      title: 'Total Courses',
+      title: 'Tổng số khóa học',
       value: data.totalCourses,
       thisMonth: data.coursesThisMonth,
       icon: <Book className="h-5 w-5 text-emerald-600" />,
       color: 'bg-emerald-50',
     },
     {
-      title: 'Total Lectures',
+      title: 'Tổng số bài giảng',
       value: data.totalLectures,
       thisMonth: data.lecturesThisMonth,
       icon: <FileText className="h-5 w-5 text-purple-600" />,
       color: 'bg-purple-50',
     },
     {
-      title: 'Total Questions',
+      title: 'Tổng số câu hỏi',
       value: data.totalQuestions,
       thisMonth: data.questionsThisMonth,
       icon: <FileText className="h-5 w-5 text-amber-600" />,
       color: 'bg-amber-50',
     },
     {
-      title: 'Published Courses',
+      title: 'Khóa học đã xuất bản',
       value: data.publishedCourses,
       percent: data.totalCourses > 0 ? Math.round((data.publishedCourses / data.totalCourses) * 100) : 0,
       icon: <BookOpen className="h-5 w-5 text-green-600" />,
       color: 'bg-green-50',
     },
     {
-      title: 'Completed Lectures',
+      title: 'Bài giảng đã hoàn thành',
       value: data.completedLectures,
       percent: data.totalLectures > 0 ? Math.round((data.completedLectures / data.totalLectures) * 100) : 0,
       icon: <CheckCircle className="h-5 w-5 text-indigo-600" />,
@@ -79,12 +79,12 @@ const OverviewStats: React.FC<OverviewStatsProps> = ({ data }) => {
             {stat.thisMonth !== undefined && (
               <p className="text-xs text-muted-foreground flex items-center">
                 <ArrowUp className="mr-1 h-3 w-3 text-green-500" />
-                <span>{stat.thisMonth} new this month</span>
+                <span>{stat.thisMonth} mới trong tháng này</span>
               </p>
             )}
             {stat.percent !== undefined && (
               <p className="text-xs text-muted-foreground">
-                {stat.percent}% of total
+                {stat.percent}% trên tổng số
               </p>
             )}
           </CardContent>
