@@ -84,6 +84,14 @@ export class QuestionController {
     return await this.questionService.getQuestionsForQuiz(lectureId, limit);
   }
 
+  @Get('/random-all/:lectureId')
+  @UseGuards(JwtAuthGuard)
+  async getAllQuestionsRandomByLectureId(
+    @Param('lectureId') lectureId: string,
+  ) {
+    return await this.questionService.getAllQuestionsRandomByLectureId(lectureId);
+  }
+
   @Post('/check-answers')
   @UseGuards(JwtAuthGuard)
   async checkQuizAnswers(

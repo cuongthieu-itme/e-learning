@@ -339,4 +339,70 @@ export class QuestionService {
       percentage: Math.round((correctCount / results.length) * 100)
     };
   }
+
+  /**
+   * Get all questions for a specific lecture with random sorting
+   * This method retrieves ALL questions without pagination and sorts them randomly
+   * 
+   * @param lectureId - The ID of the lecture to get questions for
+   * @returns Promise with question data including all fields
+   */
+  async getAllQuestionsRandomByLectureId(lectureId: string): Promise<ResponseObject> {
+    if (!lectureId) {
+      throw new NotFoundException('Lecture ID is required');
+    }
+
+    const conditions = { 
+      lectureId: new Types.ObjectId(lectureId)
+    };
+
+    // Get total count of questions for this lecture
+    const totalQuestions = await this.questionModel.countDocuments(conditions);
+    
+    if (totalQuestions === 0) {
+      return {
+        statusCode: HttpStatus.OK,
+        questions: [],
+        totalQuestions: 0,
+        message: 'No questions found for this lecture'
+      };
+    }
+
+    // Get all questions with random sorting
+    const questions = await this.questionModel
+      .aggregate([
+        { $match: conditions },
+        { $sample: { size: totalQuestions } }, // Use total count to get all questions
+        { $lookup: {
+          from: 'users',
+          localField: 'createdById',
+          foreignField: '_id',
+          as: 'createdBy'
+        }},
+        { $unwind: { path: '$createdBy', preserveNullAndEmptyArrays: true } },
+        { $project: {
+          question: 1,
+          optionA: 1,
+          optionB: 1,
+          optionC: 1,
+          optionD: 1,
+          correctAnswer: 1,
+          explanation: 1,
+          lectureId: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          'createdBy._id': 1,
+          'createdBy.first_name': 1,
+          'createdBy.last_name': 1
+        }}
+      ])
+      .exec();
+
+    return {
+      statusCode: HttpStatus.OK,
+      questions,
+      totalQuestions,
+      message: 'Questions retrieved successfully'
+    };
+  }
 }

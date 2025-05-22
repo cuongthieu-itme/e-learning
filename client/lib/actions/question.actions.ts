@@ -68,3 +68,19 @@ export const getOneQuestion = async (
 > => {
   return await getApiHandler(`question/${questionId}`);
 };
+
+/**
+ * Get all questions for a lecture randomly sorted without pagination
+ * @param lectureId Lecture ID to fetch questions for
+ * @returns Promise with randomly sorted questions for the lecture
+ */
+export const getAllQuestionsRandomByLectureId = async (
+  lectureId: string,
+): Promise<
+  ServerResponse<{
+    questions: IQuestion[];
+    totalQuestions: number;
+  }>
+> => {
+  return await getApiHandler(`question/random-all/${lectureId}`);
+};

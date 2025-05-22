@@ -237,7 +237,7 @@ const CourseLecturesList = ({ courseId }: CourseLecturesListProps) => {
                     href={`/lectures/${lecture._id}`}
                     className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
                   >
-                    Xem chi tiết
+                    Làm bài
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </div>
