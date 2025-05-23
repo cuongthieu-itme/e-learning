@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
 
-import { getValidUserRole } from './lib/utils';
+import { getValidUserRole } from './lib/utils/auth.utils';
 
 type UserRole = 'admin' | 'user' | null;
 

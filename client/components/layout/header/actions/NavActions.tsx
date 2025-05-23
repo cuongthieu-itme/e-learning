@@ -4,7 +4,6 @@ import React from 'react';
 import Link from 'next/link';
 import { LogOut, User } from 'lucide-react';
 
-import { getRoleSpecificData } from '@/lib/utils';
 import { useAuthStore } from '@/store/auth.store';
 
 import Logo from '../Logo';
@@ -12,6 +11,7 @@ import { NavSearch } from './search/NavSearch';
 
 import { Button } from '@/components/ui/buttons/button';
 import { TooltipWrapper } from '@/components/ui/info/tooltip-wrapper';
+import { getRoleSpecificData } from '@/lib/utils/auth.utils';
 
 const NavActions: React.FC<{
   showSearch?: boolean;

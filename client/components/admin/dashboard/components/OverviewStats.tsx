@@ -75,16 +75,16 @@ const OverviewStats: React.FC<OverviewStatsProps> = ({ data }) => {
             <div className={`rounded-full p-2 ${stat.color}`}>{stat.icon}</div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stat.value}</div>
+            <div className="text-2xl font-bold">{String(stat.value)}</div>
             {stat.thisMonth !== undefined && (
               <p className="text-xs text-muted-foreground flex items-center">
                 <ArrowUp className="mr-1 h-3 w-3 text-green-500" />
-                <span>{stat.thisMonth} mới trong tháng này</span>
+                <span>{String(stat.thisMonth)} mới trong tháng này</span>
               </p>
             )}
             {stat.percent !== undefined && (
               <p className="text-xs text-muted-foreground">
-                {stat.percent}% trên tổng số
+                {String(stat.percent)}% trên tổng số
               </p>
             )}
           </CardContent>
