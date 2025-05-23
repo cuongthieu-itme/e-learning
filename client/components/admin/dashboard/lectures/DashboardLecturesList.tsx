@@ -177,7 +177,7 @@ const DashboardLecturesList: React.FC<DashboardLecturesListProps> = ({
       </TableBody>
       <TableFooter>
         <TableRow>
-          <TableCell colSpan={3}>Tổng</TableCell>
+          <TableCell colSpan={6}>Tổng</TableCell>
           <TableCell className="text-right">
             {lecturesData.totalLectures}
           </TableCell>
