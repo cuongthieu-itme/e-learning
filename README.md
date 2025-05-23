@@ -1,13 +1,13 @@
-# Ecommerce
+# E-Learning Platform
 
-Welcome to the Ecommerce Project, a modern and fully functional eCommerce platform built using Next.js, TypeScript, and Tailwind CSS. This platform allows users to browse products, manage their shopping cart, and securely complete purchases. It also includes an Admin Dashboard for managing products, orders, and user data.
+Welcome to the E-Learning Platform, a modern and fully functional educational platform built using Next.js, TypeScript, and Tailwind CSS. This platform allows users to browse courses, explore topics, and engage with educational content. It also includes an Admin Dashboard for managing courses, topics, lectures, and user data.
 
 ## Features
 
 - **User Authentication**: User registration, login, and authentication mechanisms to ensure secure access.
-- **Product Management**: Add, edit, delete, and view products with comprehensive details.
-- **Shopping Cart**: Add products to the cart, update quantities, and proceed to checkout.
-- **Admin Dashboard**: Manage products, orders, coupons and users through an intuitive administrative interface.
+- **Course Management**: Browse, search, and filter courses with comprehensive details.
+- **Course Topics**: Explore various topics within courses, including randomly featured topics.
+- **Admin Dashboard**: Manage courses, topics, lectures, and users through an intuitive administrative interface.
 
 ## Technologies Used
 
@@ -20,13 +20,14 @@ Welcome to the Ecommerce Project, a modern and fully functional eCommerce platfo
 - **Backend**
   - **NestJS for building efficient and scalable server-side applications**
   - **MongoDB for database management**
+  - **CSRF Protection** for enhanced security
 
 ## Installation
 
 1. **Clone the Repository:**
 
 ```bash
-git clone https://github.com/Dzenoo/Ecommerce.git
+git clone https://github.com/yourusername/e-learning.git
 ```
 
 2. **Frontend Setup:**
@@ -77,11 +78,22 @@ pnpm start:api
 
 ## Usage
 
-Create account and start exploring application.
+Create an account and start exploring the platform's educational content:
+
+1. Browse all available courses with advanced filtering and search options
+2. Explore course topics and related materials
+3. View featured random topics on the homepage
+4. Access detailed course information
 
 ## Admin Access
 
 Users cannot sign in as an admin by default. To gain admin privileges, you must use your MongoDB account and manually update the user's role in MongoDB Atlas by changing the role property to "admin".
+
+The admin dashboard provides access to:
+- Course management (create, edit, delete)
+- Topic management
+- Lecture management
+- User administration
 
 ## Contributing
 
