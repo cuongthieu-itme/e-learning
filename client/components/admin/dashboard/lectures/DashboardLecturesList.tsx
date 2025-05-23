@@ -63,7 +63,7 @@ const DashboardLecturesList: React.FC<DashboardLecturesListProps> = ({
       setSelectedLectureId('');
 
       toast({
-        title: `Success ${response.statusCode} 🚀`,
+        title: `Thành công 🚀`,
         description: response.message,
       });
     },

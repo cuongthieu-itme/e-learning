@@ -58,7 +58,7 @@ const DashboardQuestionsList: React.FC<DashboardQuestionsListProps> = ({
       setSelectedQuestionId('');
 
       toast({
-        title: `Success ${response.statusCode} 🚀`,
+        title: `Thành công 🚀`,
         description: response.message,
       });
     },
@@ -95,8 +95,8 @@ const DashboardQuestionsList: React.FC<DashboardQuestionsListProps> = ({
           </TableRow>
         ) : (
           questionsData.questions.map((question, index) => (
-            <TableRow 
-              className="whitespace-nowrap cursor-pointer hover:bg-gray-50" 
+            <TableRow
+              className="whitespace-nowrap cursor-pointer hover:bg-gray-50"
               key={question._id}
               onClick={() => {
                 setSelectedQuestion(question);
@@ -179,7 +179,7 @@ const DashboardQuestionsList: React.FC<DashboardQuestionsListProps> = ({
         </DialogContent>
       </Dialog>
 
-      <QuestionDetailModal 
+      <QuestionDetailModal
         isOpen={isDetailDialogOpen}
         onOpenChange={setIsDetailDialogOpen}
         question={selectedQuestion}
