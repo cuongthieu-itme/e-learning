@@ -1,19 +1,17 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
-
-import {
-  UserQueryType,
-  useUserQuery,
-} from '@/hooks/queries/useUser.query';
-
 import DashboardUsersList from '@/components/admin/dashboard/users/DashboardUsersList';
 import SearchDashboardUsers from '@/components/admin/dashboard/users/filters/SearchDashboardUsers';
 import LoadingDashboardUsers from '@/components/shared/loading/dashboard/LoadingDashboardUsers';
 import NotFound from '@/components/shared/NotFound';
 import QueryParamController from '@/components/shared/QueryParamController';
 import PaginateList from '@/components/ui/pagination/paginate-list';
+import {
+  UserQueryType,
+  useUserQuery,
+} from '@/hooks/queries/useUser.query';
+import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
 const DashboardUsers: React.FC = () => {
   return (

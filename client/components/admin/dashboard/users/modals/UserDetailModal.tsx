@@ -1,7 +1,3 @@
-import { Edit, User } from 'lucide-react';
-import Link from 'next/link';
-import React from 'react';
-
 import { Button } from '@/components/ui/buttons/button';
 import { Badge } from '@/components/ui/info/badge';
 import {
@@ -14,6 +10,9 @@ import {
 } from '@/components/ui/layout/dialog';
 import { Role } from '@/types/shared.types';
 import { IUser } from '@/types/user.types';
+import { Edit, User } from 'lucide-react';
+import Link from 'next/link';
+import React from 'react';
 
 type UserDetailModalProps = {
   isOpen: boolean;
@@ -24,11 +23,11 @@ type UserDetailModalProps = {
 const getRoleBadge = (role: Role) => {
   switch (role) {
     case 'admin':
-      return <Badge className="bg-purple-500">Quản trị viên</Badge>;
+      return <Badge variant="destructive">Quản trị viên</Badge>;
     case 'teacher':
-      return <Badge className="bg-blue-500">Giáo viên</Badge>;
+      return <Badge variant="default">Giáo viên</Badge>;
     case 'user':
-      return <Badge className="bg-green-500">Học sinh</Badge>;
+      return <Badge variant="secondary">Học sinh</Badge>;
     default:
       return <Badge>{role}</Badge>;
   }
@@ -52,7 +51,6 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
         </DialogHeader>
 
         <div className="py-4 overflow-y-auto max-h-[80vh]">
-          {/* Profile Section */}
           <div className="bg-slate-50 rounded-lg p-5 my-4 shadow-sm border border-slate-100">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-lg font-medium text-slate-700 flex items-center">
@@ -84,7 +82,6 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
             </div>
           </div>
 
-          {/* Addresses Section */}
           {user.addresses && user.addresses.length > 0 && (
             <div className="my-6">
               <h3 className="text-base font-medium text-slate-700 mb-4 flex items-center">
@@ -109,7 +106,6 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
             </div>
           )}
 
-          {/* Metadata Section */}
           <div className="mt-6 pt-4 border-t">
             <h3 className="text-base font-medium text-slate-700 mb-4 flex items-center">
               <span className="inline-block w-1 h-5 bg-slate-400 rounded-full mr-2"></span>
@@ -117,7 +113,6 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 p-4 bg-slate-50 rounded-lg">
-              {/* Creation Date */}
               {user.createdAt && (
                 <div>
                   <h4 className="text-xs uppercase tracking-wider text-slate-500 mb-1">Ngày tạo</h4>
@@ -131,7 +126,6 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
                 </div>
               )}
 
-              {/* Last Update */}
               {user.updatedAt && (
                 <div>
                   <h4 className="text-xs uppercase tracking-wider text-slate-500 mb-1">Cập nhật cuối</h4>
