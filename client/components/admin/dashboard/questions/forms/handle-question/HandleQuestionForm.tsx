@@ -1,21 +1,5 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import debounce from 'lodash.debounce';
-import { Check, ChevronsUpDown, Search } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-
-import { queryClient } from '@/context/react-query-client';
-import { useCurrentUser } from '@/hooks/auth/use-current-user';
-import { useToast } from '@/hooks/core/use-toast';
-import { QuestionMutationType, useQuestionMutation } from '@/hooks/mutations/useQuestion.mutation';
-import { LectureQueryType, useLectureQuery } from '@/hooks/queries/useLecture.query';
-import { cn } from '@/lib/utils';
-import { IQuestion } from '@/types/question.types';
-
 import { Button } from '@/components/ui/buttons/button';
 import {
   Form,
@@ -38,7 +22,21 @@ import { Textarea } from '@/components/ui/form/textarea';
 import Loader from '@/components/ui/info/loader';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/layout/popover';
 import { Separator } from '@/components/ui/layout/separator';
+import { queryClient } from '@/context/react-query-client';
+import { useCurrentUser } from '@/hooks/auth/use-current-user';
+import { useToast } from '@/hooks/core/use-toast';
+import { QuestionMutationType, useQuestionMutation } from '@/hooks/mutations/useQuestion.mutation';
+import { LectureQueryType, useLectureQuery } from '@/hooks/queries/useLecture.query';
+import { cn } from '@/lib/utils';
 import { ILecture } from '@/types/lecture.types';
+import { IQuestion } from '@/types/question.types';
+import { zodResolver } from '@hookform/resolvers/zod';
+import debounce from 'lodash.debounce';
+import { Check, ChevronsUpDown, Search } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 const CreateQuestionSchema = z.object({
   lectureId: z.string().min(1, 'Lecture ID is required'),
@@ -108,7 +106,7 @@ const HandleQuestionForm: React.FC<HandleQuestionFormProps> = (props) => {
       form.reset();
 
       toast({
-        title: `Success ${response.statusCode} 🚀`,
+        title: `Thành công 🚀`,
         description: response.message,
       });
 
@@ -118,7 +116,7 @@ const HandleQuestionForm: React.FC<HandleQuestionFormProps> = (props) => {
     },
     onError: (error: any) => {
       toast({
-        title: 'Error',
+        title: 'Lỗi',
         description: error?.response?.data?.message,
         variant: 'destructive',
       });
