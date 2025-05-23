@@ -54,4 +54,11 @@ export class UserController {
   async getOneUser(@Param('id') id: string) {
     return await this.userService.getOne(id);
   }
+
+  @Patch('update/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  async updateOneUser(@Param('id') id: string, @Body() body: UpdateProfileDto) {
+    return await this.userService.updateOne(id, body);
+  }
 }

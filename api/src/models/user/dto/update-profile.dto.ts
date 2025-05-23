@@ -1,6 +1,7 @@
 import { sanitizeInput } from '@/common/utils';
 import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
+import { Role } from '@/types';
 
 export class UpdateProfileDto {
   @IsString()
@@ -16,4 +17,12 @@ export class UpdateProfileDto {
   @IsOptional()
   @Transform(({ value }) => sanitizeInput(value))
   last_name?: string;
+  
+  @IsEnum(Role)
+  @IsOptional()
+  role?: Role;
+  
+  @IsString()
+  @IsOptional()
+  email?: string;
 }

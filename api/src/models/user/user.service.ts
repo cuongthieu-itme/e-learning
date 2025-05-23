@@ -11,7 +11,7 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 export class UserService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
-  ) {}
+  ) { }
 
   async find(query: FilterQuery<User> = {}, select?: string): Promise<User[]> {
     return await this.userModel.find(query).select(select).lean().exec();
@@ -55,9 +55,11 @@ export class UserService {
 
     if (
       body.first_name === user.first_name &&
-      body.last_name === user.last_name
+      body.last_name === user.last_name &&
+      body.email === user.email &&
+      body.role === user.role
     )
-      throw new NotFoundException('No changes found');
+      throw new NotFoundException('Giá trị chưa thay đổi');
 
     const updatedProfile = await this.userModel.findByIdAndUpdate(
       id,
@@ -69,7 +71,7 @@ export class UserService {
 
     return {
       statusCode: HttpStatus.ACCEPTED,
-      message: 'Profile updated successfully',
+      message: 'Cập nhật người dùng thành công',
     };
   }
 
