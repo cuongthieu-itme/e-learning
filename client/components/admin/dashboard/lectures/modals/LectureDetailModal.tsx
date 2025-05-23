@@ -2,6 +2,7 @@ import { AlertCircle, Edit } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
 
+import { Button } from '@/components/ui/buttons/button';
 import { Badge } from '@/components/ui/info/badge';
 import {
   Dialog,
@@ -11,8 +12,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/layout/dialog';
-import { Separator } from '@/components/ui/layout/separator';
-import { Button } from '@/components/ui/buttons/button';
 import { ILecture } from '@/types/lecture.types';
 import { LectureStatus } from '@/types/shared.types';
 
@@ -54,7 +53,6 @@ const LectureDetailModal: React.FC<LectureDetailModalProps> = ({
 
         {lecture && (
           <div className="py-2 overflow-y-auto max-h-[80vh]">
-            {/* Title Section */}
             <div className="bg-slate-50 rounded-lg p-5 my-4 shadow-sm border border-slate-100">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-lg font-medium text-slate-700 flex items-center">
@@ -65,40 +63,36 @@ const LectureDetailModal: React.FC<LectureDetailModalProps> = ({
               </div>
               <p className="text-base leading-relaxed pl-9">{lecture.title}</p>
             </div>
-            
-            {/* Content Section */}
+
             <div className="my-6">
               <h3 className="text-base font-medium text-slate-700 mb-4 flex items-center">
                 <span className="inline-block w-1 h-5 bg-primary rounded-full mr-2"></span>
                 Nội dung
               </h3>
-              
+
               <div className="p-4 bg-white rounded-lg border border-slate-200 shadow-sm">
                 <p className="text-sm whitespace-pre-line">{lecture.content}</p>
               </div>
             </div>
 
-            {/* Outline Section */}
             <div className="my-6">
               <h3 className="text-base font-medium text-slate-700 mb-4 flex items-center">
                 <span className="inline-block w-1 h-5 bg-blue-500 rounded-full mr-2"></span>
                 Đề cương
               </h3>
-              
+
               <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 shadow-sm">
                 <p className="text-sm whitespace-pre-line">{lecture.outline}</p>
               </div>
             </div>
 
-            {/* Additional Resources */}
             <div className="my-6">
               <h3 className="text-base font-medium text-slate-700 mb-4 flex items-center">
                 <span className="inline-block w-1 h-5 bg-purple-500 rounded-full mr-2"></span>
                 Tài nguyên bổ sung
               </h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 auto-rows-fr">
-                {/* PPTX Resources */}
                 <div className="p-4 rounded-lg border border-slate-200 bg-white">
                   <h4 className="font-medium text-sm mb-2 text-slate-700">Bài trình bày PowerPoint</h4>
                   {lecture.pptxUrl ? (
@@ -112,7 +106,6 @@ const LectureDetailModal: React.FC<LectureDetailModalProps> = ({
                   )}
                 </div>
 
-                {/* Mindmap Resources */}
                 <div className="p-4 rounded-lg border border-slate-200 bg-white">
                   <h4 className="font-medium text-sm mb-2 text-slate-700">Sơ đồ tư duy</h4>
                   {lecture.mindmapUrl ? (
@@ -128,7 +121,6 @@ const LectureDetailModal: React.FC<LectureDetailModalProps> = ({
               </div>
             </div>
 
-            {/* Metadata Section */}
             <div className="mt-6 pt-4 border-t">
               <h3 className="text-base font-medium text-slate-700 mb-4 flex items-center">
                 <span className="inline-block w-1 h-5 bg-slate-400 rounded-full mr-2"></span>
@@ -136,7 +128,6 @@ const LectureDetailModal: React.FC<LectureDetailModalProps> = ({
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 p-4 bg-slate-50 rounded-lg">
-                {/* Course Info */}
                 <div>
                   <h4 className="text-xs uppercase tracking-wider text-slate-500 mb-1">Khóa học</h4>
                   {typeof lecture.courseId === 'object' ? (
@@ -150,7 +141,6 @@ const LectureDetailModal: React.FC<LectureDetailModalProps> = ({
                   )}
                 </div>
 
-                {/* Creator Info */}
                 <div>
                   <h4 className="text-xs uppercase tracking-wider text-slate-500 mb-1">Người tạo</h4>
                   <div className="p-3 bg-white rounded border border-slate-200">
@@ -160,8 +150,7 @@ const LectureDetailModal: React.FC<LectureDetailModalProps> = ({
                     <p className="text-xs text-slate-500 mt-1">ID: {lecture.createdById._id}</p>
                   </div>
                 </div>
-                
-                {/* Creation Date */}
+
                 {lecture.createdAt && (
                   <div>
                     <h4 className="text-xs uppercase tracking-wider text-slate-500 mb-1">Ngày tạo</h4>
@@ -174,8 +163,7 @@ const LectureDetailModal: React.FC<LectureDetailModalProps> = ({
                     })}</p>
                   </div>
                 )}
-                
-                {/* Last Update */}
+
                 {lecture.updatedAt && (
                   <div>
                     <h4 className="text-xs uppercase tracking-wider text-slate-500 mb-1">Cập nhật cuối</h4>

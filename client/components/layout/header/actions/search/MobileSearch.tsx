@@ -1,18 +1,15 @@
-import { useMounted } from '@/hooks/core/useMounted.hook';
-
-import { SearchInput } from './SearchInput';
-import { SearchResults } from './SearchResults';
-
 import { Input } from '@/components/ui/form/input';
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import {
   Drawer,
   DrawerContent,
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/layout/drawer';
+import { useMounted } from '@/hooks/core/useMounted.hook';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { SearchInput } from './SearchInput';
 
-export const MobileSearch: React.FC = ({}) => {
+export const MobileSearch: React.FC = ({ }) => {
   const { isMounted } = useMounted();
   if (!isMounted) return null;
 
@@ -35,10 +32,6 @@ export const MobileSearch: React.FC = ({}) => {
 
         <div className="flex flex-1 flex-col space-y-5 p-4">
           <SearchInput />
-
-          <div className="flex-1 overflow-y-auto">
-            <SearchResults />
-          </div>
         </div>
       </DrawerContent>
     </Drawer>

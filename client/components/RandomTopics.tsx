@@ -1,11 +1,9 @@
 "use client";
 
-import Link from 'next/link';
-import { BookOpen, Bookmark, ArrowRight } from 'lucide-react';
 import { CourseTopicQueryType, useCourseTopicQuery } from '@/hooks/queries/useCourseTopic.query';
-import { ICourseTopic } from '@/types/course-topic.types';
+import { ArrowRight, BookOpen, Bookmark } from 'lucide-react';
+import Link from 'next/link';
 
-// Định nghĩa interface cho topic item từ API
 interface CourseTopicResponse {
   _id: string;
   courseId: string;
@@ -16,25 +14,15 @@ interface CourseTopicResponse {
   };
 }
 
-// Định nghĩa interface cho response của API
-interface RandomTopicsResponse {
-  statusCode: number;
-  courseTopics: CourseTopicResponse[];
-  totalTopics: number;
-}
-
 const RandomTopics = () => {
-  // Sử dụng hook query để lấy các chủ đề ngẫu nhiên
   const { data, isLoading, error } = useCourseTopicQuery({
     type: CourseTopicQueryType.GET_RANDOM,
     params: {}
   });
-  
-  // Lấy danh sách chủ đề từ response
+
   const topics = data?.courseTopics || [];
   const hasError = !!error || !data;
 
-  // Background gradient colors for cards
   const cardColors = [
     'bg-gradient-to-br from-blue-600 to-indigo-700',
     'bg-gradient-to-br from-purple-600 to-pink-500',
@@ -74,23 +62,23 @@ const RandomTopics = () => {
             <h2 className="text-2xl font-bold text-gray-800">Chủ đề nổi bật</h2>
             <p className="text-gray-600">Khám phá các chủ đề học tập được nhiều người quan tâm</p>
           </div>
-          <Link 
-            href="/topics" 
+          <Link
+            href="/topics"
             className="group mt-4 flex items-center text-indigo-600 hover:text-indigo-800 sm:mt-0"
           >
             <span className="font-medium">Xem tất cả</span>
             <ArrowRight className="ml-1 h-4 w-4 transform transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
-        
+
         <div className="grid gap-6 md:grid-cols-3">
           {topics && topics.length > 0 ? (topics as unknown as CourseTopicResponse[]).map((topic, index) => (
-            <div 
+            <div
               key={topic._id}
               className={`group relative overflow-hidden rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl ${cardColors[index % cardColors.length]}`}
             >
               <div className="absolute inset-0 bg-black opacity-10 transition-opacity duration-300 group-hover:opacity-0"></div>
-              
+
               <div className="relative z-10 flex h-full flex-col justify-between p-6 text-white">
                 <div>
                   <div className="mb-2 flex items-center">
@@ -103,9 +91,9 @@ const RandomTopics = () => {
                     <p className="text-sm opacity-90">{topic.course.name}</p>
                   </div>
                 </div>
-                
-                <Link 
-                  href={`/courses/${topic.courseId}/topics/${topic._id}`} 
+
+                <Link
+                  href={`/courses/${topic.courseId}/topics/${topic._id}`}
                   className="mt-4 inline-flex items-center text-sm font-semibold transition-all duration-300 hover:translate-x-1"
                 >
                   Xem chi tiết

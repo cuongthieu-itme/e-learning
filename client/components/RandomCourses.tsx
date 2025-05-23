@@ -4,7 +4,6 @@ import { CourseQueryType, useCourseQuery } from '@/hooks/queries/useCourse.query
 import { ArrowRight, BookOpen, Bookmark, Layers } from 'lucide-react';
 import Link from 'next/link';
 
-// Định nghĩa interface cho course item từ API
 interface CourseResponse {
   _id: string;
   name: string;
@@ -23,25 +22,15 @@ interface CourseResponse {
   }>;
 }
 
-// Định nghĩa interface cho response của API
-interface RandomCoursesResponse {
-  statusCode: number;
-  courses: CourseResponse[];
-  totalCourses: number;
-}
-
 const RandomCourses = () => {
-  // Sử dụng hook query để lấy các khóa học ngẫu nhiên
   const { data, isLoading, error } = useCourseQuery({
     type: CourseQueryType.GET_RANDOM,
     params: {}
   });
 
-  // Lấy danh sách khóa học từ response
   const courses = data?.courses || [];
   const hasError = !!error || !data;
 
-  // Background gradient colors for cards
   const cardColors = [
     'bg-gradient-to-br from-blue-500 to-indigo-600',
     'bg-gradient-to-br from-purple-500 to-pink-400',

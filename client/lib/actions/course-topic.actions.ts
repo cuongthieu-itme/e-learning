@@ -1,7 +1,6 @@
-import qs from 'qs';
-
 import { ServerResponse } from '@/types';
 import { GetCourseTopicsDto, ICourseTopic } from '@/types/course-topic.types';
+import qs from 'qs';
 import {
     deleteApiHandler,
     getApiHandler,
@@ -12,7 +11,6 @@ import {
 export const createCourseTopic = async (
     data: FormData | any,
 ): Promise<ServerResponse> => {
-    // Handle both FormData and JSON payload
     const headers = data instanceof FormData
         ? { 'Content-Type': 'multipart/form-data' }
         : { 'Content-Type': 'application/json' };

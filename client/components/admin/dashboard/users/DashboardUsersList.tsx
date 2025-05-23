@@ -36,10 +36,10 @@ import {
 } from '@/hooks/mutations/useUser.mutation';
 import { formatDate } from '@/lib/utils';
 import { IUser, Role } from '@/types';
-import UserDetailModal from './modals/UserDetailModal';
-import { Delete, Edit, MoreHorizontal, User } from 'lucide-react';
+import { Delete, Edit, MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
+import UserDetailModal from './modals/UserDetailModal';
 
 type DashboardUsersListProps = {
   usersData: { users: IUser[]; totalUsers: number };
@@ -133,13 +133,13 @@ const DashboardUsersList: React.FC<DashboardUsersListProps> = ({
           </TableRow>
         ) : (
           usersData.users.map((user, index) => (
-            <TableRow 
-              className="whitespace-nowrap cursor-pointer hover:bg-slate-50" 
+            <TableRow
+              className="whitespace-nowrap cursor-pointer hover:bg-slate-50"
               key={user._id}
               onClick={(e) => {
                 // Chỉ mở modal chi tiết nếu click trực tiếp vào row, không phải vào các nút hành động
-                if ((e.target as HTMLElement).closest('button') === null && 
-                    (e.target as HTMLElement).closest('[role="menuitem"]') === null) {
+                if ((e.target as HTMLElement).closest('button') === null &&
+                  (e.target as HTMLElement).closest('[role="menuitem"]') === null) {
                   setSelectedUser(user);
                   setIsDetailDialogOpen(true);
                 }

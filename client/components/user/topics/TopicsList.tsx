@@ -7,7 +7,6 @@ import { ArrowRight, BookOpen, Bookmark, RefreshCw, Search } from 'lucide-react'
 import Link from 'next/link';
 import { useState } from 'react';
 
-// Interface for topic item from API
 interface CourseTopicResponse {
   _id: string;
   courseId: string | { _id: string; name: string };
@@ -18,21 +17,11 @@ interface CourseTopicResponse {
   };
 }
 
-// Interface for response of API
-interface TopicsResponse {
-  statusCode: number;
-  courseTopics: CourseTopicResponse[];
-  totalTopics: number;
-  totalPages: number;
-  currentPage: number;
-}
-
 const TopicsList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [debounceTimeout, setDebounceTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  // Fetch topics data
   const { data, isLoading, error, refetch } = useCourseTopicQuery({
     type: CourseTopicQueryType.GET_ALL,
     params: {
@@ -44,15 +33,11 @@ const TopicsList = () => {
     }
   });
 
-  // Extract topics and pagination info from response
   const topics = data?.courseTopics || [];
-  // Calculate total pages based on total topics and limit
   const totalTopics = data?.totalCourseTopics || 0;
-  const pageSize = 12; // Same as limit in the query
+  const pageSize = 12;
   const totalPages = Math.ceil(totalTopics / pageSize);
   const hasError = !!error || !data;
-
-  // Background gradient colors for cards
   const cardColors = [
     'bg-gradient-to-br from-blue-600 to-indigo-700',
     'bg-gradient-to-br from-purple-600 to-pink-500',
@@ -62,7 +47,6 @@ const TopicsList = () => {
     'bg-gradient-to-br from-cyan-500 to-blue-700',
   ];
 
-  // Handle search input with debounce
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
@@ -72,7 +56,7 @@ const TopicsList = () => {
     }
 
     const timeout = setTimeout(() => {
-      setCurrentPage(1); // Reset to first page on new search
+      setCurrentPage(1);
       refetch();
     }, 500);
 
@@ -81,18 +65,15 @@ const TopicsList = () => {
 
 
 
-  // Handle pagination
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     refetch();
-    // Scroll to top when page changes
     window.scrollTo({
       top: 0,
       behavior: 'smooth',
     });
   };
 
-  // Render loading state
   if (isLoading && !data) {
     return (
       <div className="py-8">
@@ -102,7 +83,6 @@ const TopicsList = () => {
             <p className="text-gray-600">Khám phá đa dạng chủ đề học tập</p>
           </div>
 
-          {/* Loading skeleton */}
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {[1, 2, 3, 4, 5, 6, 8, 9].map((i) => (
               <div key={i} className="h-64 animate-pulse rounded-xl bg-gray-200"></div>
@@ -121,7 +101,6 @@ const TopicsList = () => {
           <p className="text-gray-600">Khám phá đa dạng chủ đề học tập</p>
         </div>
 
-        {/* Search and filter */}
         <div className="mb-8 grid gap-4 md:flex md:items-center md:justify-between">
           <div className="relative w-full md:max-w-md">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -148,7 +127,6 @@ const TopicsList = () => {
           </Button>
         </div>
 
-        {/* Error state */}
         {hasError && (
           <div className="rounded-lg bg-red-50 p-4 text-center">
             <p className="text-red-600">Không thể tải dữ liệu chủ đề. Vui lòng thử lại sau.</p>
@@ -162,7 +140,6 @@ const TopicsList = () => {
           </div>
         )}
 
-        {/* Topics grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {topics && topics.length > 0 ? (topics as unknown as CourseTopicResponse[]).map((topic, index) => (
             <div
@@ -200,7 +177,6 @@ const TopicsList = () => {
           )}
         </div>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="mt-8 flex justify-center">
             <div className="flex flex-wrap items-center gap-2">
@@ -215,7 +191,6 @@ const TopicsList = () => {
 
               {[...Array(totalPages)].map((_, index) => {
                 const pageNumber = index + 1;
-                // Show limited page numbers for better UX
                 if (
                   pageNumber === 1 ||
                   pageNumber === totalPages ||

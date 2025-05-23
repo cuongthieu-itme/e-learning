@@ -38,10 +38,10 @@ import {
 } from '@/hooks/mutations/useCourse.mutation';
 import { formatDate } from '@/lib/utils/date.utils';
 import { ICourse } from '@/types';
-import CourseDetailModal from './modals/CourseDetailModal';
-import { Book, Delete, Edit, MoreHorizontal } from 'lucide-react';
+import { Delete, Edit, MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
+import CourseDetailModal from './modals/CourseDetailModal';
 
 type DashboardCoursesListProps = {
   coursesData: {
@@ -114,13 +114,12 @@ const DashboardCoursesList: React.FC<DashboardCoursesListProps> = ({
           </TableRow>
         ) : (
           coursesData.courses.map((course, index) => (
-            <TableRow 
-              className="whitespace-nowrap cursor-pointer hover:bg-slate-50" 
+            <TableRow
+              className="whitespace-nowrap cursor-pointer hover:bg-slate-50"
               key={course._id}
               onClick={(e) => {
-                // Chỉ mở modal chi tiết nếu click trực tiếp vào row, không phải vào các nút hành động
-                if ((e.target as HTMLElement).closest('button') === null && 
-                    (e.target as HTMLElement).closest('[role="menuitem"]') === null) {
+                if ((e.target as HTMLElement).closest('button') === null &&
+                  (e.target as HTMLElement).closest('[role="menuitem"]') === null) {
                   setSelectedCourse(course);
                   setIsDetailDialogOpen(true);
                 }

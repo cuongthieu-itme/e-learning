@@ -31,10 +31,10 @@ import { queryClient } from '@/context/react-query-client';
 import { useToast } from '@/hooks/core/use-toast';
 import { CourseTopicMutationType, useCourseTopicMutation } from '@/hooks/mutations/useCourseTopic.mutation';
 import { ICourseTopic } from '@/types/course-topic.types';
-import CourseTopicDetailModal from './modals/CourseTopicDetailModal';
-import { AlertCircle, Delete, Edit, MoreHorizontal } from 'lucide-react';
+import { Delete, Edit, MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
+import CourseTopicDetailModal from './modals/CourseTopicDetailModal';
 
 type DashboardCourseTopicsListProps = {
   courseTopicsData: { courseTopics: ICourseTopic[]; totalCourseTopics: number };
@@ -91,13 +91,12 @@ const DashboardCourseTopicsList: React.FC<DashboardCourseTopicsListProps> = ({
           </TableRow>
         ) : (
           courseTopicsData.courseTopics.map((courseTopic, index) => (
-            <TableRow 
-              className="whitespace-nowrap cursor-pointer hover:bg-slate-50" 
+            <TableRow
+              className="whitespace-nowrap cursor-pointer hover:bg-slate-50"
               key={courseTopic._id}
               onClick={(e) => {
-                // Chỉ mở modal chi tiết nếu click trực tiếp vào row, không phải vào các nút hành động
-                if ((e.target as HTMLElement).closest('button') === null && 
-                    (e.target as HTMLElement).closest('[role="menuitem"]') === null) {
+                if ((e.target as HTMLElement).closest('button') === null &&
+                  (e.target as HTMLElement).closest('[role="menuitem"]') === null) {
                   setSelectedCourseTopic(courseTopic);
                   setIsDetailDialogOpen(true);
                 }
@@ -171,7 +170,7 @@ const DashboardCourseTopicsList: React.FC<DashboardCourseTopicsListProps> = ({
           </TableCell>
         </TableRow>
       </TableFooter>
-    
+
       <CourseTopicDetailModal
         isOpen={isDetailDialogOpen}
         onOpenChange={setIsDetailDialogOpen}

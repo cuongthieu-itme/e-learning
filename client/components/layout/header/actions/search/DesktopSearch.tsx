@@ -1,15 +1,13 @@
 import { useMounted } from '@/hooks/core/useMounted.hook';
 
 import { SearchInput } from './SearchInput';
-import { SearchResults } from './SearchResults';
 
 import {
   Popover,
-  PopoverContent,
-  PopoverTrigger,
+  PopoverTrigger
 } from '@/components/ui/layout/popover';
 
-export const DesktopSearch: React.FC = ({}) => {
+export const DesktopSearch: React.FC = ({ }) => {
   const { isMounted } = useMounted();
   if (!isMounted) return null;
 
@@ -20,14 +18,6 @@ export const DesktopSearch: React.FC = ({}) => {
           <SearchInput />
         </div>
       </PopoverTrigger>
-      <PopoverContent
-        onOpenAutoFocus={(e) => e.preventDefault()}
-        className="w-[var(--radix-popover-trigger-width)] max-w-none p-0 shadow-none"
-        side="bottom"
-        align="start"
-      >
-        <SearchResults />
-      </PopoverContent>
     </Popover>
   );
 };

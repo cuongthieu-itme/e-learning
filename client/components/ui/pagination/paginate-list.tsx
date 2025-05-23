@@ -1,16 +1,14 @@
-import { getTruncatedPageRange } from '@/lib/utils';
-
-import { usePagination } from '@/hooks/core/usePagination.hook';
-
 import {
   Pagination,
   PaginationContent,
+  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-  PaginationEllipsis,
 } from '@/components/ui/pagination/pagination';
+import { usePagination } from '@/hooks/core/usePagination.hook';
+import { getTruncatedPageRange } from '@/lib/utils/pagination.utils';
 
 type PaginationProps = {
   totalItems: number;

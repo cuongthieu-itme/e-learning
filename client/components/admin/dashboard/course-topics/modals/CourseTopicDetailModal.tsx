@@ -2,7 +2,7 @@ import { AlertCircle, Edit } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
 
-import { Badge } from '@/components/ui/info/badge';
+import { Button } from '@/components/ui/buttons/button';
 import {
   Dialog,
   DialogClose,
@@ -11,7 +11,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/layout/dialog';
-import { Button } from '@/components/ui/buttons/button';
 import { ICourseTopic } from '@/types/course-topic.types';
 
 type CourseTopicDetailModalProps = {
@@ -38,7 +37,6 @@ const CourseTopicDetailModal: React.FC<CourseTopicDetailModalProps> = ({
         </DialogHeader>
 
         <div className="py-4 overflow-y-auto max-h-[80vh]">
-          {/* Topic Section */}
           <div className="bg-slate-50 rounded-lg p-5 my-4 shadow-sm border border-slate-100">
             <h3 className="text-lg font-medium text-slate-700 mb-3 flex items-center">
               <span className="inline-flex justify-center items-center w-7 h-7 rounded-full bg-primary text-white font-semibold mr-2">T</span>
@@ -46,8 +44,7 @@ const CourseTopicDetailModal: React.FC<CourseTopicDetailModalProps> = ({
             </h3>
             <p className="text-base leading-relaxed pl-9">{courseTopic.topic}</p>
           </div>
-          
-          {/* Metadata Section */}
+
           <div className="mt-6 pt-4 border-t">
             <h3 className="text-base font-medium text-slate-700 mb-4 flex items-center">
               <span className="inline-block w-1 h-5 bg-slate-400 rounded-full mr-2"></span>
@@ -55,7 +52,6 @@ const CourseTopicDetailModal: React.FC<CourseTopicDetailModalProps> = ({
             </h3>
 
             <div className="grid grid-cols-1 gap-x-8 gap-y-4 p-4 bg-slate-50 rounded-lg">
-              {/* Course Info */}
               <div>
                 <h4 className="text-xs uppercase tracking-wider text-slate-500 mb-1">Khóa học</h4>
                 {typeof courseTopic.courseId === 'object' ? (
@@ -68,8 +64,7 @@ const CourseTopicDetailModal: React.FC<CourseTopicDetailModalProps> = ({
                   <p className="text-sm">{courseTopic.courseId}</p>
                 )}
               </div>
-              
-              {/* Creation Date */}
+
               {courseTopic.createdAt && (
                 <div>
                   <h4 className="text-xs uppercase tracking-wider text-slate-500 mb-1">Ngày tạo</h4>
@@ -82,8 +77,7 @@ const CourseTopicDetailModal: React.FC<CourseTopicDetailModalProps> = ({
                   })}</p>
                 </div>
               )}
-              
-              {/* Last Update */}
+
               {courseTopic.updatedAt && (
                 <div>
                   <h4 className="text-xs uppercase tracking-wider text-slate-500 mb-1">Cập nhật cuối</h4>
