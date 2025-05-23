@@ -31,13 +31,13 @@ const LectureDetailModal: React.FC<LectureDetailModalProps> = ({
   const getStatusBadge = (status: LectureStatus) => {
     switch (status) {
       case LectureStatus.PUBLISHED:
-        return <Badge className="bg-green-500">Đã đăng</Badge>;
+        return <Badge className="bg-green-500">Đã xuất bản</Badge>;
       case LectureStatus.DRAFT:
-        return <Badge variant="secondary">Bản nháp</Badge>;
+        return <Badge variant="secondary" className='bg-yellow-500'>Bản nháp</Badge>;
       case LectureStatus.ARCHIVED:
-        return <Badge variant="destructive">Đã lưu trữ</Badge>;
+        return <Badge variant="destructive" className='bg-red-500'>Đã lưu trữ</Badge>;
       default:
-        return <Badge>{status}</Badge>;
+        return <Badge className='bg-gray-500'>{status}</Badge>;
     }
   };
 

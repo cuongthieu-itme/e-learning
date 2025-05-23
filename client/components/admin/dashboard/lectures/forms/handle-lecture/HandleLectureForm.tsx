@@ -98,24 +98,20 @@ const HandleLectureForm: React.FC<HandleLectureFormProps> = (props) => {
     },
   });
 
-  // Update form values when user changes
   useEffect(() => {
     if (user?.userId && !form.getValues('createdById')) {
       form.setValue('createdById', user.userId);
     }
   }, [user, form]);
 
-  // Populate form with lecture data when in edit mode
   useEffect(() => {
     if (props.isEdit && props.lecture) {
       const lectureData = props.lecture;
 
-      // Extract courseId
       const courseId = typeof lectureData.courseId === 'object' && '_id' in lectureData.courseId
         ? lectureData.courseId._id
         : String(lectureData.courseId);
 
-      // Set form values
       form.setValue('courseId', courseId);
       form.setValue('title', lectureData.title);
       form.setValue('content', lectureData.content);
@@ -124,7 +120,6 @@ const HandleLectureForm: React.FC<HandleLectureFormProps> = (props) => {
       form.setValue('mindmapUrl', lectureData.mindmapUrl || '');
       form.setValue('status', lectureData.status);
 
-      // Set createdById if available
       if (lectureData.createdById) {
         const createdById = typeof lectureData.createdById === 'object' && '_id' in lectureData.createdById
           ? lectureData.createdById._id
@@ -141,7 +136,7 @@ const HandleLectureForm: React.FC<HandleLectureFormProps> = (props) => {
       form.reset();
 
       toast({
-        title: `Success ${response.statusCode} 🚀`,
+        title: `Thành công 🚀`,
         description: response.message,
       });
 
@@ -151,7 +146,7 @@ const HandleLectureForm: React.FC<HandleLectureFormProps> = (props) => {
     },
     onError: (error: any) => {
       toast({
-        title: 'Error',
+        title: 'Lỗi',
         description: error?.response?.data?.message,
         variant: 'destructive',
       });
@@ -488,8 +483,8 @@ const HandleLectureForm: React.FC<HandleLectureFormProps> = (props) => {
                   </FormControl>
                   <SelectContent>
                     <SelectItem value={LectureStatus.DRAFT}>Bản nháp</SelectItem>
-                    <SelectItem value={LectureStatus.PUBLISHED}>Đã xuất bản</SelectItem>
-                    <SelectItem value={LectureStatus.ARCHIVED}>Đã lưu trữ</SelectItem>
+                    <SelectItem value={LectureStatus.PUBLISHED}>Xuất bản</SelectItem>
+                    <SelectItem value={LectureStatus.ARCHIVED}>Lưu trữ</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormDescription>

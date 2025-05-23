@@ -1,4 +1,4 @@
-import { AlertCircle, Delete, Edit, MoreHorizontal } from 'lucide-react';
+import { Delete, Edit, MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
@@ -38,9 +38,9 @@ import {
 } from '@/components/ui/utilities/table';
 import { LectureMutationType, useLectureMutation } from '@/hooks/mutations/useLecture.mutation';
 import { formatDate } from '@/lib/utils';
-import LectureDetailModal from './modals/LectureDetailModal';
 import { ILecture } from '@/types/lecture.types';
 import { LectureStatus } from '@/types/shared.types';
+import LectureDetailModal from './modals/LectureDetailModal';
 
 type DashboardLecturesListProps = {
   lecturesData: { lectures: ILecture[]; totalLectures: number };
@@ -79,20 +79,20 @@ const DashboardLecturesList: React.FC<DashboardLecturesListProps> = ({
   const getStatusBadge = (status: LectureStatus) => {
     switch (status) {
       case LectureStatus.PUBLISHED:
-        return <Badge variant="default">{status}</Badge>;
+        return <Badge variant="default" className='bg-green-500'>{getLabel(status)}</Badge>;
       case LectureStatus.DRAFT:
-        return <Badge variant="secondary">{status}</Badge>;
+        return <Badge variant="secondary" className='bg-yellow-500'>{getLabel(status)}</Badge>;
       case LectureStatus.ARCHIVED:
-        return <Badge variant="destructive">{status}</Badge>;
+        return <Badge variant="destructive" className='bg-red-500'>{getLabel(status)}</Badge>;
       default:
-        return <Badge>{status}</Badge>;
+        return <Badge className='bg-gray-500'>{getLabel(status)}</Badge>;
     }
   };
 
   const getLabel = (status: LectureStatus) => {
     switch (status) {
       case LectureStatus.PUBLISHED:
-        return 'Đã đăng';
+        return 'Đã xuất bản';
       case LectureStatus.DRAFT:
         return 'Bản nháp';
       case LectureStatus.ARCHIVED:
@@ -129,8 +129,8 @@ const DashboardLecturesList: React.FC<DashboardLecturesListProps> = ({
           </TableRow>
         ) : (
           lecturesData.lectures.map((lecture, index) => (
-            <TableRow 
-              className="whitespace-nowrap cursor-pointer hover:bg-slate-50" 
+            <TableRow
+              className="whitespace-nowrap cursor-pointer hover:bg-slate-50"
               key={lecture._id}
               onClick={() => {
                 setSelectedLecture(lecture);
@@ -141,7 +141,7 @@ const DashboardLecturesList: React.FC<DashboardLecturesListProps> = ({
               <TableCell className="max-w-[300px] truncate">{lecture.title}</TableCell>
               <TableCell className="max-w-[300px] truncate">{lecture.content}</TableCell>
               <TableCell>{`${lecture.createdById?.first_name} ${lecture.createdById?.last_name}`}</TableCell>
-              <TableCell>{getLabel(lecture.status)}</TableCell>
+              <TableCell>{getStatusBadge(lecture.status)}</TableCell>
               <TableCell>{formatDate(new Date(lecture.createdAt || ''))}</TableCell>
               <TableCell onClick={(e) => e.stopPropagation()}>
                 <DropdownMenu modal={false}>
@@ -214,7 +214,7 @@ const DashboardLecturesList: React.FC<DashboardLecturesListProps> = ({
         </DialogContent>
       </Dialog>
 
-      <LectureDetailModal 
+      <LectureDetailModal
         isOpen={isDetailDialogOpen}
         onOpenChange={setIsDetailDialogOpen}
         lecture={selectedLecture}

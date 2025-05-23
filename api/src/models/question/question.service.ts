@@ -1,19 +1,19 @@
-import { HttpStatus, Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { ForbiddenException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, UpdateQuery, UpdateWriteOpResult, Types } from 'mongoose';
+import { FilterQuery, Model, Types, UpdateQuery, UpdateWriteOpResult } from 'mongoose';
 
 import { Question } from './schema/question.schema';
 
-import { CreateQuestionDto } from './dto/create-question.dto';
-import { UpdateQuestionDto } from './dto/update-question.dto';
-import { GetQuestionsDto } from './dto/get-questions.dto';
 import { ResponseObject } from '@/types';
+import { CreateQuestionDto } from './dto/create-question.dto';
+import { GetQuestionsDto } from './dto/get-questions.dto';
+import { UpdateQuestionDto } from './dto/update-question.dto';
 
 @Injectable()
 export class QuestionService {
   constructor(
     @InjectModel(Question.name) private readonly questionModel: Model<Question>,
-  ) {}
+  ) { }
 
   async find(query: FilterQuery<Question> = {}, select?: string): Promise<Question[]> {
     return await this.questionModel.find(query).select(select).lean().exec();
@@ -46,7 +46,7 @@ export class QuestionService {
 
     return {
       statusCode: HttpStatus.CREATED,
-      message: 'Question created successfully',
+      message: 'Câu hỏi đã được tạo thành công',
       question: newQuestion,
     };
   }
@@ -56,14 +56,12 @@ export class QuestionService {
 
     if (!question) throw new NotFoundException('Question not found');
 
-    // Check if user is authorized to update this question
     if (question.createdById.toString() !== userId) {
       throw new ForbiddenException('You are not authorized to update this question');
     }
 
-    // Check if there are any changes
     const hasChanges = Object.keys(body).some(key => body[key] !== question[key]);
-    if (!hasChanges) throw new NotFoundException('No changes found');
+    if (!hasChanges) throw new NotFoundException('Giá trị chưa thay đổi');
 
     const updateData: any = { ...body };
     if (body.lectureId) updateData.lectureId = new Types.ObjectId(body.lectureId);
@@ -76,16 +74,16 @@ export class QuestionService {
 
     return {
       statusCode: HttpStatus.ACCEPTED,
-      message: 'Question updated successfully',
+      message: 'Câu hỏi đã được cập nhật thành công',
       question: updatedQuestion,
     };
   }
 
   async deleteOne(id: string, userId: string): Promise<ResponseObject> {
     const question = await this.questionModel.findById(id).exec();
-    
+
     if (!question) throw new NotFoundException('Question not found');
-    
+
     // Check if user is authorized to delete this question
     if (question.createdById.toString() !== userId) {
       throw new ForbiddenException('You are not authorized to delete this question');
@@ -95,7 +93,7 @@ export class QuestionService {
 
     return {
       statusCode: HttpStatus.OK,
-      message: 'Question deleted successfully',
+      message: 'Câu hỏi đã được xóa thành công',
     };
   }
 
@@ -144,8 +142,8 @@ export class QuestionService {
       conditions.createdById = new Types.ObjectId(createdById);
     }
 
-    const sortOptions: any = { 
-      createdAt: sort === 'desc' ? -1 : 1 
+    const sortOptions: any = {
+      createdAt: sort === 'desc' ? -1 : 1
     };
 
     const questions = await this.questionModel
@@ -194,8 +192,8 @@ export class QuestionService {
       conditions.lectureId = new Types.ObjectId(lectureId);
     }
 
-    const sortOptions: any = { 
-      createdAt: sort === 'desc' ? -1 : 1 
+    const sortOptions: any = {
+      createdAt: sort === 'desc' ? -1 : 1
     };
 
     const questions = await this.questionModel
@@ -224,7 +222,7 @@ export class QuestionService {
     search,
     sort,
   }: GetQuestionsDto): Promise<ResponseObject> {
-    const conditions: any = { 
+    const conditions: any = {
       lectureId: new Types.ObjectId(lectureId)
     };
 
@@ -240,8 +238,8 @@ export class QuestionService {
       ];
     }
 
-    const sortOptions: any = { 
-      createdAt: sort === 'desc' ? -1 : 1 
+    const sortOptions: any = {
+      createdAt: sort === 'desc' ? -1 : 1
     };
 
     const questions = await this.questionModel
@@ -265,7 +263,7 @@ export class QuestionService {
 
   // Method to get questions for quiz (hides correct answers)
   async getQuestionsForQuiz(lectureId: string, limit: number = 10): Promise<ResponseObject> {
-    const conditions = { 
+    const conditions = {
       lectureId: new Types.ObjectId(lectureId)
     };
 
@@ -274,14 +272,16 @@ export class QuestionService {
       .aggregate([
         { $match: conditions },
         { $sample: { size: limit } },
-        { $project: { 
-          question: 1,
-          optionA: 1,
-          optionB: 1,
-          optionC: 1,
-          optionD: 1,
-          // Do not include correctAnswer and explanation
-        }}
+        {
+          $project: {
+            question: 1,
+            optionA: 1,
+            optionB: 1,
+            optionC: 1,
+            optionD: 1,
+            // Do not include correctAnswer and explanation
+          }
+        }
       ])
       .exec();
 
@@ -293,11 +293,11 @@ export class QuestionService {
   }
 
   // Method to check quiz answers
-  async checkQuizAnswers(answers: {questionId: string, answer: string}[]): Promise<ResponseObject> {
+  async checkQuizAnswers(answers: { questionId: string, answer: string }[]): Promise<ResponseObject> {
     if (!answers || !Array.isArray(answers) || answers.length === 0) {
       throw new NotFoundException('No answers provided');
     }
-    
+
     const questionIds = answers.map(a => new Types.ObjectId(a.questionId));
     const questions = await this.questionModel
       .find({ _id: { $in: questionIds } })
@@ -343,7 +343,7 @@ export class QuestionService {
   /**
    * Get all questions for a specific lecture with random sorting
    * This method retrieves ALL questions without pagination and sorts them randomly
-   * 
+   *
    * @param lectureId - The ID of the lecture to get questions for
    * @returns Promise with question data including all fields
    */
@@ -352,13 +352,13 @@ export class QuestionService {
       throw new NotFoundException('Lecture ID is required');
     }
 
-    const conditions = { 
+    const conditions = {
       lectureId: new Types.ObjectId(lectureId)
     };
 
     // Get total count of questions for this lecture
     const totalQuestions = await this.questionModel.countDocuments(conditions);
-    
+
     if (totalQuestions === 0) {
       return {
         statusCode: HttpStatus.OK,
@@ -373,28 +373,32 @@ export class QuestionService {
       .aggregate([
         { $match: conditions },
         { $sample: { size: totalQuestions } }, // Use total count to get all questions
-        { $lookup: {
-          from: 'users',
-          localField: 'createdById',
-          foreignField: '_id',
-          as: 'createdBy'
-        }},
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'createdById',
+            foreignField: '_id',
+            as: 'createdBy'
+          }
+        },
         { $unwind: { path: '$createdBy', preserveNullAndEmptyArrays: true } },
-        { $project: {
-          question: 1,
-          optionA: 1,
-          optionB: 1,
-          optionC: 1,
-          optionD: 1,
-          correctAnswer: 1,
-          explanation: 1,
-          lectureId: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          'createdBy._id': 1,
-          'createdBy.first_name': 1,
-          'createdBy.last_name': 1
-        }}
+        {
+          $project: {
+            question: 1,
+            optionA: 1,
+            optionB: 1,
+            optionC: 1,
+            optionD: 1,
+            correctAnswer: 1,
+            explanation: 1,
+            lectureId: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            'createdBy._id': 1,
+            'createdBy.first_name': 1,
+            'createdBy.last_name': 1
+          }
+        }
       ])
       .exec();
 

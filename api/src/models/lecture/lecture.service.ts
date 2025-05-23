@@ -46,7 +46,7 @@ export class LectureService {
 
     return {
       statusCode: HttpStatus.CREATED,
-      message: 'Lecture created successfully',
+      message: 'Bài giảng đã được tạo thành công',
       lecture: newLecture,
     };
   }
@@ -56,21 +56,18 @@ export class LectureService {
 
     if (!lecture) throw new NotFoundException('Lecture not found');
 
-    // Check if user is authorized to update this lecture
     if (lecture.createdById.toString() !== userId) {
       throw new ForbiddenException('You are not authorized to update this lecture');
     }
 
-    // Only allow published status to be updated if content and outline exist
     if (body.status === LectureStatus.PUBLISHED) {
       if (!lecture.content || !lecture.outline) {
         throw new ForbiddenException('Cannot publish lecture without content and outline');
       }
     }
 
-    // Check if there are any changes
     const hasChanges = Object.keys(body).some(key => body[key] !== lecture[key]);
-    if (!hasChanges) throw new NotFoundException('No changes found');
+    if (!hasChanges) throw new NotFoundException('Giá trị chưa thay đổi');
 
     const updateData: any = { ...body };
     if (body.courseId) updateData.courseId = new Types.ObjectId(body.courseId);
@@ -83,7 +80,7 @@ export class LectureService {
 
     return {
       statusCode: HttpStatus.ACCEPTED,
-      message: 'Lecture updated successfully',
+      message: 'Bài giảng đã được cập nhật thành công',
       lecture: updatedLecture,
     };
   }
@@ -102,7 +99,7 @@ export class LectureService {
 
     return {
       statusCode: HttpStatus.OK,
-      message: 'Lecture deleted successfully',
+      message: 'Bài giảng đã được xóa thành công',
     };
   }
 
