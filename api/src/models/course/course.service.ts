@@ -1,19 +1,17 @@
+import { ResponseObject } from '@/types';
 import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, UpdateQuery, UpdateWriteOpResult, Types } from 'mongoose';
-
-import { Course } from './schema/course.schema';
-
+import { FilterQuery, Model, Types, UpdateQuery, UpdateWriteOpResult } from 'mongoose';
 import { CreateCourseDto } from './dto/create-course.dto';
-import { UpdateCourseDto } from './dto/update-course.dto';
 import { GetCoursesDto } from './dto/get-courses.dto';
-import { ResponseObject } from '@/types';
+import { UpdateCourseDto } from './dto/update-course.dto';
+import { Course } from './schema/course.schema';
 
 @Injectable()
 export class CourseService {
   constructor(
     @InjectModel(Course.name) private readonly courseModel: Model<Course>,
-  ) {}
+  ) { }
 
   async find(query: FilterQuery<Course> = {}, select?: string): Promise<Course[]> {
     return await this.courseModel.find(query).select(select).lean().exec();
@@ -52,7 +50,7 @@ export class CourseService {
 
     return {
       statusCode: HttpStatus.CREATED,
-      message: 'Course created successfully',
+      message: 'Khóa học đã được tạo thành công',
       course: newCourse,
     };
   }
@@ -62,9 +60,8 @@ export class CourseService {
 
     if (!course) throw new NotFoundException('Course not found');
 
-    // Check if there are any changes
     const hasChanges = Object.keys(body).some(key => body[key] !== course[key]);
-    if (!hasChanges) throw new NotFoundException('No changes found');
+    if (!hasChanges) throw new NotFoundException('Giá trị chưa thay đổi');
 
     const updatedCourse = await this.courseModel.findByIdAndUpdate(
       id,
@@ -74,7 +71,7 @@ export class CourseService {
 
     return {
       statusCode: HttpStatus.ACCEPTED,
-      message: 'Course updated successfully',
+      message: 'Khóa học đã được cập nhật thành công',
       course: updatedCourse,
     };
   }
@@ -86,7 +83,7 @@ export class CourseService {
 
     return {
       statusCode: HttpStatus.OK,
-      message: 'Course deleted successfully',
+      message: 'Khóa học đã được xóa thành công',
     };
   }
 
@@ -150,7 +147,7 @@ export class CourseService {
     };
   }
 
-  async getUserCourses(userId: string, { 
+  async getUserCourses(userId: string, {
     page = 1,
     limit = 10,
     search,
@@ -194,9 +191,8 @@ export class CourseService {
   }
 
   async getRandomCourses(limit: number = 3): Promise<ResponseObject> {
-    // Using MongoDB's aggregation pipeline with $sample to get random documents
     const randomCourses = await this.courseModel.aggregate([
-      { $match: { isPublished: true } }, // Only get published courses
+      { $match: { isPublished: true } },
       { $sample: { size: limit } },
       {
         $lookup: {

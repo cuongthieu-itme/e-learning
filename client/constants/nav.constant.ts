@@ -1,5 +1,4 @@
 import {
-  AlignVerticalJustifyEnd,
   Book,
   Heart,
   Home,
@@ -82,26 +81,26 @@ export const AdminNavbarActions = [
       },
     ],
   },
-  {
-    id: 6,
-    icon: AlignVerticalJustifyEnd,
-    text: 'Chủ đề khóa học',
-    href: '/dashboard/course-topics',
-    subActions: [
-      {
-        id: 6.1,
-        icon: View,
-        text: 'Danh sách',
-        href: '/dashboard/course-topics',
-      },
-      {
-        id: 6.2,
-        icon: Plus,
-        text: 'Thêm mới',
-        href: '/dashboard/course-topics/add',
-      },
-    ],
-  },
+  // {
+  //   id: 6,
+  //   icon: AlignVerticalJustifyEnd,
+  //   text: 'Chủ đề khóa học',
+  //   href: '/dashboard/course-topics',
+  //   subActions: [
+  //     {
+  //       id: 6.1,
+  //       icon: View,
+  //       text: 'Danh sách',
+  //       href: '/dashboard/course-topics',
+  //     },
+  //     {
+  //       id: 6.2,
+  //       icon: Plus,
+  //       text: 'Thêm mới',
+  //       href: '/dashboard/course-topics/add',
+  //     },
+  //   ],
+  // },
   {
     id: 7,
     icon: School,

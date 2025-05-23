@@ -1,15 +1,5 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-
-import { queryClient } from '@/context/react-query-client';
-import { useToast } from '@/hooks/core/use-toast';
-import { ICourse } from '@/types';
-
 import { Button } from '@/components/ui/buttons/button';
 import { Checkbox } from '@/components/ui/buttons/checkbox';
 import {
@@ -25,8 +15,16 @@ import { Input } from '@/components/ui/form/input';
 import { Textarea } from '@/components/ui/form/textarea';
 import Loader from '@/components/ui/info/loader';
 import { Separator } from '@/components/ui/layout/separator';
+import { queryClient } from '@/context/react-query-client';
 import { useCurrentUser } from '@/hooks/auth/use-current-user';
+import { useToast } from '@/hooks/core/use-toast';
 import { useCourseMutation } from '@/hooks/mutations/useCourse.mutation';
+import { ICourse } from '@/types';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 const CreateCourseSchema = z.object({
   name: z.string().min(1, 'Course name is required'),
@@ -78,7 +76,7 @@ const HandleCourseForm: React.FC<HandleCourseFormProps> = (props) => {
       form.reset();
 
       toast({
-        title: `Success ${response.statusCode} 🚀`,
+        title: `Thành công 🚀`,
         description: response.message,
       });
 
@@ -88,7 +86,7 @@ const HandleCourseForm: React.FC<HandleCourseFormProps> = (props) => {
     },
     onError: (error: any) => {
       toast({
-        title: 'Error',
+        title: 'Lỗi',
         description: error?.response?.data?.message,
         variant: 'destructive',
       });
@@ -111,7 +109,6 @@ const HandleCourseForm: React.FC<HandleCourseFormProps> = (props) => {
     }
   }, [props.course, props.isEdit, form]);
 
-  // Set the user ID in the form when it becomes available
   useEffect(() => {
     if (user && !props.isEdit) {
       form.setValue('createdById', user.userId);
@@ -119,7 +116,6 @@ const HandleCourseForm: React.FC<HandleCourseFormProps> = (props) => {
   }, [user, form, props.isEdit]);
 
   const handleFormSubmit = async (data: CourseFormValues) => {
-    // Verify user data is available
     if (!user && !props.isEdit) {
       toast({
         title: 'Error',

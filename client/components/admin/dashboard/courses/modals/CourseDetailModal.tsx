@@ -1,7 +1,8 @@
-import { AlertCircle, Book, Edit, User } from 'lucide-react';
+import { Book, Edit, User } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
 
+import { Button } from '@/components/ui/buttons/button';
 import { Badge } from '@/components/ui/info/badge';
 import {
   Dialog,
@@ -11,7 +12,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/layout/dialog';
-import { Button } from '@/components/ui/buttons/button';
 import { ICourse } from '@/types/course.types';
 
 type CourseDetailModalProps = {
@@ -38,51 +38,47 @@ const CourseDetailModal: React.FC<CourseDetailModalProps> = ({
         </DialogHeader>
 
         <div className="py-4 overflow-y-auto max-h-[80vh]">
-          {/* Title Section */}
           <div className="bg-slate-50 rounded-lg p-5 my-4 shadow-sm border border-slate-100">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-lg font-medium text-slate-700 flex items-center">
                 <span className="inline-flex justify-center items-center w-7 h-7 rounded-full bg-primary text-white font-semibold mr-2">T</span>
                 Tên khóa học
               </h3>
-              <Badge variant={course.isPublished ? "default" : "secondary"}>
+              <Badge variant={course.isPublished ? "default" : "secondary"} className={course.isPublished ? "bg-green-500" : ""}>
                 {course.isPublished ? "Đã xuất bản" : "Chưa xuất bản"}
               </Badge>
             </div>
             <p className="text-base leading-relaxed pl-9">{course.name}</p>
           </div>
-          
-          {/* Subject Section */}
+
           <div className="my-6">
             <h3 className="text-base font-medium text-slate-700 mb-4 flex items-center">
               <span className="inline-block w-1 h-5 bg-primary rounded-full mr-2"></span>
               Môn học
             </h3>
-            
+
             <div className="p-4 bg-white rounded-lg border border-slate-200 shadow-sm">
               <p className="text-sm">{course.subject}</p>
             </div>
           </div>
 
-          {/* Description Section */}
           <div className="my-6">
             <h3 className="text-base font-medium text-slate-700 mb-4 flex items-center">
               <span className="inline-block w-1 h-5 bg-blue-500 rounded-full mr-2"></span>
               Mô tả khóa học
             </h3>
-            
+
             <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 shadow-sm">
               <p className="text-sm whitespace-pre-line">{course.description}</p>
             </div>
           </div>
 
-          {/* Creator Info Section */}
           <div className="my-6">
             <h3 className="text-base font-medium text-slate-700 mb-4 flex items-center">
               <span className="inline-block w-1 h-5 bg-purple-500 rounded-full mr-2"></span>
               Người tạo
             </h3>
-            
+
             <div className="p-4 bg-white rounded-lg border border-slate-200 shadow-sm">
               <div className="flex items-center">
                 <User className="h-10 w-10 text-slate-400 bg-slate-100 p-2 rounded-full mr-3" />
@@ -96,7 +92,6 @@ const CourseDetailModal: React.FC<CourseDetailModalProps> = ({
             </div>
           </div>
 
-          {/* Metadata Section */}
           <div className="mt-6 pt-4 border-t">
             <h3 className="text-base font-medium text-slate-700 mb-4 flex items-center">
               <span className="inline-block w-1 h-5 bg-slate-400 rounded-full mr-2"></span>
@@ -104,7 +99,6 @@ const CourseDetailModal: React.FC<CourseDetailModalProps> = ({
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 p-4 bg-slate-50 rounded-lg">
-              {/* Creation Date */}
               {course.createdAt && (
                 <div>
                   <h4 className="text-xs uppercase tracking-wider text-slate-500 mb-1">Ngày tạo</h4>
@@ -117,8 +111,7 @@ const CourseDetailModal: React.FC<CourseDetailModalProps> = ({
                   })}</p>
                 </div>
               )}
-              
-              {/* Last Update */}
+
               {course.updatedAt && (
                 <div>
                   <h4 className="text-xs uppercase tracking-wider text-slate-500 mb-1">Cập nhật cuối</h4>

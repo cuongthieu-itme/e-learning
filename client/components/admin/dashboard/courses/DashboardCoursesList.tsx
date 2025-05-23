@@ -68,7 +68,7 @@ const DashboardCoursesList: React.FC<DashboardCoursesListProps> = ({
       setIsDialogOpen(false);
 
       toast({
-        title: `Success ${response.statusCode} 🚀`,
+        title: `Xóa thành công 🚀`,
         description: response.message,
       });
     },
@@ -131,7 +131,7 @@ const DashboardCoursesList: React.FC<DashboardCoursesListProps> = ({
               <TableCell>{course.subject}</TableCell>
               <TableCell>
                 <Badge variant={course.isPublished ? "default" : "outline"} className={course.isPublished ? "bg-green-500" : ""}>
-                  {course.isPublished ? "Đã xuất bản" : "Bản nháp"}
+                  {course.isPublished ? "Đã xuất bản" : "Chưa xuất bản"}
                 </Badge>
               </TableCell>
               <TableCell>{`${course.createdById.first_name} ${course.createdById.last_name}`}</TableCell>
