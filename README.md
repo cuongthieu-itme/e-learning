@@ -67,13 +67,13 @@ Add a .env file in the api directory and configure the necessary environment var
 - Frontend
 
 ```bash
-pnpm start:client
+pnpm dev
 ```
 
 - Backend
 
 ```bash
-pnpm start:api
+pnpm start:dev
 ```
 
 ## Usage
