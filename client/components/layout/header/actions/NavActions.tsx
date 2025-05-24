@@ -27,11 +27,11 @@ const NavActions: React.FC<{
         <Logo />
       </div>
 
-      {showSearch && (
+      {/* {showSearch && (
         <div className="basis-1/3">
           <NavSearch />
         </div>
-      )}
+      )} */}
 
       <div className="flex items-center gap-5">
         {isAuthenticated &&
