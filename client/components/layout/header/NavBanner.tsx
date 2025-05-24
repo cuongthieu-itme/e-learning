@@ -7,13 +7,8 @@ const NavBanner: React.FC = () => {
     {
       id: 1,
       icon: <BadgeHelp color="#008ECC" />,
-      text: 'Online Support',
-    },
-    {
-      id: 2,
-      icon: <Truck color="#008ECC" />,
-      text: 'Fast delivery (1 - 3 days)',
-    },
+      text: 'Hỗ trợ trực tuyến',
+    }
   ];
 
   return (
