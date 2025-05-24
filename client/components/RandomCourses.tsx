@@ -1,8 +1,10 @@
 "use client";
 
 import { CourseQueryType, useCourseQuery } from '@/hooks/queries/useCourse.query';
-import { ArrowRight, BookOpen, Bookmark, Layers } from 'lucide-react';
+import { useAuthStore } from '@/store/auth.store';
+import { ArrowRight, BookOpen, Bookmark, Layers, Lock } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface CourseResponse {
   _id: string;
@@ -27,6 +29,9 @@ const RandomCourses = () => {
     type: CourseQueryType.GET_RANDOM,
     params: {}
   });
+  
+  const { isAuthenticated } = useAuthStore();
+  const router = useRouter();
 
   const courses = data?.courses || [];
   const hasError = !!error || !data;
@@ -36,6 +41,14 @@ const RandomCourses = () => {
     'bg-gradient-to-br from-purple-500 to-pink-400',
     'bg-gradient-to-br from-emerald-400 to-teal-600',
   ];
+
+  const handleCourseClick = (courseId: string) => {
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+    router.push(`/courses/${courseId}`);
+  };
 
   if (isLoading) {
     return (
@@ -83,7 +96,8 @@ const RandomCourses = () => {
           {courses && courses.length > 0 ? (courses as unknown as CourseResponse[]).map((course, index) => (
             <div
               key={course._id}
-              className={`group relative overflow-hidden rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl ${cardColors[index % cardColors.length]}`}
+              className={`group relative overflow-hidden rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer ${cardColors[index % cardColors.length]}`}
+              onClick={() => handleCourseClick(course._id)}
             >
               <div className="absolute inset-0 bg-black opacity-10 transition-opacity duration-300 group-hover:opacity-0"></div>
 
@@ -109,15 +123,28 @@ const RandomCourses = () => {
                       <p className="text-sm opacity-90">{course.topics.length} chủ đề</p>
                     </div>
                   )}
+
+                  {!isAuthenticated && (
+                    <div className="mt-3 flex items-center text-yellow-300">
+                      <Lock className="mr-2 h-4 w-4" />
+                      <span className="text-sm">Yêu cầu đăng nhập để xem</span>
+                    </div>
+                  )}
                 </div>
 
-                <Link
-                  href={`/courses/${course._id}`}
-                  className="mt-4 inline-flex items-center text-sm font-semibold transition-all duration-300 hover:translate-x-1"
-                >
-                  Xem chi tiết
-                  <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
+                <div className="mt-4 inline-flex items-center text-sm font-semibold transition-all duration-300 group-hover:translate-x-1">
+                  {!isAuthenticated ? (
+                    <>
+                      Đăng nhập để xem
+                      <ArrowRight className="ml-1 h-4 w-4" />
+                    </>
+                  ) : (
+                    <>
+                      Xem chi tiết
+                      <ArrowRight className="ml-1 h-4 w-4" />
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           )) : (

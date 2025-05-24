@@ -26,6 +26,11 @@ const rootConfig = {
       allowedRoles: new Set(['user']),
       redirect: '/',
     },
+    {
+      pattern: /^\/courses\/[^\/]+(\/.*)?$/,
+      allowedRoles: new Set(['user', 'admin']),
+      redirect: '/login',
+    },
   ],
   authPages: new Set(['/login', '/signup']),
   roleRedirects: new Map([
@@ -103,5 +108,6 @@ export const config = {
     '/cart/:path*',
     '/profile/:path*',
     '/wishlist/:path*',
+    '/courses/:path*',
   ],
 };
