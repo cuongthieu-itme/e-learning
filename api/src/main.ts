@@ -10,8 +10,19 @@ import { AppModule } from './app.module';
 async function initializeServer() {
   const app = await NestFactory.create(AppModule);
 
+  const corsOrigins: (string | RegExp)[] = [
+    /^http:\/\/localhost:\d+$/,
+    /^https:\/\/localhost:\d+$/,
+    /^http:\/\/127\.0\.0\.1:\d+$/,
+    /^https:\/\/127\.0\.0\.1:\d+$/,
+  ];
+
+  if (process.env.FRONTEND_URL) {
+    corsOrigins.push(process.env.FRONTEND_URL);
+  }
+
   app.enableCors({
-    origin: ['http://localhost:3002'],
+    origin: corsOrigins,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -20,7 +31,6 @@ async function initializeServer() {
   app.use(helmet());
   app.use(cookieParser());
   
-  // CSRF protection has been removed
   app.use(compression());
   app.useGlobalPipes(
     new ValidationPipe({
