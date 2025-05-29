@@ -178,7 +178,8 @@ const HandleQuestionForm: React.FC<HandleQuestionFormProps> = (props) => {
     page,
     limit: 10,
     search: searchTerm,
-  }), [page, searchTerm]);
+    createdById: user?.userId,
+  }), [page, searchTerm, user]);
 
   const { data: lecturesData, isLoading: isLecturesLoading, refetch } = useLectureQuery({
     type: LectureQueryType.GET_ALL,
@@ -243,10 +244,8 @@ const HandleQuestionForm: React.FC<HandleQuestionFormProps> = (props) => {
     }
   };
 
-  // Effects that need to react to field value but can't be inside the render prop
   const lectureIdValue = form.watch("lectureId");
 
-  // Effect for updating selectedLecture when lectureId changes
   useEffect(() => {
     if (open && lectureIdValue && !selectedLecture) {
       const lecture = lectures.find(l => l._id === lectureIdValue);
@@ -256,7 +255,6 @@ const HandleQuestionForm: React.FC<HandleQuestionFormProps> = (props) => {
     }
   }, [open, lectureIdValue, selectedLecture, lectures]);
 
-  // Effect for handling edit mode lecture selection
   useEffect(() => {
     if (props.isEdit && props.question) {
       if (lectures.length > 0) {
@@ -292,7 +290,7 @@ const HandleQuestionForm: React.FC<HandleQuestionFormProps> = (props) => {
                         className="justify-between w-full font-normal"
                       >
                         {field.value && selectedLecture
-                          ? `${selectedLecture.title} (${field.value})`
+                          ? selectedLecture.title
                           : "Chọn bài giảng"}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
@@ -347,7 +345,6 @@ const HandleQuestionForm: React.FC<HandleQuestionFormProps> = (props) => {
                                   />
                                   <div className="flex flex-col">
                                     <span className="font-medium">{lecture.title}</span>
-                                    <span className="text-xs text-muted-foreground">{lecture._id}</span>
                                   </div>
                                 </div>
                               ))}

@@ -4,6 +4,7 @@ import LoadingDashboardCourses from '@/components/shared/loading/dashboard/Loadi
 import NotFound from '@/components/shared/NotFound';
 import QueryParamController from '@/components/shared/QueryParamController';
 import PaginateList from '@/components/ui/pagination/paginate-list';
+import { useCurrentUser } from '@/hooks/auth/use-current-user';
 import { CourseQueryType, useCourseQuery } from '@/hooks/queries/useCourse.query';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
@@ -20,12 +21,14 @@ const DashboardCourses: React.FC = () => {
 
 const DashboardCoursesContent: React.FC = () => {
   const searchParams = useSearchParams();
+  const { user } = useCurrentUser();
 
   const query = {
     page: Number(searchParams.get('page')) || 1,
     limit: Math.min(Math.max(Number(searchParams.get('limit')) || 10, 1), 100),
     search: searchParams.get('search') || '',
     sort: searchParams.get('sort') || '',
+    createdById: user?.userId,
   };
 
   const { data, isLoading } = useCourseQuery({

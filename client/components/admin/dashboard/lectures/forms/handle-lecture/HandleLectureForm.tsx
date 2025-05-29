@@ -159,7 +159,8 @@ const HandleLectureForm: React.FC<HandleLectureFormProps> = (props) => {
     page,
     limit: 10,
     search: searchTerm,
-  }), [page, searchTerm]);
+    createdById: user?.userId,
+  }), [page, searchTerm, user]);
 
   const { data: coursesData, isLoading: isCoursesLoading, refetch } = useCourseQuery({
     type: CourseQueryType.GET_ALL,
@@ -278,7 +279,7 @@ const HandleLectureForm: React.FC<HandleLectureFormProps> = (props) => {
                         className="justify-between w-full font-normal"
                       >
                         {field.value && selectedCourse
-                          ? `${selectedCourse.name} (${field.value})`
+                          ? selectedCourse.name
                           : "Chọn khóa học"}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
@@ -333,7 +334,6 @@ const HandleLectureForm: React.FC<HandleLectureFormProps> = (props) => {
                                   />
                                   <div className="flex flex-col">
                                     <span className="font-medium">{course.name}</span>
-                                    <span className="text-xs text-muted-foreground">{course._id}</span>
                                   </div>
                                 </div>
                               ))}
