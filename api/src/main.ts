@@ -10,19 +10,8 @@ import { AppModule } from './app.module';
 async function initializeServer() {
   const app = await NestFactory.create(AppModule);
 
-  const corsOrigins: (string | RegExp)[] = [
-    /^http:\/\/localhost:\d+$/,
-    /^https:\/\/localhost:\d+$/,
-    /^http:\/\/127\.0\.0\.1:\d+$/,
-    /^https:\/\/127\.0\.0\.1:\d+$/,
-  ];
-
-  if (process.env.FRONTEND_URL) {
-    corsOrigins.push(process.env.FRONTEND_URL);
-  }
-
   app.enableCors({
-    origin: corsOrigins,
+    origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,

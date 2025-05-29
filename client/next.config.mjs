@@ -32,7 +32,7 @@ const cspHeader = `
     style-src 'self' 'unsafe-inline';
     img-src 'self' blob: data: https://ecommerce-application-for-business.s3.eu-north-1.amazonaws.com;
     font-src 'self' data:;
-    connect-src 'self' http://localhost:8080 http://localhost:8080/api;
+    connect-src 'self' https: http: ws: wss: *;
     object-src 'none';
     base-uri 'self';
     form-action 'self';
