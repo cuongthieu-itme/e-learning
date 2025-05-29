@@ -12,8 +12,8 @@ interface OverviewData {
   lecturesThisMonth: number;
   totalQuestions: number;
   questionsThisMonth: number;
-  publishedCourses: number;
-  completedLectures: number;
+  publishedCourses?: number;
+  completedLectures?: number;
 }
 
 interface OverviewStatsProps {
@@ -21,48 +21,50 @@ interface OverviewStatsProps {
 }
 
 const OverviewStats: React.FC<OverviewStatsProps> = ({ data }) => {
+  // Ensure all values are valid numbers
+  const safeData = {
+    totalUsers: data?.totalUsers ?? 0,
+    usersThisMonth: data?.usersThisMonth ?? 0,
+    totalCourses: data?.totalCourses ?? 0,
+    coursesThisMonth: data?.coursesThisMonth ?? 0,
+    totalLectures: data?.totalLectures ?? 0,
+    lecturesThisMonth: data?.lecturesThisMonth ?? 0,
+    totalQuestions: data?.totalQuestions ?? 0,
+    questionsThisMonth: data?.questionsThisMonth ?? 0,
+  };
+
   const statCards = [
     {
       title: 'Tổng số người dùng',
-      value: data.totalUsers,
-      thisMonth: data.usersThisMonth,
+      value: safeData.totalUsers,
+      thisMonth: safeData.usersThisMonth,
       icon: <Users className="h-5 w-5 text-blue-600" />,
       color: 'bg-blue-50',
+      percent: data?.publishedCourses ? Math.round((data.publishedCourses / safeData.totalUsers) * 100) : undefined,
     },
     {
       title: 'Tổng số khóa học',
-      value: data.totalCourses,
-      thisMonth: data.coursesThisMonth,
+      value: safeData.totalCourses,
+      thisMonth: safeData.coursesThisMonth,
       icon: <Book className="h-5 w-5 text-emerald-600" />,
       color: 'bg-emerald-50',
+      percent: data?.publishedCourses ? Math.round((data.publishedCourses / safeData.totalCourses) * 100) : undefined,
     },
     {
       title: 'Tổng số bài giảng',
-      value: data.totalLectures,
-      thisMonth: data.lecturesThisMonth,
+      value: safeData.totalLectures,
+      thisMonth: safeData.lecturesThisMonth,
       icon: <FileText className="h-5 w-5 text-purple-600" />,
       color: 'bg-purple-50',
+      percent: data?.completedLectures ? Math.round((data.completedLectures / safeData.totalLectures) * 100) : undefined,
     },
     {
       title: 'Tổng số câu hỏi',
-      value: data.totalQuestions,
-      thisMonth: data.questionsThisMonth,
+      value: safeData.totalQuestions,
+      thisMonth: safeData.questionsThisMonth,
       icon: <FileText className="h-5 w-5 text-amber-600" />,
       color: 'bg-amber-50',
-    },
-    {
-      title: 'Khóa học đã xuất bản',
-      value: data.publishedCourses,
-      percent: data.totalCourses > 0 ? Math.round((data.publishedCourses / data.totalCourses) * 100) : 0,
-      icon: <BookOpen className="h-5 w-5 text-green-600" />,
-      color: 'bg-green-50',
-    },
-    {
-      title: 'Bài giảng đã hoàn thành',
-      value: data.completedLectures,
-      percent: data.totalLectures > 0 ? Math.round((data.completedLectures / data.totalLectures) * 100) : 0,
-      icon: <CheckCircle className="h-5 w-5 text-indigo-600" />,
-      color: 'bg-indigo-50',
+      percent: undefined,
     },
   ];
 
