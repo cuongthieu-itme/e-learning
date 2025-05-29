@@ -22,7 +22,6 @@ export interface CreateBatchQuestionsDto {
 export const createQuestion = async (
   data: FormData | any,
 ): Promise<ServerResponse> => {
-  // Handle both FormData and JSON payload
   const headers = data instanceof FormData
     ? { 'Content-Type': 'multipart/form-data' }
     : { 'Content-Type': 'application/json' };
@@ -36,7 +35,6 @@ export const updateQuestion = async (
   data: FormData | any,
   questionId: string,
 ): Promise<ServerResponse> => {
-  // Handle both FormData and JSON payload
   const headers = data instanceof FormData
     ? { 'Content-Type': 'multipart/form-data' }
     : { 'Content-Type': 'application/json' };

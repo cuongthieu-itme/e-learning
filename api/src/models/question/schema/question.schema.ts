@@ -27,7 +27,7 @@ export class Question {
     optionD: string;
 
     @Prop({ required: true })
-    correctAnswer: string; // A, B, C, D — validate in service
+    correctAnswer: string;
 
     @Prop()
     explanation?: string;

@@ -12,7 +12,6 @@ import {
 export const createCourse = async (
   data: FormData | any,
 ): Promise<ServerResponse> => {
-  // Handle both FormData and JSON payload
   return await postApiHandler('course', data);
 };
 
@@ -20,7 +19,6 @@ export const updateCourse = async (
   data: FormData | any,
   courseId: string,
 ): Promise<ServerResponse> => {
-  // Handle both FormData and JSON payload
   return await patchApiHandler(`course/${courseId}`, data);
 };
 

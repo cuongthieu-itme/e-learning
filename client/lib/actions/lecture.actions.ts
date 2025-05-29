@@ -12,7 +12,6 @@ import {
 export const createLecture = async (
   data: FormData | any,
 ): Promise<ServerResponse> => {
-  // Handle both FormData and JSON payload
   const headers = data instanceof FormData
     ? { 'Content-Type': 'multipart/form-data' }
     : { 'Content-Type': 'application/json' };
@@ -26,7 +25,6 @@ export const updateLecture = async (
   data: FormData | any,
   lectureId: string,
 ): Promise<ServerResponse> => {
-  // Handle both FormData and JSON payload
   const headers = data instanceof FormData
     ? { 'Content-Type': 'multipart/form-data' }
     : { 'Content-Type': 'application/json' };

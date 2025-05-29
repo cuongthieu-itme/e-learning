@@ -51,7 +51,6 @@ const AiQuestionGeneratorModal: React.FC<AiQuestionGeneratorModalProps> = ({
   const [selectedLecture, setSelectedLecture] = useState<ILecture | null>(null);
   const [openLecturePopover, setOpenLecturePopover] = useState(false);
 
-  // For preview and submission
   const [generatedQuestions, setGeneratedQuestions] = useState<any[]>([]);
   const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(0);
 
@@ -110,11 +109,9 @@ const AiQuestionGeneratorModal: React.FC<AiQuestionGeneratorModalProps> = ({
 
       if (data?.questions) {
         if (questionMutation.variables?.type === QuestionMutationType.GENERATE_AI) {
-          // Handle success for AI generation
           setGeneratedQuestions(data.questions);
           setStep('preview');
         } else if (questionMutation.variables?.type === QuestionMutationType.CREATE_BATCH) {
-          // Handle success for batch creation
           toast({
             title: 'Thành công',
             description: `Đã tạo ${data.questionsCount || data.questions.length} câu hỏi thành công`,
@@ -409,7 +406,6 @@ const AiQuestionGeneratorModal: React.FC<AiQuestionGeneratorModalProps> = ({
                     </div>
                   </div>
 
-                  {/* Main content - question preview */}
                   <div className="flex-1 overflow-y-auto pr-1">
                     {generatedQuestions[selectedQuestionIndex] && (
                       <div className="space-y-4">

@@ -277,7 +277,6 @@ const CourseLecturesList = ({ courseId }: CourseLecturesListProps) => {
 
             {[...Array(totalPages)].map((_, index) => {
               const pageNumber = index + 1;
-              // Show limited page numbers for better UX
               if (
                 pageNumber === 1 ||
                 pageNumber === totalPages ||

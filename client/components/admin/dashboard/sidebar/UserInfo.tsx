@@ -31,19 +31,16 @@ const UserInfo: React.FC = () => {
   const { user, isLoading, logout } = useAuthStore();
   const router = useRouter();
 
-  // Handle logout with redirection
   const handleLogout = async () => {
     await logout();
     router.push('/login');
   };
 
-  // Generate initials from role
   const getInitials = () => {
     if (!user?.role) return 'U';
     return user.role.substring(0, 2).toUpperCase();
   };
 
-  // Handle loading state
   if (isLoading) {
     return (
       <SidebarMenu>

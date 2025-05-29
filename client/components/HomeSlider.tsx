@@ -1,25 +1,21 @@
 "use client";
 
-import { useRef, useState } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { Autoplay, Navigation, Pagination } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
-// Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 const HomeSlider = () => {
-  // State to track when navigation is initialized
   const [isInitialized, setIsInitialized] = useState(false);
-  
-  // References for navigation buttons and swiper instance
+
   const swiperRef = useRef<any>(null);
   const navigationPrevRef = useRef<HTMLButtonElement>(null);
   const navigationNextRef = useRef<HTMLButtonElement>(null);
 
-  // Slider content data
   const sliderData = [
     {
       id: 1,
@@ -46,7 +42,7 @@ const HomeSlider = () => {
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         slidesPerView={1}
-        speed={500} /* Optimized speed for smoother transitions */
+        speed={500}
         loop={true}
         autoplay={{
           delay: 5000,
@@ -61,12 +57,7 @@ const HomeSlider = () => {
           nextEl: navigationNextRef.current,
         }}
         onSwiper={(swiper) => {
-          // Save swiper instance
           swiperRef.current = swiper;
-          
-          // Update navigation after initialization
-          // This fixes a common issue with Swiper where navigation buttons
-          // don't work on first render
           setTimeout(() => {
             if (swiper.params && swiper.params.navigation) {
               const nav = swiper.params.navigation as any;
@@ -83,7 +74,6 @@ const HomeSlider = () => {
         {sliderData.map((slide) => (
           <SwiperSlide key={slide.id}>
             <div className={`relative h-full w-full ${slide.bgColor}`}>
-              {/* Content with optimized transitions */}
               <div className="flex h-full w-full flex-col justify-center p-8">
                 <h1 className="max-w-2xl text-3xl font-bold text-white md:text-4xl will-change-transform">
                   {slide.title}
@@ -104,18 +94,17 @@ const HomeSlider = () => {
         ))}
       </Swiper>
 
-      {/* Custom navigation buttons with hardware acceleration */}
       <div className="absolute bottom-8 right-8 z-10 flex items-center gap-2">
-        <button 
-          ref={navigationPrevRef} 
+        <button
+          ref={navigationPrevRef}
           className="flex h-10 w-10 transform items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-white/30 will-change-transform"
           aria-label="Previous slide"
           disabled={!isInitialized}
         >
           <ArrowLeft size={20} />
         </button>
-        <button 
-          ref={navigationNextRef} 
+        <button
+          ref={navigationNextRef}
           className="flex h-10 w-10 transform items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-white/30 will-change-transform"
           aria-label="Next slide"
           disabled={!isInitialized}

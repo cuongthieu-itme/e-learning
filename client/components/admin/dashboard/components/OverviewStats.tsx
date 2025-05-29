@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/layout/card';
-import { ArrowUp, Book, BookOpen, CheckCircle, FileText, Users } from 'lucide-react';
+import { ArrowUp, Book, FileText, Users } from 'lucide-react';
 
 interface OverviewData {
   totalUsers: number;
@@ -21,7 +21,6 @@ interface OverviewStatsProps {
 }
 
 const OverviewStats: React.FC<OverviewStatsProps> = ({ data }) => {
-  // Ensure all values are valid numbers
   const safeData = {
     totalUsers: data?.totalUsers ?? 0,
     usersThisMonth: data?.usersThisMonth ?? 0,

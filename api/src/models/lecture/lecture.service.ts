@@ -90,7 +90,6 @@ export class LectureService {
 
     if (!lecture) throw new NotFoundException('Lecture not found');
 
-    // Check if user is authorized to delete this lecture
     if (lecture.createdById.toString() !== userId) {
       throw new ForbiddenException('You are not authorized to delete this lecture');
     }
@@ -235,7 +234,7 @@ export class LectureService {
   }: GetLecturesDto): Promise<ResponseObject> {
     const conditions: any = {
       courseId: new Types.ObjectId(courseId),
-      status: LectureStatus.PUBLISHED, // Only return published lectures by default
+      status: LectureStatus.PUBLISHED,
     };
 
     if (search) {
@@ -247,7 +246,6 @@ export class LectureService {
       ];
     }
 
-    // Override the status if explicitly specified
     if (status) {
       conditions.status = status;
     }
@@ -281,12 +279,13 @@ export class LectureService {
 
     if (!lecture) throw new NotFoundException('Lecture not found');
 
-    // Check if user is authorized to publish this lecture
     if (lecture.createdById.toString() !== userId) {
       throw new ForbiddenException('You are not authorized to publish this lecture');
     }
 
-    // Check if lecture has content and outline
+    if (!lecture.content || !lecture.outline) {
+      throw new ForbiddenException('Cannot publish lecture without content and outline');
+    }
     if (!lecture.content || !lecture.outline) {
       throw new ForbiddenException('Cannot publish lecture without content and outline');
     }
@@ -309,7 +308,6 @@ export class LectureService {
 
     if (!lecture) throw new NotFoundException('Lecture not found');
 
-    // Check if user is authorized to unpublish this lecture
     if (lecture.createdById.toString() !== userId) {
       throw new ForbiddenException('You are not authorized to unpublish this lecture');
     }

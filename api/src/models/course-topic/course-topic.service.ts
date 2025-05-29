@@ -1,19 +1,19 @@
-import { HttpStatus, Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { ConflictException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, UpdateQuery, UpdateWriteOpResult, Types } from 'mongoose';
+import { FilterQuery, Model, Types, UpdateQuery, UpdateWriteOpResult } from 'mongoose';
 
 import { CourseTopic } from './schema/course-topic.schema';
 
-import { CreateCourseTopicDto } from './dto/create-course-topic.dto';
-import { UpdateCourseTopicDto } from './dto/update-course-topic.dto';
-import { GetCourseTopicsDto } from './dto/get-course-topics.dto';
 import { ResponseObject } from '@/types';
+import { CreateCourseTopicDto } from './dto/create-course-topic.dto';
+import { GetCourseTopicsDto } from './dto/get-course-topics.dto';
+import { UpdateCourseTopicDto } from './dto/update-course-topic.dto';
 
 @Injectable()
 export class CourseTopicService {
   constructor(
     @InjectModel(CourseTopic.name) private readonly courseTopicModel: Model<CourseTopic>,
-  ) {}
+  ) { }
 
   async find(query: FilterQuery<CourseTopic> = {}, select?: string): Promise<CourseTopic[]> {
     return await this.courseTopicModel.find(query).select(select).lean().exec();
@@ -39,7 +39,6 @@ export class CourseTopicService {
 
   async createOne(body: CreateCourseTopicDto): Promise<ResponseObject> {
     try {
-      // Check if the topic already exists for this course
       const existingTopic = await this.courseTopicModel.findOne({
         courseId: new Types.ObjectId(body.courseId),
         topic: body.topic
@@ -63,11 +62,11 @@ export class CourseTopicService {
       if (error instanceof ConflictException) {
         throw error;
       }
-      
+
       if (error.code === 11000) {
         throw new ConflictException('Topic already exists for this course');
       }
-      
+
       throw error;
     }
   }
@@ -78,14 +77,13 @@ export class CourseTopicService {
     if (!courseTopic) throw new NotFoundException('Course topic not found');
 
     try {
-      // Check if the updated topic would create a duplicate
       if (body.topic || body.courseId) {
-        const courseIdToCheck = body.courseId 
-          ? new Types.ObjectId(body.courseId) 
+        const courseIdToCheck = body.courseId
+          ? new Types.ObjectId(body.courseId)
           : courseTopic.courseId;
-        
+
         const topicToCheck = body.topic || courseTopic.topic;
-        
+
         const existingTopic = await this.courseTopicModel.findOne({
           _id: { $ne: new Types.ObjectId(id) },
           courseId: courseIdToCheck,
@@ -97,7 +95,6 @@ export class CourseTopicService {
         }
       }
 
-      // Check if there are any changes
       const hasChanges = Object.keys(body).some(key => body[key] !== courseTopic[key]);
       if (!hasChanges) throw new NotFoundException('No changes found');
 
@@ -120,11 +117,11 @@ export class CourseTopicService {
       if (error instanceof ConflictException || error instanceof NotFoundException) {
         throw error;
       }
-      
+
       if (error.code === 11000) {
         throw new ConflictException('Topic already exists for this course');
       }
-      
+
       throw error;
     }
   }
@@ -172,8 +169,8 @@ export class CourseTopicService {
       conditions.courseId = new Types.ObjectId(courseId);
     }
 
-    const sortOptions: any = { 
-      topic: sort === 'desc' ? -1 : 1 
+    const sortOptions: any = {
+      topic: sort === 'desc' ? -1 : 1
     };
 
     const courseTopics = await this.courseTopicModel
@@ -213,7 +210,6 @@ export class CourseTopicService {
   }
 
   async getRandomTopics(limit: number = 3): Promise<ResponseObject> {
-    // Using MongoDB's aggregation pipeline with $sample to get random documents
     const randomTopics = await this.courseTopicModel.aggregate([
       { $sample: { size: limit } },
       {

@@ -193,10 +193,8 @@ const HandleCourseTopicForm: React.FC<HandleCourseTopicFormProps> = (props) => {
     }
   };
 
-  // Effects that need to react to field value but can't be inside the render prop
   const courseIdValue = form.watch("courseId");
 
-  // Effect for updating selectedCourse when courseId changes
   useEffect(() => {
     if (open && courseIdValue && !selectedCourse) {
       const course = courses.find(c => c._id === courseIdValue);
@@ -206,7 +204,6 @@ const HandleCourseTopicForm: React.FC<HandleCourseTopicFormProps> = (props) => {
     }
   }, [open, courseIdValue, selectedCourse, courses]);
 
-  // Effect for handling edit mode course selection
   useEffect(() => {
     if (props.isEdit && props.courseTopic) {
       if (courses.length > 0) {
