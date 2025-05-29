@@ -24,6 +24,7 @@ import { cn } from '@/lib/utils';
 import { ILecture } from '@/types/lecture.types';
 import debounce from 'lodash.debounce';
 import { AlertCircle, BrainCircuit, Check, ChevronsUpDown, Database, Loader2, Search, Sparkles, Trash2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 type AiQuestionGeneratorModalProps = {
@@ -37,6 +38,7 @@ const AiQuestionGeneratorModal: React.FC<AiQuestionGeneratorModalProps> = ({
   onOpenChange,
   onSuccess,
 }) => {
+  const router = useRouter();
   const { user } = useCurrentUser();
   const { toast } = useToast();
   const [lectureId, setLectureId] = useState('');
@@ -121,6 +123,7 @@ const AiQuestionGeneratorModal: React.FC<AiQuestionGeneratorModalProps> = ({
             onSuccess(data.questions);
           }
           onOpenChange(false);
+          router.push('/dashboard/questions');
         }
       }
     },
@@ -490,7 +493,7 @@ const AiQuestionGeneratorModal: React.FC<AiQuestionGeneratorModalProps> = ({
                               disabled={selectedQuestionIndex === 0}
                               className="h-7 gap-1 px-2"
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5"><path d="m15 18-6-6 6-6"/></svg>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5"><path d="m15 18-6-6 6-6" /></svg>
                               Câu trước
                             </Button>
                             <Button
@@ -501,7 +504,7 @@ const AiQuestionGeneratorModal: React.FC<AiQuestionGeneratorModalProps> = ({
                               className="h-7 gap-1 px-2"
                             >
                               Câu tiếp theo
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5"><path d="m9 18 6-6-6-6"/></svg>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5"><path d="m9 18 6-6-6-6" /></svg>
                             </Button>
                           </div>
                           <div className="text-xs text-muted-foreground">
