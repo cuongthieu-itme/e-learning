@@ -21,7 +21,7 @@ export default function AdminLayout({
 }) {
   return (
     <html lang="en">
-      <body className={GeistSans.className}>
+      <body className={GeistSans.className} suppressHydrationWarning>
         <QueryContextProvider>
           <AdminLayoutWrapper>{children}</AdminLayoutWrapper>
           <Toaster />

@@ -23,7 +23,7 @@ export default function UsersLayout({
 }) {
   return (
     <html lang="en">
-      <body className={GeistSans.className}>
+      <body className={GeistSans.className} suppressHydrationWarning>
         <QueryContextProvider>
           <AuthProvider>
             <UserLayoutWrapper>{children}</UserLayoutWrapper>

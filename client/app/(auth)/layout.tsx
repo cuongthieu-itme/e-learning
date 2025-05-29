@@ -22,7 +22,7 @@ export default function AuthLayout({
 }) {
   return (
     <html lang="en">
-      <body className={GeistSans.className}>
+      <body className={GeistSans.className} suppressHydrationWarning>
         <QueryContextProvider>
           <AuthLayoutWrapper>{children}</AuthLayoutWrapper>
           <Toaster />

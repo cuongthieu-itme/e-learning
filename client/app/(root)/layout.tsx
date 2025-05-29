@@ -23,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={GeistSans.className}>
+      <body className={GeistSans.className} suppressHydrationWarning>
         <QueryContextProvider>
           <AuthProvider>
             <RootLayoutWrapper>{children}</RootLayoutWrapper>
