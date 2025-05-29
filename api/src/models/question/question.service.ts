@@ -1,20 +1,30 @@
-import { ForbiddenException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { ResponseObject } from '@/types';
+import { ForbiddenException, HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, Types, UpdateQuery, UpdateWriteOpResult } from 'mongoose';
-
-import { Question } from './schema/question.schema';
-
-import { ResponseObject } from '@/types';
+import OpenAI from 'openai';
+import { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 import { CreateManyQuestionsDto } from './dto/create-many-questions.dto';
 import { CreateQuestionDto } from './dto/create-question.dto';
+import { GenerateAiQuestionsDto } from './dto/generate-ai-questions.dto';
 import { GetQuestionsDto } from './dto/get-questions.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
+import { Question } from './schema/question.schema';
 
 @Injectable()
 export class QuestionService {
+  private readonly openai: OpenAI;
+  private readonly logger = new Logger(QuestionService.name);
+
   constructor(
     @InjectModel(Question.name) private readonly questionModel: Model<Question>,
-  ) { }
+    private configService: ConfigService,
+  ) {
+    this.openai = new OpenAI({
+      apiKey: this.configService.get<string>('OPENAI_API_KEY'),
+    });
+  }
 
   async find(query: FilterQuery<Question> = {}, select?: string): Promise<Question[]> {
     return await this.questionModel.find(query).select(select).lean().exec();
@@ -106,7 +116,6 @@ export class QuestionService {
 
     if (!question) throw new NotFoundException('Question not found');
 
-    // Check if user is authorized to delete this question
     if (question.createdById.toString() !== userId) {
       throw new ForbiddenException('You are not authorized to delete this question');
     }
@@ -283,13 +292,11 @@ export class QuestionService {
     };
   }
 
-  // Method to get questions for quiz (hides correct answers)
   async getQuestionsForQuiz(lectureId: string, limit: number = 10): Promise<ResponseObject> {
     const conditions = {
       lectureId: new Types.ObjectId(lectureId)
     };
 
-    // Randomly select questions up to the limit
     const questions = await this.questionModel
       .aggregate([
         { $match: conditions },
@@ -301,7 +308,6 @@ export class QuestionService {
             optionB: 1,
             optionC: 1,
             optionD: 1,
-            // Do not include correctAnswer and explanation
           }
         }
       ])
@@ -314,7 +320,6 @@ export class QuestionService {
     };
   }
 
-  // Method to check quiz answers
   async checkQuizAnswers(answers: { questionId: string, answer: string }[]): Promise<ResponseObject> {
     if (!answers || !Array.isArray(answers) || answers.length === 0) {
       throw new NotFoundException('No answers provided');
@@ -421,5 +426,96 @@ export class QuestionService {
       totalQuestions,
       message: 'Questions retrieved successfully'
     };
+  }
+
+  async generateAiQuestions(dto: GenerateAiQuestionsDto, userId: string): Promise<ResponseObject> {
+    try {
+      const { count, lectureId, lecture } = dto;
+
+      const questions = await this.questionModel.find({ lectureId }).exec();
+      if (!questions) {
+        throw new NotFoundException('Lecture not found');
+      }
+
+      const messages: ChatCompletionMessageParam[] = [
+        {
+          role: 'system',
+          content: 'Bạn là một chuyên gia tạo câu hỏi giáo dục. Hãy tạo các câu hỏi giáo dục bằng tiếng Việt với đáp án dựa trên chủ đề được cung cấp. Đầu ra phải ở định dạng JSON.'
+        },
+        {
+          role: 'user',
+          content: `Tạo ${count} câu hỏi trắc nghiệm bằng tiếng Việt về "${lecture}".
+          Mỗi câu hỏi phải có 4 lựa chọn (A, B, C, D) với chỉ một đáp án đúng.
+          Định dạng phản hồi như một đối tượng JSON hợp lệ với mảng 'questions' chứa các đối tượng có cấu trúc sau:
+          {
+            "questions": [
+              {
+                "lectureId": "${lectureId}",
+                "question": "Nội dung câu hỏi?",
+                "optionA": "Nội dung lựa chọn A",
+                "optionB": "Nội dung lựa chọn B",
+                "optionC": "Nội dung lựa chọn C",
+                "optionD": "Nội dung lựa chọn D",
+                "correctAnswer": "A", // phải là một trong: A, B, C, D
+                "explanation": "Giải thích tại sao đáp án này là đúng"
+              }
+            ]
+          }`
+        }
+      ];
+
+      const response = await this.openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages,
+        temperature: 0.7,
+        max_tokens: 2500,
+      });
+
+      const content = response.choices[0].message.content;
+
+      try {
+        const parsedResponse = JSON.parse(content);
+        const generatedQuestions = parsedResponse.questions || [];
+
+        if (!generatedQuestions.length) {
+          throw new Error('No questions generated in the response');
+        }
+
+        const questionsToCreate = generatedQuestions.map((q: any) => ({
+          question: q.question,
+          optionA: q.optionA,
+          optionB: q.optionB,
+          optionC: q.optionC,
+          optionD: q.optionD,
+          correctAnswer: q.correctAnswer,
+          explanation: q.explanation,
+          lectureId: new Types.ObjectId(lectureId),
+          createdById: new Types.ObjectId(userId)
+        }));
+
+        const createdQuestions = await this.questionModel.insertMany(questionsToCreate);
+
+        return {
+          statusCode: HttpStatus.CREATED,
+          message: `${createdQuestions.length} câu hỏi đã được tạo thành công bằng AI`,
+          questions: createdQuestions
+        };
+      } catch (parseError) {
+        this.logger.error(`Failed to parse OpenAI response: ${parseError.message}`);
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Không thể phân tích cú pháp phản hồi từ AI',
+          error: 'Failed to parse response',
+          rawContent: content
+        };
+      }
+    } catch (error) {
+      this.logger.error(`OpenAI API error: ${error.message}`);
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Lỗi khi tạo câu hỏi bằng AI',
+        error: error.message
+      };
+    }
   }
 }
