@@ -1,4 +1,4 @@
-import { createQuestion, deleteQuestion, updateQuestion } from '@/lib/actions/question.actions';
+import { GenerateAiQuestionsDto, createQuestion, deleteQuestion, generateAiQuestions, updateQuestion } from '@/lib/actions/question.actions';
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 import { useToast } from '../core/use-toast';
 
@@ -6,6 +6,7 @@ enum QuestionMutationType {
   CREATE = 'CREATE',
   UPDATE = 'UPDATE',
   DELETE = 'DELETE',
+  GENERATE_AI = 'GENERATE_AI',
 }
 
 type QuestionMutationPayload =
@@ -21,6 +22,10 @@ type QuestionMutationPayload =
   | {
     type: QuestionMutationType.DELETE;
     questionId: string;
+  }
+  | {
+    type: QuestionMutationType.GENERATE_AI;
+    data: GenerateAiQuestionsDto;
   };
 
 const useQuestionMutation = (
@@ -39,6 +44,8 @@ const useQuestionMutation = (
         return updateQuestion(payload.data, payload.questionId);
       case QuestionMutationType.DELETE:
         return deleteQuestion(payload.questionId);
+      case QuestionMutationType.GENERATE_AI:
+        return generateAiQuestions(payload.data);
       default:
         throw new Error('Invalid mutation type');
     }

@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/buttons/button';
-import { Textarea } from '@/components/ui/form/textarea';
+import { Input } from '@/components/ui/form/input';
 import { Badge } from '@/components/ui/info/badge';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/layout/command';
 import {
@@ -20,23 +20,24 @@ import { LectureQueryType, useLectureQuery } from '@/hooks/queries/useLecture.qu
 import { cn } from '@/lib/utils';
 import { ILecture } from '@/types/lecture.types';
 import debounce from 'lodash.debounce';
-import { AlertCircle, BrainCircuit, Check, ChevronsUpDown, LightbulbIcon, Loader2, Search, Sparkles } from 'lucide-react';
+import { BrainCircuit, Check, ChevronsUpDown, Loader2, Search, Sparkles } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { QuestionMutationType, useQuestionMutation } from '@/hooks/mutations/useQuestion.mutation';
 
 type AiQuestionGeneratorModalProps = {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onGenerate: (lectureId: string, topic: string) => void;
+  onSuccess?: (questions: any[]) => void;
 };
 
 const AiQuestionGeneratorModal: React.FC<AiQuestionGeneratorModalProps> = ({
   isOpen,
   onOpenChange,
-  onGenerate,
+  onSuccess,
 }) => {
   const { user } = useCurrentUser();
   const [lectureId, setLectureId] = useState('');
-  const [topic, setTopic] = useState('');
+  const [count, setCount] = useState(5);
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<'input' | 'generating' | 'preview'>('input');
 
@@ -44,12 +45,6 @@ const AiQuestionGeneratorModal: React.FC<AiQuestionGeneratorModalProps> = ({
   const [page, setPage] = useState<number>(1);
   const [selectedLecture, setSelectedLecture] = useState<ILecture | null>(null);
   const [openLecturePopover, setOpenLecturePopover] = useState(false);
-
-  const exampleTopics = [
-    'Kiến thức cơ bản về hàm số',
-    'Ứng dụng của vi phân trong kinh tế',
-    'Lịch sử phát triển của ngôn ngữ lập trình'
-  ];
 
   const queryParams = useMemo(() => ({
     page,
@@ -100,20 +95,36 @@ const AiQuestionGeneratorModal: React.FC<AiQuestionGeneratorModalProps> = ({
     }
   };
 
+  const questionMutation = useQuestionMutation({
+    onSuccess: (data) => {
+      setIsLoading(false);
+      setStep('input');
+      if (onSuccess && data?.questions) {
+        onSuccess(data.questions);
+      }
+      onOpenChange(false);
+    },
+    onError: () => {
+      setIsLoading(false);
+      setStep('input');
+    },
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!lectureId || !topic) return;
+    if (!lectureId || !selectedLecture) return;
 
     setIsLoading(true);
     setStep('generating');
 
-    setTimeout(() => {
-      onGenerate(lectureId, topic);
-    }, 1500);
-  };
-
-  const useSuggestion = (suggestion: string) => {
-    setTopic(suggestion);
+    questionMutation.mutate({
+      type: QuestionMutationType.GENERATE_AI,
+      data: {
+        lectureId,
+        lecture: selectedLecture.title,
+        count,
+      },
+    });
   };
 
   const handleSelectLecture = (lecture: ILecture) => {
@@ -140,7 +151,7 @@ const AiQuestionGeneratorModal: React.FC<AiQuestionGeneratorModalProps> = ({
         setStep('input');
         setIsLoading(false);
         setLectureId('');
-        setTopic('');
+        setCount(5);
         setSelectedLecture(null);
         setSearchTerm('');
         setPage(1);
@@ -158,7 +169,7 @@ const AiQuestionGeneratorModal: React.FC<AiQuestionGeneratorModalProps> = ({
               Tạo câu hỏi bằng AI
             </DialogTitle>
             <DialogDescription className="text-base">
-              Nhập ID bài giảng và chủ đề để tạo câu hỏi tự động với trí tuệ nhân tạo
+              Nhập thông tin để tạo câu hỏi tự động với trí tuệ nhân tạo
             </DialogDescription>
             <Separator />
           </DialogHeader>
@@ -236,45 +247,20 @@ const AiQuestionGeneratorModal: React.FC<AiQuestionGeneratorModalProps> = ({
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="topic" className="text-sm font-medium flex items-center gap-1.5">
-                    <span>Chủ đề câu hỏi</span>
+                  <label htmlFor="count" className="text-sm font-medium flex items-center gap-1.5">
+                    <span>Số lượng câu hỏi</span>
                     <Badge variant="outline" className="text-xs font-normal">Bắt buộc</Badge>
                   </label>
-                  <Textarea
-                    id="topic"
-                    value={topic}
-                    onChange={(e) => setTopic(e.target.value)}
-                    placeholder="Mô tả chi tiết về chủ đề câu hỏi bạn muốn tạo"
-                    className="w-full min-h-24"
+                  <Input
+                    id="count"
+                    type="number"
+                    min={1}
+                    max={20}
+                    value={count}
+                    onChange={(e) => setCount(parseInt(e.target.value) || 5)}
+                    className="w-full"
                     required
                   />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <LightbulbIcon className="h-4 w-4 text-amber-500" />
-                  <span className="text-sm font-medium">Gợi ý chủ đề</span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {exampleTopics.map((suggestion, index) => (
-                    <Badge
-                      key={index}
-                      variant="secondary"
-                      className="cursor-pointer hover:bg-secondary/80 transition-colors"
-                      onClick={() => useSuggestion(suggestion)}
-                    >
-                      {suggestion}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm flex items-start gap-2">
-                <AlertCircle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
-                <div className="text-amber-800">
-                  <p className="font-medium">Lưu ý:</p>
-                  <p>Để có kết quả tốt nhất, hãy cung cấp mô tả chi tiết về chủ đề và phạm vi kiến thức của câu hỏi.</p>
                 </div>
               </div>
             </div>
@@ -288,7 +274,7 @@ const AiQuestionGeneratorModal: React.FC<AiQuestionGeneratorModalProps> = ({
               </div>
               <div className="text-center space-y-2">
                 <h3 className="font-medium text-lg">Đang tạo câu hỏi...</h3>
-                <p className="text-muted-foreground">AI đang xử lý yêu cầu của bạn, vui lòng đợi một chút</p>
+                <p className="text-muted-foreground">AI đang xử lý yêu cầu của bạn, quá trình này có thể mất từ 30 giây đến 1 phút</p>
               </div>
             </div>
           )}
@@ -301,7 +287,7 @@ const AiQuestionGeneratorModal: React.FC<AiQuestionGeneratorModalProps> = ({
             </DialogClose>
             <Button
               type="submit"
-              disabled={isLoading || !lectureId || !topic}
+              disabled={isLoading || !lectureId || !selectedLecture}
               className="gap-2"
             >
               {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}

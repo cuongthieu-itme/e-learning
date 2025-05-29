@@ -9,6 +9,12 @@ import {
   postApiHandler,
 } from '../api';
 
+export interface GenerateAiQuestionsDto {
+  lectureId: string;
+  lecture: string;
+  count: number;
+}
+
 export const createQuestion = async (
   data: FormData | any,
 ): Promise<ServerResponse> => {
@@ -83,4 +89,19 @@ export const getAllQuestionsRandomByLectureId = async (
   }>
 > => {
   return await getApiHandler(`question/random-all/${lectureId}`);
+};
+
+/**
+ * Generate questions using AI based on lecture information
+ * @param data Object containing lectureId, lecture name, and count
+ * @returns Promise with generated questions
+ */
+export const generateAiQuestions = async (
+  data: GenerateAiQuestionsDto
+): Promise<
+  ServerResponse<{
+    questions: IQuestion[];
+  }>
+> => {
+  return await postApiHandler('question/generate-ai', data);
 };
