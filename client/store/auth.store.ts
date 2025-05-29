@@ -7,7 +7,7 @@ import {
 
 type User = {
   userId: string;
-  role: 'user' | 'admin';
+  role: 'user' | 'admin' | 'teacher';
 };
 
 type AuthStore = {

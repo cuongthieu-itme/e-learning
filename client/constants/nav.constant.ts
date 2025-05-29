@@ -32,6 +32,13 @@ export const UserNavbarActions = [
   },
 ];
 
+export const getNavbarActionsByRole = (role: string | undefined) => {
+  if (role === 'teacher') {
+    return AdminNavbarActions.filter(item => item.id !== 3);
+  }
+  return AdminNavbarActions;
+};
+
 export const AdminNavbarActions = [
   {
     id: 1,

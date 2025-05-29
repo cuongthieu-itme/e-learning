@@ -1,6 +1,8 @@
 import Link from 'next/link';
+import { useEffect } from 'react';
 
-import { AdminNavbarActions } from '@/constants';
+import { getNavbarActionsByRole } from '@/constants';
+import { useAuthStore } from '@/store/auth.store';
 
 import {
   SidebarGroup,
@@ -14,11 +16,19 @@ import {
 } from '@/components/ui/layout/sidebar';
 
 const SidebarNav: React.FC = () => {
+  const { user, isAuthenticated, fetchUser } = useAuthStore();
+
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
+
+  const navItems = getNavbarActionsByRole(user?.role);
+
   return (
     <SidebarGroup>
       <SidebarGroupContent>
         <SidebarMenu>
-          {AdminNavbarActions.map((item) => {
+          {navItems.map((item) => {
             const hasSubActions = item.subActions.length === 0;
 
             const Button = (

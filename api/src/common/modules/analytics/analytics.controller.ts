@@ -11,7 +11,7 @@ export class AnalyticsController {
 
     @Get()
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.Admin)
+    @Roles(Role.Admin, Role.Teacher)
     async getAnalytics() {
         return await this.analyticsService.getAnalytics();
     }

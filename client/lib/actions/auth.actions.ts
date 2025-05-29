@@ -25,7 +25,7 @@ export const signin = async (
 export const getCurrentUser = async (): Promise<ServerResponse<{
   user: {
     userId: string;
-    role: 'user' | 'admin';
+    role: 'user' | 'admin' | 'teacher';
   };
 }> | null> => {
   try {
