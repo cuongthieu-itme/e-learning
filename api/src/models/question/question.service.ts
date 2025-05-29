@@ -5,6 +5,7 @@ import { FilterQuery, Model, Types, UpdateQuery, UpdateWriteOpResult } from 'mon
 import { Question } from './schema/question.schema';
 
 import { ResponseObject } from '@/types';
+import { CreateManyQuestionsDto } from './dto/create-many-questions.dto';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { GetQuestionsDto } from './dto/get-questions.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
@@ -48,6 +49,27 @@ export class QuestionService {
       statusCode: HttpStatus.CREATED,
       message: 'Câu hỏi đã được tạo thành công',
       question: newQuestion,
+    };
+  }
+
+  async createMany(data: CreateManyQuestionsDto, userId: string): Promise<ResponseObject> {
+    if (!data.questions || data.questions.length === 0) {
+      throw new NotFoundException('No questions provided');
+    }
+
+    const questionsToCreate = data.questions.map(question => ({
+      ...question,
+      lectureId: new Types.ObjectId(question.lectureId),
+      createdById: new Types.ObjectId(userId),
+    }));
+
+    const createdQuestions = await this.questionModel.insertMany(questionsToCreate);
+
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: `${createdQuestions.length} câu hỏi đã được tạo thành công`,
+      questionsCount: createdQuestions.length,
+      questions: createdQuestions,
     };
   }
 
@@ -340,13 +362,6 @@ export class QuestionService {
     };
   }
 
-  /**
-   * Get all questions for a specific lecture with random sorting
-   * This method retrieves ALL questions without pagination and sorts them randomly
-   *
-   * @param lectureId - The ID of the lecture to get questions for
-   * @returns Promise with question data including all fields
-   */
   async getAllQuestionsRandomByLectureId(lectureId: string): Promise<ResponseObject> {
     if (!lectureId) {
       throw new NotFoundException('Lecture ID is required');
@@ -356,7 +371,6 @@ export class QuestionService {
       lectureId: new Types.ObjectId(lectureId)
     };
 
-    // Get total count of questions for this lecture
     const totalQuestions = await this.questionModel.countDocuments(conditions);
 
     if (totalQuestions === 0) {
@@ -368,11 +382,10 @@ export class QuestionService {
       };
     }
 
-    // Get all questions with random sorting
     const questions = await this.questionModel
       .aggregate([
         { $match: conditions },
-        { $sample: { size: totalQuestions } }, // Use total count to get all questions
+        { $sample: { size: totalQuestions } },
         {
           $lookup: {
             from: 'users',

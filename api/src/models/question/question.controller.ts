@@ -15,6 +15,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CreateQuestionDto } from './dto/create-question.dto';
+import { CreateManyQuestionsDto } from './dto/create-many-questions.dto';
 import { GetQuestionsDto } from './dto/get-questions.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { QuestionService } from './question.service';
@@ -31,6 +32,16 @@ export class QuestionController {
     @User('userId') userId: string,
   ) {
     return await this.questionService.createOne(body, userId);
+  }
+
+  @Post('/batch')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin, Role.Teacher)
+  async createManyQuestions(
+    @Body() data: CreateManyQuestionsDto,
+    @User('userId') userId: string,
+  ) {
+    return await this.questionService.createMany(data, userId);
   }
 
   @Patch('/:id')
