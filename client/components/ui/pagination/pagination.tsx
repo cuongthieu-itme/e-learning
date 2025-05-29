@@ -1,8 +1,8 @@
-import * as React from 'react';
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
+import * as React from 'react';
 
-import { cn } from '@/lib/utils';
 import { ButtonProps, buttonVariants } from '@/components/ui/buttons/button';
+import { cn } from '@/lib/utils';
 
 const Pagination = ({ className, ...props }: React.ComponentProps<'nav'>) => (
   <nav
@@ -71,7 +71,7 @@ const PaginationPrevious = ({
     {...props}
   >
     <ChevronLeft className="h-4 w-4" />
-    <span>Previous</span>
+    <span>Trước đó</span>
   </PaginationLink>
 );
 PaginationPrevious.displayName = 'PaginationPrevious';
@@ -86,7 +86,7 @@ const PaginationNext = ({
     className={cn('cursor-pointer gap-1 pr-2.5', className)}
     {...props}
   >
-    <span>Next</span>
+    <span>Tiếp theo</span>
     <ChevronRight className="h-4 w-4" />
   </PaginationLink>
 );
@@ -109,10 +109,6 @@ PaginationEllipsis.displayName = 'PaginationEllipsis';
 
 export {
   Pagination,
-  PaginationContent,
-  PaginationLink,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationNext,
-  PaginationEllipsis,
+  PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious
 };
+
