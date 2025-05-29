@@ -28,7 +28,7 @@ const DashboardCoursesContent: React.FC = () => {
     limit: Math.min(Math.max(Number(searchParams.get('limit')) || 10, 1), 100),
     search: searchParams.get('search') || '',
     sort: searchParams.get('sort') || '',
-    createdById: user?.userId,
+    createdById: user?.role === 'admin' ? undefined : user?.userId,
   };
 
   const { data, isLoading } = useCourseQuery({

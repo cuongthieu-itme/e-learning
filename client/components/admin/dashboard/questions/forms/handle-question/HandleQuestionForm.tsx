@@ -168,7 +168,6 @@ const HandleQuestionForm: React.FC<HandleQuestionFormProps> = (props) => {
     }
   };
 
-  // Lecture selection states
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [page, setPage] = useState<number>(1);
   const [selectedLecture, setSelectedLecture] = useState<ILecture | null>(null);
@@ -178,7 +177,7 @@ const HandleQuestionForm: React.FC<HandleQuestionFormProps> = (props) => {
     page,
     limit: 10,
     search: searchTerm,
-    createdById: user?.userId,
+    createdById: user?.role === 'admin' ? undefined : user?.userId,
   }), [page, searchTerm, user]);
 
   const { data: lecturesData, isLoading: isLecturesLoading, refetch } = useLectureQuery({

@@ -159,7 +159,7 @@ const HandleLectureForm: React.FC<HandleLectureFormProps> = (props) => {
     page,
     limit: 10,
     search: searchTerm,
-    createdById: user?.userId,
+    createdById: user?.role === 'admin' ? undefined : user?.userId,
   }), [page, searchTerm, user]);
 
   const { data: coursesData, isLoading: isCoursesLoading, refetch } = useCourseQuery({
