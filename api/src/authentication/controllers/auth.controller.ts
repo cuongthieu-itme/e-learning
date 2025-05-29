@@ -1,28 +1,24 @@
+import { GoogleOAuthGuard } from '@/authentication/guards/google-auth.guard';
+import { JwtAuthGuard } from '@/authentication/guards/jwt-auth.guard';
+import { LocalAuthGuard } from '@/authentication/guards/local-auth.guard';
+import { GoogleAuthService } from '@/authentication/services/google-auth.service';
+import { LocalAuthService } from '@/authentication/services/local-auth.service';
+import { cookieOptions } from '@/common/constants';
+import { getRedirectUrl } from '@/common/utils';
+import { User } from '@/models/user/schema/user.schema';
 import {
+  Body,
   Controller,
   Get,
+  HttpStatus,
   Post,
-  Body,
   Req,
   Res,
-  HttpStatus,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
-
 import { Request, Response } from 'express';
-
-import { LocalAuthService } from '@/authentication/services/local-auth.service';
-import { GoogleAuthService } from '@/authentication/services/google-auth.service';
-
-import { LocalAuthGuard } from '@/authentication/guards/local-auth.guard';
-import { GoogleOAuthGuard } from '@/authentication/guards/google-auth.guard';
-import { JwtAuthGuard } from '@/authentication/guards/jwt-auth.guard';
-
-import { getRedirectUrl } from '@/common/utils';
-import { cookieOptions } from '@/common/constants';
-import { User } from '@/models/user/schema/user.schema';
 import { SignupDto } from '../dto/signup.dto';
 
 @Controller('/auth')
@@ -30,11 +26,11 @@ export class AuthController {
   constructor(
     private readonly localAuthService: LocalAuthService,
     private readonly googleAuthService: GoogleAuthService,
-  ) {}
+  ) { }
 
   @Get('/google')
   @UseGuards(GoogleOAuthGuard)
-  googleAuth() {}
+  googleAuth() { }
 
   @Get('/google/redirect')
   @UseGuards(GoogleOAuthGuard)

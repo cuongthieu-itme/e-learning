@@ -1,3 +1,7 @@
+import { JwtAuthGuard } from '@/authentication/guards/jwt-auth.guard';
+import { RolesGuard } from '@/authentication/guards/role-auth.guard';
+import { Roles } from '@/common/decorators/roles.decorator';
+import { Role } from '@/types';
 import {
   Body,
   Controller,
@@ -9,13 +13,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-
-import { JwtAuthGuard } from '@/authentication/guards/jwt-auth.guard';
-import { RolesGuard } from '@/authentication/guards/role-auth.guard';
-import { Roles } from '@/common/decorators/roles.decorator';
-import { Role } from '@/types';
 import { CourseTopicService } from './course-topic.service';
-
 import { CreateCourseTopicDto } from './dto/create-course-topic.dto';
 import { GetCourseTopicsDto } from './dto/get-course-topics.dto';
 import { UpdateCourseTopicDto } from './dto/update-course-topic.dto';
@@ -26,14 +24,14 @@ export class CourseTopicController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.Admin, Role.Manager, Role.Teacher)
+  @Roles(Role.Admin, Role.Teacher)
   async createCourseTopic(@Body() body: CreateCourseTopicDto) {
     return await this.courseTopicService.createOne(body);
   }
 
   @Patch('/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.Admin, Role.Manager, Role.Teacher)
+  @Roles(Role.Admin, Role.Teacher)
   async updateCourseTopic(
     @Param('id') id: string,
     @Body() body: UpdateCourseTopicDto,
@@ -43,7 +41,7 @@ export class CourseTopicController {
 
   @Delete('/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.Admin, Role.Manager, Role.Teacher)
+  @Roles(Role.Admin, Role.Teacher)
   async deleteCourseTopic(@Param('id') id: string) {
     return await this.courseTopicService.deleteOne(id);
   }

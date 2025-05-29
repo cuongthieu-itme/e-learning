@@ -1,3 +1,8 @@
+import { JwtAuthGuard } from '@/authentication/guards/jwt-auth.guard';
+import { RolesGuard } from '@/authentication/guards/role-auth.guard';
+import { Roles } from '@/common/decorators/roles.decorator';
+import { User } from '@/common/decorators/user.decorator';
+import { Role } from '@/types';
 import {
   Body,
   Controller,
@@ -9,17 +14,10 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-
-import { JwtAuthGuard } from '@/authentication/guards/jwt-auth.guard';
-import { RolesGuard } from '@/authentication/guards/role-auth.guard';
-import { Roles } from '@/common/decorators/roles.decorator';
-import { User } from '@/common/decorators/user.decorator';
-import { Role } from '@/types';
-import { LectureService } from './lecture.service';
-
 import { CreateLectureDto } from './dto/create-lecture.dto';
 import { GetLecturesDto } from './dto/get-lectures.dto';
 import { UpdateLectureDto } from './dto/update-lecture.dto';
+import { LectureService } from './lecture.service';
 
 @Controller('/lecture')
 export class LectureController {
@@ -27,7 +25,7 @@ export class LectureController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.Admin, Role.Manager, Role.Teacher)
+  @Roles(Role.Admin, Role.Teacher)
   async createLecture(
     @Body() body: CreateLectureDto,
     @User('userId') userId: string,
@@ -37,7 +35,7 @@ export class LectureController {
 
   @Patch('/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.Admin, Role.Manager, Role.Teacher)
+  @Roles(Role.Admin, Role.Teacher)
   async updateLecture(
     @Param('id') id: string,
     @Body() body: UpdateLectureDto,
@@ -48,7 +46,7 @@ export class LectureController {
 
   @Delete('/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.Admin, Role.Manager, Role.Teacher)
+  @Roles(Role.Admin, Role.Teacher)
   async deleteLecture(
     @Param('id') id: string,
     @User('userId') userId: string,
@@ -58,7 +56,7 @@ export class LectureController {
 
   @Get('/my-lectures')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.Admin, Role.Manager, Role.Teacher)
+  @Roles(Role.Admin, Role.Teacher)
   async getUserLectures(
     @User('userId') userId: string,
     @Query() query: GetLecturesDto,
@@ -85,7 +83,7 @@ export class LectureController {
 
   @Patch('/:id/publish')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.Admin, Role.Manager, Role.Teacher)
+  @Roles(Role.Admin, Role.Teacher)
   async publishLecture(
     @Param('id') id: string,
     @User('userId') userId: string,
@@ -95,7 +93,7 @@ export class LectureController {
 
   @Patch('/:id/unpublish')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.Admin, Role.Manager, Role.Teacher)
+  @Roles(Role.Admin, Role.Teacher)
   async unpublishLecture(
     @Param('id') id: string,
     @User('userId') userId: string,

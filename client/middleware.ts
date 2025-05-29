@@ -2,13 +2,13 @@ import { NextResponse, NextRequest } from 'next/server';
 
 import { getValidUserRole } from './lib/utils/auth.utils';
 
-type UserRole = 'admin' | 'user' | null;
+type UserRole = 'admin' | 'user' | 'teacher' | null;
 
 const rootConfig = {
   protectedRoutes: [
     {
       pattern: /^\/dashboard(\/.*)?$/,
-      allowedRoles: new Set(['admin']),
+      allowedRoles: new Set(['admin', 'teacher']),
       redirect: '/',
     },
     {
@@ -35,6 +35,7 @@ const rootConfig = {
   authPages: new Set(['/login', '/signup']),
   roleRedirects: new Map([
     ['admin', '/dashboard'],
+    ['teacher', '/dashboard'],
     ['user', '/'],
   ]),
   defaultRedirect: '/',

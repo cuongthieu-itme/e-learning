@@ -23,7 +23,7 @@ export class LocalAuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly blockedDomainsService: BlockedDomainsService,
-  ) {}
+  ) { }
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userService.findOneByEmail(email, '+password');
@@ -43,7 +43,7 @@ export class LocalAuthService {
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Entered password is not valid!');
+      throw new UnauthorizedException('Tài khoản hoặc mật khẩu không chính xác!');
     }
 
     if (user && isPasswordValid) {
