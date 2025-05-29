@@ -15,11 +15,15 @@ export interface GenerateAiQuestionsDto {
   count: number;
 }
 
+export interface CreateBatchQuestionsDto {
+  questions: any[];
+}
+
 export const createQuestion = async (
   data: FormData | any,
 ): Promise<ServerResponse> => {
   // Handle both FormData and JSON payload
-  const headers = data instanceof FormData 
+  const headers = data instanceof FormData
     ? { 'Content-Type': 'multipart/form-data' }
     : { 'Content-Type': 'application/json' };
 
@@ -33,7 +37,7 @@ export const updateQuestion = async (
   questionId: string,
 ): Promise<ServerResponse> => {
   // Handle both FormData and JSON payload
-  const headers = data instanceof FormData 
+  const headers = data instanceof FormData
     ? { 'Content-Type': 'multipart/form-data' }
     : { 'Content-Type': 'application/json' };
 
@@ -104,4 +108,20 @@ export const generateAiQuestions = async (
   }>
 > => {
   return await postApiHandler('question/generate-ai', data);
+};
+
+/**
+ * Create multiple questions in a batch
+ * @param data Object containing an array of questions
+ * @returns Promise with created questions
+ */
+export const createBatchQuestions = async (
+  data: CreateBatchQuestionsDto
+): Promise<
+  ServerResponse<{
+    questions: IQuestion[];
+    questionsCount: number;
+  }>
+> => {
+  return await postApiHandler('question/batch', data);
 };
