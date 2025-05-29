@@ -1,7 +1,11 @@
 'use client';
 
 import { IQuestion } from '@/types/question.types';
+import { useState } from 'react';
 
+import HandleQuestionForm from '@/components/admin/dashboard/questions/forms/handle-question/HandleQuestionForm';
+import AiQuestionGeneratorModal from '@/components/admin/dashboard/questions/modals/AiQuestionGeneratorModal';
+import { Button } from '@/components/ui/buttons/button';
 import {
   Card,
   CardContent,
@@ -10,7 +14,7 @@ import {
   CardTitle,
 } from '@/components/ui/layout/card';
 import { Separator } from '@/components/ui/layout/separator';
-import HandleQuestionForm from '@/components/admin/dashboard/questions/forms/handle-question/HandleQuestionForm';
+import { BrainCircuit } from 'lucide-react';
 
 type HandleQuestionProps =
   | {
@@ -24,21 +28,48 @@ const HandleQuestion: React.FC<HandleQuestionProps> = (props) => {
     ? { isEdit: true as const, question: props.question }
     : { isEdit: false as const, question: undefined };
 
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
+
+  const handleGenerateQuestion = (lectureId: string, topic: string) => {
+    console.log('Generating question for lecture:', lectureId, 'with topic:', topic);
+    setIsAiModalOpen(false);
+  };
+
   return (
-    <Card className="h-full shadow-none">
-      <CardHeader>
-        <CardTitle>{props.isEdit ? 'Sửa' : 'Thêm'} câu hỏi</CardTitle>
-        <CardDescription>
-          {props.isEdit
-            ? 'Sửa câu hỏi'
-            : 'Thêm câu hỏi mới'}
-        </CardDescription>
-      </CardHeader>
-      <Separator />
-      <CardContent className="pt-5">
-        <HandleQuestionForm {...formProps} />
-      </CardContent>
-    </Card>
+    <>
+      <Card className="h-full shadow-none">
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <div>
+            <CardTitle>{props.isEdit ? 'Sửa' : 'Thêm'} câu hỏi</CardTitle>
+            <CardDescription>
+              {props.isEdit
+                ? 'Sửa câu hỏi'
+                : 'Thêm câu hỏi mới'}
+            </CardDescription>
+          </div>
+          {!props.isEdit && (
+            <Button
+              variant="outline"
+              className="flex items-center gap-2"
+              onClick={() => setIsAiModalOpen(true)}
+            >
+              <BrainCircuit className="h-4 w-4" />
+              Tạo câu hỏi bằng AI
+            </Button>
+          )}
+        </CardHeader>
+        <Separator />
+        <CardContent className="pt-5">
+          <HandleQuestionForm {...formProps} />
+        </CardContent>
+      </Card>
+
+      <AiQuestionGeneratorModal
+        isOpen={isAiModalOpen}
+        onOpenChange={setIsAiModalOpen}
+        onGenerate={handleGenerateQuestion}
+      />
+    </>
   );
 };
 
