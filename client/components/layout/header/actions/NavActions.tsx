@@ -1,13 +1,12 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
 import { LogOut, User } from 'lucide-react';
+import Link from 'next/link';
+import React from 'react';
 
 import { useAuthStore } from '@/store/auth.store';
 
 import Logo from '../Logo';
-import { NavSearch } from './search/NavSearch';
 
 import { Button } from '@/components/ui/buttons/button';
 import { TooltipWrapper } from '@/components/ui/info/tooltip-wrapper';
@@ -18,7 +17,7 @@ const NavActions: React.FC<{
 }> = ({ showSearch = true }) => {
   const { user, isAuthenticated, logout } = useAuthStore();
 
-  const isAdmin = (user && user.role === 'admin') || false;
+  const isAdmin = user ? (user.role === 'admin' || user.role === 'teacher') : false;
   const roleData = getRoleSpecificData(isAdmin);
 
   return (
