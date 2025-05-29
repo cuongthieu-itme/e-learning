@@ -105,6 +105,7 @@ export class CourseService {
     sort,
     subject,
     isPublished,
+    createdById
   }: GetCoursesDto): Promise<ResponseObject> {
     const conditions: any = {};
 
@@ -123,6 +124,10 @@ export class CourseService {
 
     if (isPublished !== undefined) {
       conditions.isPublished = isPublished;
+    }
+
+    if (createdById) {
+      conditions.createdById = new Types.ObjectId(createdById);
     }
 
     const sortOptions: any = { createdAt: sort === 'desc' ? -1 : 1 };

@@ -1,5 +1,5 @@
-import { LectureStatus } from '@/types';
 import { sanitizeInput } from '@/common/utils';
+import { LectureStatus } from '@/types';
 import { Transform } from 'class-transformer';
 import { IsEnum, IsMongoId, IsNumber, IsOptional, IsPositive, IsString, Max, Min } from 'class-validator';
 
@@ -29,11 +29,11 @@ export class GetLecturesDto {
   @IsOptional()
   @IsMongoId()
   readonly courseId?: string;
-  
+
   @IsOptional()
   @IsMongoId()
   readonly createdById?: string;
-  
+
   @IsOptional()
   @IsEnum(LectureStatus)
   readonly status?: LectureStatus;

@@ -1,6 +1,6 @@
 import { sanitizeInput } from '@/common/utils';
 import { Transform } from 'class-transformer';
-import { IsBoolean, IsNumber, IsOptional, IsPositive, IsString, Max, Min } from 'class-validator';
+import { IsBoolean, IsMongoId, IsNumber, IsOptional, IsPositive, IsString, Max, Min } from 'class-validator';
 
 export class GetCoursesDto {
   @IsOptional()
@@ -28,9 +28,13 @@ export class GetCoursesDto {
   @IsOptional()
   @IsString()
   readonly subject?: string;
-  
+
   @IsOptional()
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
   readonly isPublished?: boolean;
+
+  @IsOptional()
+  @IsMongoId()
+  readonly createdById?: string;
 }
