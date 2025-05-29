@@ -30,8 +30,7 @@ const HandleQuestion: React.FC<HandleQuestionProps> = (props) => {
 
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
 
-  const handleGenerateQuestion = (lectureId: string, topic: string) => {
-    console.log('Generating question for lecture:', lectureId, 'with topic:', topic);
+  const handleQuestionSuccess = (questions: any[]) => {
     setIsAiModalOpen(false);
   };
 
@@ -67,7 +66,7 @@ const HandleQuestion: React.FC<HandleQuestionProps> = (props) => {
       <AiQuestionGeneratorModal
         isOpen={isAiModalOpen}
         onOpenChange={setIsAiModalOpen}
-        onGenerate={handleGenerateQuestion}
+        onSuccess={handleQuestionSuccess}
       />
     </>
   );

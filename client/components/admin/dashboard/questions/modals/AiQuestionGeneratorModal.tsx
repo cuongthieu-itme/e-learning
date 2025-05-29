@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/buttons/button';
 import { Input } from '@/components/ui/form/input';
 import { Badge } from '@/components/ui/info/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/layout/card';
+import { Card, CardContent } from '@/components/ui/layout/card';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/layout/command';
 import {
   Dialog,
@@ -365,38 +365,41 @@ const AiQuestionGeneratorModal: React.FC<AiQuestionGeneratorModalProps> = ({
               <Separator />
             </DialogHeader>
 
-            <div className="flex-1 overflow-hidden pb-3 -mx-6 px-6">
+            <div className="flex-1 overflow-hidden pb-3">
               {generatedQuestions.length > 0 ? (
-                <div className="flex h-full gap-4">
+                <div className="flex h-full gap-3">
                   {/* Left sidebar - question list */}
-                  <div className="w-[240px] border-r pr-4 h-full overflow-y-auto">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-sm font-medium">Danh sách câu hỏi</h3>
-                      <span className="text-xs text-muted-foreground">{generatedQuestions.length} câu hỏi</span>
+                  <div className="w-[220px] border-r pr-3 h-full overflow-y-auto py-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-sm font-semibold">Danh sách câu hỏi</h3>
+                      <Badge variant="secondary" className="text-xs">{generatedQuestions.length} câu</Badge>
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       {generatedQuestions.map((q, index) => (
                         <div
                           key={index}
                           className={cn(
-                            "text-sm p-2 rounded border flex justify-between items-center cursor-pointer hover:bg-muted/50 transition-colors",
-                            selectedQuestionIndex === index && "bg-muted border-primary/40"
+                            "text-sm p-2 rounded-md border flex justify-between items-center cursor-pointer transition-all",
+                            selectedQuestionIndex === index
+                              ? "bg-primary/10 border-primary text-primary font-medium shadow-sm"
+                              : "hover:bg-muted/70 border-muted-foreground/20"
                           )}
                           onClick={() => setSelectedQuestionIndex(index)}
                         >
-                          <span className="line-clamp-2 flex-1 mr-2 text-xs">
-                            {index + 1}. {q.question.substring(0, 40)}{q.question.length > 40 ? '...' : ''}
+                          <span className="line-clamp-2 flex-1 mr-1.5 text-xs">
+                            <span className="font-medium mr-1">#{index + 1}</span>
+                            {q.question.substring(0, 30)}{q.question.length > 30 ? '...' : ''}
                           </span>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6 opacity-70 hover:opacity-100"
+                            className="h-5 w-5 opacity-70 hover:opacity-100 hover:text-destructive flex-shrink-0"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleRemoveQuestion(index);
                             }}
                           >
-                            <Trash2 className="h-3.5 w-3.5" />
+                            <Trash2 className="h-3 w-3" />
                           </Button>
                         </div>
                       ))}
@@ -404,85 +407,106 @@ const AiQuestionGeneratorModal: React.FC<AiQuestionGeneratorModalProps> = ({
                   </div>
 
                   {/* Main content - question preview */}
-                  <div className="flex-1 overflow-y-auto">
+                  <div className="flex-1 overflow-y-auto pr-1">
                     {generatedQuestions[selectedQuestionIndex] && (
-                      <div className="space-y-6">
-                        <Card>
-                          <CardHeader>
-                            <CardTitle className="text-base">Câu hỏi {selectedQuestionIndex + 1}</CardTitle>
-                            <CardDescription>
-                              {selectedLecture?.title}
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent className="space-y-4">
-                            <div>
-                              <h4 className="font-medium mb-1.5">Câu hỏi:</h4>
-                              <p className="text-sm">{generatedQuestions[selectedQuestionIndex].question}</p>
+                      <div className="space-y-4">
+                        <Card className="shadow-sm border-muted-foreground/20 overflow-hidden mt-1">
+                          <div className="bg-primary/5 px-4 py-3 border-b">
+                            <div className="flex items-center justify-between gap-2">
+                              <h3 className="font-semibold text-base">Câu hỏi #{selectedQuestionIndex + 1}</h3>
+                              <Badge
+                                variant="outline"
+                                className="bg-background/80 backdrop-blur-sm text-xs truncate max-w-[180px]"
+                              >
+                                {selectedLecture?.title}
+                              </Badge>
                             </div>
+                          </div>
+                          <CardContent className="space-y-4 p-4">
+                            <div className="space-y-1.5">
+                              <h4 className="font-medium text-sm text-muted-foreground">Câu hỏi:</h4>
+                              <p className="text-base font-medium">{generatedQuestions[selectedQuestionIndex].question}</p>
+                            </div>
+
+                            <Separator />
 
                             <div className="grid grid-cols-2 gap-3">
-                              <div>
-                                <h4 className="font-medium mb-1.5 flex items-center gap-1.5">
-                                  <span>A:</span>
-                                  {generatedQuestions[selectedQuestionIndex].correctAnswer === 'A' && (
-                                    <Badge variant="secondary" className="text-xs">Đáp án đúng</Badge>
-                                  )}
-                                </h4>
-                                <p className="text-sm">{generatedQuestions[selectedQuestionIndex].optionA}</p>
-                              </div>
-                              <div>
-                                <h4 className="font-medium mb-1.5 flex items-center gap-1.5">
-                                  <span>B:</span>
-                                  {generatedQuestions[selectedQuestionIndex].correctAnswer === 'B' && (
-                                    <Badge variant="secondary" className="text-xs">Đáp án đúng</Badge>
-                                  )}
-                                </h4>
-                                <p className="text-sm">{generatedQuestions[selectedQuestionIndex].optionB}</p>
-                              </div>
-                              <div>
-                                <h4 className="font-medium mb-1.5 flex items-center gap-1.5">
-                                  <span>C:</span>
-                                  {generatedQuestions[selectedQuestionIndex].correctAnswer === 'C' && (
-                                    <Badge variant="secondary" className="text-xs">Đáp án đúng</Badge>
-                                  )}
-                                </h4>
-                                <p className="text-sm">{generatedQuestions[selectedQuestionIndex].optionC}</p>
-                              </div>
-                              <div>
-                                <h4 className="font-medium mb-1.5 flex items-center gap-1.5">
-                                  <span>D:</span>
-                                  {generatedQuestions[selectedQuestionIndex].correctAnswer === 'D' && (
-                                    <Badge variant="secondary" className="text-xs">Đáp án đúng</Badge>
-                                  )}
-                                </h4>
-                                <p className="text-sm">{generatedQuestions[selectedQuestionIndex].optionD}</p>
-                              </div>
+                              {['A', 'B', 'C', 'D'].map((option) => {
+                                const isCorrect = generatedQuestions[selectedQuestionIndex].correctAnswer === option;
+                                const optionKey = `option${option}` as 'optionA' | 'optionB' | 'optionC' | 'optionD';
+                                return (
+                                  <div
+                                    key={option}
+                                    className={cn(
+                                      "p-2.5 border rounded-lg relative",
+                                      isCorrect && "border-green-500/50 bg-green-50/50 dark:bg-green-950/10"
+                                    )}
+                                  >
+                                    <div className={cn(
+                                      "absolute -left-1 -top-1 size-4 rounded-full flex items-center justify-center text-xs font-medium",
+                                      isCorrect
+                                        ? "bg-green-500 text-white"
+                                        : "bg-muted-foreground/20 text-muted-foreground"
+                                    )}>
+                                      {option}
+                                    </div>
+                                    <p className={cn(
+                                      "text-sm pt-0.5 pl-2.5",
+                                      isCorrect && "font-medium"
+                                    )}>
+                                      {generatedQuestions[selectedQuestionIndex][optionKey]}
+                                    </p>
+                                    {isCorrect && (
+                                      <div className="absolute -right-1 -top-1">
+                                        <Badge variant="default" className="bg-green-500 text-[10px] px-1.5 py-0 h-4">
+                                          <Check className="mr-0.5 h-2.5 w-2.5" />
+                                          Đúng
+                                        </Badge>
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
                             </div>
 
-                            <div>
-                              <h4 className="font-medium mb-1.5">Giải thích:</h4>
+                            <Separator />
+
+                            <div className="space-y-1.5 bg-muted/30 p-2.5 rounded-md">
+                              <h4 className="font-medium text-sm text-muted-foreground flex items-center gap-1.5">
+                                <AlertCircle className="h-3.5 w-3.5" />
+                                Giải thích:
+                              </h4>
                               <p className="text-sm">{generatedQuestions[selectedQuestionIndex].explanation}</p>
                             </div>
                           </CardContent>
                         </Card>
 
-                        <div className="flex justify-between">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setSelectedQuestionIndex(Math.max(0, selectedQuestionIndex - 1))}
-                            disabled={selectedQuestionIndex === 0}
-                          >
-                            Câu trước
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setSelectedQuestionIndex(Math.min(generatedQuestions.length - 1, selectedQuestionIndex + 1))}
-                            disabled={selectedQuestionIndex === generatedQuestions.length - 1}
-                          >
-                            Câu tiếp theo
-                          </Button>
+                        <div className="flex justify-between items-center">
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setSelectedQuestionIndex(Math.max(0, selectedQuestionIndex - 1))}
+                              disabled={selectedQuestionIndex === 0}
+                              className="h-7 gap-1 px-2"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5"><path d="m15 18-6-6 6-6"/></svg>
+                              Câu trước
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setSelectedQuestionIndex(Math.min(generatedQuestions.length - 1, selectedQuestionIndex + 1))}
+                              disabled={selectedQuestionIndex === generatedQuestions.length - 1}
+                              className="h-7 gap-1 px-2"
+                            >
+                              Câu tiếp theo
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5"><path d="m9 18 6-6-6-6"/></svg>
+                            </Button>
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {selectedQuestionIndex + 1} / {generatedQuestions.length}
+                          </div>
                         </div>
                       </div>
                     )}
