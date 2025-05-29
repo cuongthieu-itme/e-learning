@@ -428,7 +428,7 @@ export class QuestionService {
     };
   }
 
-  async generateAiQuestions(dto: GenerateAiQuestionsDto, userId: string): Promise<ResponseObject> {
+  async generateAiQuestions(dto: GenerateAiQuestionsDto, userId: string): Promise<any> {
     try {
       const { count, lectureId, lecture } = dto;
 
@@ -465,15 +465,31 @@ export class QuestionService {
       ];
 
       const response = await this.openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
+        model: "gpt-4o-mini",
         messages,
         temperature: 0.7,
         max_tokens: 2500,
       });
 
-      const content = response.choices[0].message.content;
+      let content = response.choices[0].message.content;
 
       try {
+        if (content.includes('```json')) {
+          const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/);
+          if (jsonMatch && jsonMatch[1]) {
+            content = jsonMatch[1].trim();
+          } else {
+            const altMatch = content.match(/```([\s\S]*?)```/);
+            if (altMatch && altMatch[1]) {
+              if (altMatch[1].startsWith('json\n')) {
+                content = altMatch[1].replace('json\n', '').trim();
+              } else {
+                content = altMatch[1].trim();
+              }
+            }
+          }
+        }
+
         const parsedResponse = JSON.parse(content);
         const generatedQuestions = parsedResponse.questions || [];
 
@@ -493,17 +509,14 @@ export class QuestionService {
           createdById: new Types.ObjectId(userId)
         }));
 
-        const createdQuestions = await this.questionModel.insertMany(questionsToCreate);
+        // const createdQuestions = await this.questionModel.insertMany(questionsToCreate);
 
         return {
-          statusCode: HttpStatus.CREATED,
-          message: `${createdQuestions.length} câu hỏi đã được tạo thành công bằng AI`,
-          questions: createdQuestions
+          questions: questionsToCreate
         };
       } catch (parseError) {
         this.logger.error(`Failed to parse OpenAI response: ${parseError.message}`);
         return {
-          statusCode: HttpStatus.BAD_REQUEST,
           message: 'Không thể phân tích cú pháp phản hồi từ AI',
           error: 'Failed to parse response',
           rawContent: content
