@@ -28,7 +28,7 @@ const rootConfig = {
     },
     {
       pattern: /^\/courses\/[^\/]+(\/.*)?$/,
-      allowedRoles: new Set(['user', 'admin']),
+      allowedRoles: new Set(['user', 'admin', 'teacher']),
       redirect: '/login',
     },
   ],
