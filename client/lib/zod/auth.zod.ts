@@ -26,7 +26,7 @@ export const SignupSchema = z.object({
     .string()
     .min(5, { message: 'Email phải có ít nhất 5 ký tự' })
     .max(255, { message: 'Email phải có tối đa 255 ký tự' })
-    .email()
+    .email('Email không hợp lệ')
     .transform((value) => sanitizeInput(value)),
   password: z
     .string()
@@ -43,7 +43,7 @@ export const LoginSchema = z.object({
     .string()
     .min(1, { message: 'Email không được để trống' })
     .max(255, { message: 'Email phải có tối đa 255 ký tự' })
-    .email()
+    .email('Email không hợp lệ')
     .transform((value) => sanitizeInput(value)),
   password: z
     .string()

@@ -58,7 +58,7 @@ export const AdminNavbarActions = [
     id: 3,
     icon: User,
     text: 'Người dùng',
-    href: '/users',
+    href: '/dashboard/users',
     subActions: [
       {
         id: 3.1,
