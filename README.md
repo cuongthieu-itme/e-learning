@@ -24,6 +24,21 @@ Welcome to the E-Learning Platform, a modern and fully functional educational pl
 
 ## Installation
 
+### Prerequisites
+
+First, make sure you have Node.js installed on your system. Then install pnpm globally:
+
+```bash
+# Install pnpm globally using npm
+npm install -g pnpm
+
+# Or using corepack (recommended for Node.js 16.17+)
+corepack enable
+corepack prepare pnpm@latest --activate
+```
+
+### Setup Instructions
+
 1. **Clone the Repository:**
 
 ```bash
@@ -90,6 +105,7 @@ Create an account and start exploring the platform's educational content:
 Users cannot sign in as an admin by default. To gain admin privileges, you must use your MongoDB account and manually update the user's role in MongoDB Atlas by changing the role property to "admin".
 
 The admin dashboard provides access to:
+
 - Course management (create, edit, delete)
 - Topic management
 - Lecture management
